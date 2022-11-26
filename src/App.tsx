@@ -5,14 +5,15 @@ import p5Types from "p5";
 import "./App.css";
 import colors from "./data/colors.json";
 
-// import DrawWheel from "./art-styles/wheel";
-import DrawSimpleSquares from "./art-styles/simple-squares";
-import DrawColoredRectangles from "./art-styles/colored-rectangles";
-import DrawTenPrint from "./art-styles/ten-print";
-import DrawDiamond from "./art-styles/diamond";
-import DrawSimpleTriangles from "./art-styles/simple-triangles";
-import DrawColoredTriangles from "./art-styles/colored-triangles";
-import DrawAscii from "./art-styles/ascii";
+import SimpleSquaresSketch from "./art-styles/simple-squares";
+import ColoredRectanglesSketch from "./art-styles/colored-rectangles";
+import TenPrintSketch from "./art-styles/ten-print";
+import DiamondSketch from "./art-styles/diamond";
+import SimpleTrianglesSketch from "./art-styles/simple-triangles";
+import ColoredTrianglesSketch from "./art-styles/colored-triangles";
+import AsciiSketch from "./art-styles/ascii";
+import FlowfieldSketch from "./art-styles/flow-field";
+import GenericSketch from "./art-styles/generic_sketch";
 
 interface ComponentProps {}
 
@@ -25,8 +26,9 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     "ten-print",
     "diamond",
     "simple-triangles",
+    "flow-field",
   ];
-  const [selectedStyle, setStyle] = useState("colored-rectangles");
+  const [selectedStyle, setStyle] = useState("flow-field");
   const styleHandler = (e: any) => {
     setStyle(e.currentTarget.value);
   };
@@ -40,10 +42,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
-  let p5Instance: p5Types;
   let table: p5Types.Table;
-
-  let palette: Array<p5Types.Color>;
+  let sketch: GenericSketch;
 
   const preload = (p5: p5Types) => {
     table = new p5Types.Table();
@@ -60,35 +60,11 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         row?.set(prop, color[prop]);
       }
     });
-  };
 
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    console.log("canvas setup again...");
-    p5.randomSeed(parseInt(selectedSeed));
-    p5Instance = p5;
-
-    p5.createCanvas(canvasWidth, canvasHeight).parent(canvasParentRef);
-
-    palette = [
-      p5.color(255, 52, 154), // pink
-      p5.color(4, 0, 152), // blue
-    ];
-
-    p5.noLoop();
-  };
-
-  const draw = (p5: p5Types) => {
-    console.log("DRAW", selectedStyle);
-    p5.background(230);
-    let canvasDraw = new DrawSimpleSquares(
-      p5,
-      canvasWidth,
-      canvasHeight,
-      table
-    );
+    sketch = new SimpleSquaresSketch(p5, canvasWidth, canvasHeight, table);
     switch (selectedStyle) {
       case "colored-triangles":
-        canvasDraw = new DrawColoredTriangles(
+        sketch = new ColoredTrianglesSketch(
           p5,
           canvasWidth,
           canvasHeight,
@@ -96,10 +72,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         );
         break;
       case "ascii":
-        canvasDraw = new DrawAscii(p5, canvasWidth, canvasHeight, table);
+        sketch = new AsciiSketch(p5, canvasWidth, canvasHeight, table);
         break;
       case "colored-rectangles":
-        canvasDraw = new DrawColoredRectangles(
+        sketch = new ColoredRectanglesSketch(
           p5,
           canvasWidth,
           canvasHeight,
@@ -107,21 +83,37 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         );
         break;
       case "ten-print":
-        canvasDraw = new DrawTenPrint(p5, canvasWidth, canvasHeight, table);
+        sketch = new TenPrintSketch(p5, canvasWidth, canvasHeight, table);
         break;
       case "diamond":
-        canvasDraw = new DrawDiamond(p5, canvasWidth, canvasHeight, table);
+        sketch = new DiamondSketch(p5, canvasWidth, canvasHeight, table);
         break;
       case "simple-triangles":
-        canvasDraw = new DrawSimpleTriangles(
+        sketch = new SimpleTrianglesSketch(
           p5,
           canvasWidth,
           canvasHeight,
           table
         );
         break;
+      case "flow-field":
+        sketch = new FlowfieldSketch(p5, canvasWidth, canvasHeight, table);
+        break;
     }
-    canvasDraw.draw();
+  };
+
+  const setup = (p5: p5Types, canvasParentRef: Element) => {
+    console.log("canvas setup again...");
+
+    p5.randomSeed(parseInt(selectedSeed));
+
+    sketch.setup(canvasParentRef);
+  };
+
+  const draw = (p5: p5Types) => {
+    console.log("DRAW", selectedStyle);
+    p5.background(230);
+    sketch.draw();
   };
 
   const regenerate = (e: React.SyntheticEvent) => {

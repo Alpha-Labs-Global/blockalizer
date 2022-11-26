@@ -1,21 +1,14 @@
 import p5Types from "p5";
+import GenericSketch from "./generic_sketch";
 
-export default class DrawDiamond {
-  p5: p5Types;
-  canvasWidth: number;
-  canvasHeight: number;
-  colorTable: p5Types.Table;
-
+export default class DiamondSketch extends GenericSketch {
   constructor(
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table
   ) {
-    this.p5 = p5Instance;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.colorTable = colorTable;
+    super(p5Instance, canvasWidth, canvasHeight, colorTable);
   }
 
   draw() {

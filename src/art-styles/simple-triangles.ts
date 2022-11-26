@@ -1,10 +1,7 @@
 import p5Types from "p5";
+import GenericSketch from "./generic_sketch";
 
-export default class DrawSimpleTriangles {
-  p5: p5Types;
-  canvasWidth: number;
-  canvasHeight: number;
-  colorTable: p5Types.Table;
+export default class SimpleTrianglesSketch extends GenericSketch {
   rez: number;
   size: number;
 
@@ -14,10 +11,8 @@ export default class DrawSimpleTriangles {
     canvasHeight: number,
     colorTable: p5Types.Table
   ) {
-    this.p5 = p5Instance;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.colorTable = colorTable;
+    super(p5Instance, canvasWidth, canvasHeight, colorTable);
+
     this.rez = 0.02;
     this.size = 50;
   }

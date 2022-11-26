@@ -1,10 +1,7 @@
 import p5Types from "p5";
+import GenericSketch from "./generic_sketch";
 
-export default class DrawColoredTriangles {
-  p5: p5Types;
-  canvasWidth: number;
-  canvasHeight: number;
-  colorTable: p5Types.Table;
+export default class ColoredTriangleSketch extends GenericSketch {
   factor: number;
   size: number;
   largest: number;
@@ -21,12 +18,9 @@ export default class DrawColoredTriangles {
     canvasHeight: number,
     colorTable: p5Types.Table
   ) {
-    this.p5 = p5Instance;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.colorTable = colorTable;
-    this.factor = 0;
+    super(p5Instance, canvasWidth, canvasHeight, colorTable);
 
+    this.factor = 0;
     let numb = this.p5.floor(this.p5.random(3, 20));
     this.size = this.canvasWidth / numb;
     this.largest = this.p5.floor(this.p5.random(1, 10));

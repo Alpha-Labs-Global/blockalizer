@@ -1,10 +1,7 @@
 import p5Types from "p5";
+import GenericSketch from "./generic_sketch";
 
-export default class DrawAscii {
-  p5: p5Types;
-  canvasWidth: number;
-  canvasHeight: number;
-  colorTable: p5Types.Table;
+export default class AsciiSketch extends GenericSketch {
   f: number;
   col: Array<string>;
 
@@ -14,10 +11,7 @@ export default class DrawAscii {
     canvasHeight: number,
     colorTable: p5Types.Table
   ) {
-    this.p5 = p5Instance;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.colorTable = colorTable;
+    super(p5Instance, canvasWidth, canvasHeight, colorTable);
 
     this.f = 40; //font size
     this.col = ["red", "yellow", "green", "orange", "purple"];

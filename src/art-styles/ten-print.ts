@@ -1,10 +1,7 @@
 import p5Types from "p5";
+import GenericSketch from "./generic_sketch";
 
-export default class DrawTenPrint {
-  p5: p5Types;
-  canvasWidth: number;
-  canvasHeight: number;
-  colorTable: p5Types.Table;
+export default class TenPrintSketch extends GenericSketch {
   size: number;
   rez: number;
 
@@ -14,10 +11,8 @@ export default class DrawTenPrint {
     canvasHeight: number,
     colorTable: p5Types.Table
   ) {
-    this.p5 = p5Instance;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.colorTable = colorTable;
+    super(p5Instance, canvasWidth, canvasHeight, colorTable);
+
     this.size = 25;
     this.rez = 0.008;
   }
