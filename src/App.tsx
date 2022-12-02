@@ -112,7 +112,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const draw = (p5: p5Types) => {
     console.log("DRAW", selectedStyle);
-    p5.background(230);
+    // p5.background(230);
     sketch.draw();
   };
 
