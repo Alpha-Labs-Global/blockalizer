@@ -5,5 +5,5 @@
 
 # Structure
 
-- art-styles: constains all the P5 designs
+- art-styles: contains all the P5 designs
 - data: stores all static information
