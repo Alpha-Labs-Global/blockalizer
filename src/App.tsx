@@ -28,7 +28,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     "simple-triangles",
     "flow-field",
   ];
-  const [selectedStyle, setStyle] = useState("flow-field");
+  const [selectedStyle, setStyle] = useState("colored-triangles");
   const styleHandler = (e: any) => {
     setStyle(e.currentTarget.value);
   };
