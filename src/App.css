@@ -22,17 +22,18 @@
 }
 
 .view {
-  border: solid 3px red;
+  /*border: solid 3px red;*/
   width: 60%;
   height: 100vh;
   display: flex;
 }
 
 .visualizer {
+  /*border: solid 3px red;*/
   background-color: #262626;
   width: 40%;
   height: 100vh;
-  border: solid 3px red;
+  display: flex;
 }
 
 

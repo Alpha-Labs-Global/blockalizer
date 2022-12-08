@@ -4,6 +4,7 @@ import p5Types from "p5";
 
 import "./App.css";
 import colors from "./data/colors.json";
+import visual from "./media/block-floater.png";
 
 import SimpleSquaresSketch from "./art-styles/simple-squares";
 import ColoredRectanglesSketch from "./art-styles/colored-rectangles";
@@ -132,7 +133,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     <div className="pageContainer">
       <div className="contentContainer">
         <div className="view">
-          <div className="m-auto w-9/12 break-words border-solid border-2 border-indigo-600">
+          {/*md:w-9/12*/}
+          <div className="m-auto lg:w-6/12 md:w-9/12 sm:w-9/12 break-words">
             <h1 className="lg:text-6xl md:text-5xl sm:text-3xl">Blockalizer</h1>
             <p className="lg:text-2xl md:text-xl sm:text-md">
               Blockchain transaction hash art processor
@@ -147,8 +149,9 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
           </div>
         </div>
+
         <div className="visualizer">
-          <h1>visualizer</h1>
+          <img src={visual} className="m-auto w-7/12"></img>
         </div>
 
        
