@@ -125,8 +125,9 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <div className="App">
-      Style:{" "}
+    <div className="pageContainer">
+      <h1 className="text-6xl">Blockalizer</h1>
+      {/*Style:{" "}
       <select name="select" value={selectedStyle} onChange={styleHandler}>
         {styles.map(function (n, i) {
           return (
@@ -145,7 +146,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         <button onClick={regenerate}>Regenerate</button>
       </div>
       <hr />
-      <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
+      <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />*/}
     </div>
   );
 };
