@@ -32,6 +32,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styleHandler = (e: any) => {
     setStyle(e.currentTarget.value);
   };
+  const [showStyle, setShowStyle] = useState(false);
 
   const [selectedSeed, setSeed] = useState("8");
   const seedHandler = (e: any) => {
@@ -124,8 +125,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   };
 
-  return (
-    <div className="App">
+  const styleSelector = (
+    <div>
       Style:{" "}
       <select name="select" value={selectedStyle} onChange={styleHandler}>
         {styles.map(function (n, i) {
@@ -136,6 +137,12 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
           );
         })}
       </select>
+    </div>
+  );
+
+  return (
+    <div className="App">
+      {showStyle ? styleSelector : null}
       <div>
         <input
           type="number"
