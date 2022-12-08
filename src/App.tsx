@@ -39,6 +39,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const [uniqueKey, setUniqueKey] = useState(selectedSeed + selectedStyle);
+  
+  //3 page stack
+  const [page, setPage] = useState(0);
+
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
@@ -126,7 +130,32 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   return (
     <div className="pageContainer">
-      <h1 className="text-6xl">Blockalizer</h1>
+      <div className="contentContainer">
+        <div className="view">
+          <div className="m-auto w-9/12 break-words border-solid border-2 border-indigo-600">
+            <h1 className="lg:text-6xl md:text-5xl sm:text-3xl">Blockalizer</h1>
+            <p className="lg:text-2xl md:text-xl sm:text-md">
+              Blockchain transaction hash art processor
+              <br></br>
+              <span className="block mb-4"></span>
+              Mint blocks that mean something to you
+            </p>
+            <span className="block mb-5"></span>
+            <p className="lg:text-3xl md:text-2xl sm:text-lg">
+              Try it out
+            </p>
+
+          </div>
+        </div>
+        <div className="visualizer">
+          <h1>visualizer</h1>
+        </div>
+
+       
+        
+      </div>
+      
+     
       {/*Style:{" "}
       <select name="select" value={selectedStyle} onChange={styleHandler}>
         {styles.map(function (n, i) {

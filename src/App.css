@@ -9,11 +9,33 @@
   overflow-y: hidden; 
   overflow-x: hidden;  
   overflow: hidden;
+  
 }
 
 .contentContainer {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  max-width: none;
+  margin: 0 auto;
 
 }
+
+.view {
+  border: solid 3px red;
+  width: 60%;
+  height: 100vh;
+  display: flex;
+}
+
+.visualizer {
+  background-color: #262626;
+  width: 40%;
+  height: 100vh;
+  border: solid 3px red;
+}
+
+
 
 body {
   overflow: hidden; /* for Chrome, Safari, and Opera */
@@ -28,11 +50,25 @@ body {
 }
 
 
-/*
+@media only screen and (min-width: 700px) and (max-width: 1000px)
+{
+  .visualizer {
+    display: none;
+  }
 
-strategy:
-- pageContainer holds all 
+  .view {
+    width: 100%;
+  }
+}
 
+@media only screen and (min-width: 0px) and (max-width: 700px)
+{
+  .visualizer {
+    display: none;
+  }
 
+  .view {
+    width: 100%;
+  }
 
-*/
+}
