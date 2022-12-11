@@ -9,9 +9,10 @@ export default class SimpleTrianglesSketch extends GenericSketch {
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
-    colorTable: p5Types.Table
+    colorTable: p5Types.Table,
+    seedValue: number
   ) {
-    super(p5Instance, canvasWidth, canvasHeight, colorTable);
+    super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
 
     this.rez = 0.02;
     this.size = 50;

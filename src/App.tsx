@@ -4,32 +4,22 @@ import p5Types from "p5";
 import placeHolder from "./media/square.png";
 
 import "./App.css";
+
 import colors from "./data/colors.json";
 import visual from "./media/block-floater.png";
 
-import SimpleSquaresSketch from "./art-styles/simple-squares";
-import ColoredRectanglesSketch from "./art-styles/colored-rectangles";
-import TenPrintSketch from "./art-styles/ten-print";
-import DiamondSketch from "./art-styles/diamond";
-import SimpleTrianglesSketch from "./art-styles/simple-triangles";
-import ColoredTrianglesSketch from "./art-styles/colored-triangles";
-import AsciiSketch from "./art-styles/ascii";
-import FlowfieldSketch from "./art-styles/flow-field";
 import GenericSketch from "./art-styles/generic_sketch";
+
+import {
+  assign_sketch,
+  load_colors,
+  all_sketch_styles,
+} from "./art-styles/helper";
 
 interface ComponentProps {}
 
 const App: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const styles = [
-    "colored-triangles",
-    // "simple-squares",
-    "ascii",
-    "colored-rectangles",
-    "ten-print",
-    "diamond",
-    "simple-triangles",
-    "flow-field",
-  ];
+  const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("colored-triangles");
   const styleHandler = (e: any) => {
     setStyle(e.currentTarget.value);
@@ -52,71 +42,23 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
-  let table: p5Types.Table;
   let sketch: GenericSketch;
 
   const preload = (p5: p5Types) => {
-    table = new p5Types.Table();
-    let column: keyof typeof colors[0];
-    for (column in colors[0]) {
-      table.addColumn(column);
-    }
+    let table: p5Types.Table = load_colors();
 
-    let row: p5Types.TableRow;
-    colors.map((color) => {
-      row = table.addRow();
-      let prop: keyof typeof color;
-      for (prop in color) {
-        row?.set(prop, color[prop]);
-      }
-    });
-
-    sketch = new SimpleSquaresSketch(p5, canvasWidth, canvasHeight, table);
-    switch (selectedStyle) {
-      case "colored-triangles":
-        sketch = new ColoredTrianglesSketch(
-          p5,
-          canvasWidth,
-          canvasHeight,
-          table
-        );
-        break;
-      case "ascii":
-        sketch = new AsciiSketch(p5, canvasWidth, canvasHeight, table);
-        break;
-      case "colored-rectangles":
-        sketch = new ColoredRectanglesSketch(
-          p5,
-          canvasWidth,
-          canvasHeight,
-          table
-        );
-        break;
-      case "ten-print":
-        sketch = new TenPrintSketch(p5, canvasWidth, canvasHeight, table);
-        break;
-      case "diamond":
-        sketch = new DiamondSketch(p5, canvasWidth, canvasHeight, table);
-        break;
-      case "simple-triangles":
-        sketch = new SimpleTrianglesSketch(
-          p5,
-          canvasWidth,
-          canvasHeight,
-          table
-        );
-        break;
-      case "flow-field":
-        sketch = new FlowfieldSketch(p5, canvasWidth, canvasHeight, table);
-        break;
-    }
+    sketch = assign_sketch(
+      p5,
+      canvasWidth,
+      canvasHeight,
+      table,
+      selectedSeed,
+      selectedStyle
+    );
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     console.log("canvas setup again...");
-
-    p5.randomSeed(parseInt(selectedSeed));
-
     sketch.setup(canvasParentRef);
   };
 
@@ -134,6 +76,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   };
 
+  const save = (e: React.SyntheticEvent) => {
+    console.log("sent to backend...");
+  };
+
   const styleSelector = (
     <div>
       Style:{" "}
@@ -146,6 +92,36 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
           );
         })}
       </select>
+    </div>
+  );
+
+  const colorPalette = (
+    <div>
+      {colors.map((c, i) => (
+        <div className="panel" key={i}>
+          <span className="panelIndex">{i}</span>
+          <div
+            className="box"
+            style={{ backgroundColor: `rgb(${c["R1"]},${c["G1"]},${c["B1"]})` }}
+          ></div>
+          <div
+            className="box"
+            style={{ backgroundColor: `rgb(${c["R2"]},${c["G2"]},${c["B2"]})` }}
+          ></div>
+          <div
+            className="box"
+            style={{ backgroundColor: `rgb(${c["R3"]},${c["G3"]},${c["B3"]})` }}
+          ></div>
+          <div
+            className="box"
+            style={{ backgroundColor: `rgb(${c["R4"]},${c["G4"]},${c["B4"]})` }}
+          ></div>
+          <div
+            className="box"
+            style={{ backgroundColor: `rgb(${c["R5"]},${c["G5"]},${c["B5"]})` }}
+          ></div>
+        </div>
+      ))}
     </div>
   );
 
@@ -309,9 +285,13 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               onChange={seedHandler}
             />
             <button onClick={regenerate}>Regenerate</button>
+            <button onClick={save}>Save</button>
           </div>
           <hr />
           <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
+          <hr />
+          <h2>Color Palette</h2>
+          {colorPalette}
         </div>
       )}
     </div>
