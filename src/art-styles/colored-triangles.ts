@@ -20,7 +20,14 @@ import GenericSketch from "./generic_sketch";
 }
 */
 
-export default class ColoredTriangleSketch extends GenericSketch {
+export interface ColoredTriangleOptions {
+  numOfBoxes: number;
+  smearing: number;
+  opacity: number;
+  strokeWidth: number;
+}
+
+export class ColoredTrianglesSketch extends GenericSketch {
   sizeOfBox: number; // size in px of each individual square
   alpha: number; // color opacity for each shape
   paletteIndex1: number; // randomly selected index from the palette table
@@ -46,7 +53,8 @@ export default class ColoredTriangleSketch extends GenericSketch {
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
-    seedValue: number
+    seedValue: number,
+    opts: ColoredTriangleOptions
   ) {
     super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
     this.totalNumberOfPalettes = colorTable.rows.length;
@@ -59,14 +67,14 @@ export default class ColoredTriangleSketch extends GenericSketch {
     this.mixTwoColors = false;
     // higher value creates overlayed effect of triangles
     // 2 would create only triangles
-    this.largest = 2;
-    let numberOfBoxesPerWidth = 9;
-    this.alpha = 255; // lowers values create a layered effect
+    this.largest = opts.smearing;
+    let numberOfBoxesPerWidth = opts.numOfBoxes;
+    this.alpha = opts.opacity; // lowers values create a layered effect
     this.useDefaultBackground = false; // uses the first RGB color from palette
     this.useDefaultStrokeColor = false; // uses the first RGB color from palette
     this.backgroundOverrideColor = this.p5.color(0, 0, 0);
     this.strokeOverrideColor = this.p5.color(176, 245, 212);
-    this.strokeWidth = 2;
+    this.strokeWidth = opts.strokeWidth;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -284,7 +292,6 @@ export default class ColoredTriangleSketch extends GenericSketch {
       let r = this.colorTable.getNum(index, 3 * i);
       let g = this.colorTable.getNum(index, 3 * i + 1);
       let b = this.colorTable.getNum(index, 3 * i + 2);
-      console.log("rgb: ", r, g, b);
       str += "%c  ";
       css_arr.push(`background: rgb(${r},${g},${b});`);
     }

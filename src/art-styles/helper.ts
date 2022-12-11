@@ -8,7 +8,10 @@ import ColoredRectanglesSketch from "./colored-rectangles";
 import TenPrintSketch from "./ten-print";
 import DiamondSketch from "./diamond";
 import SimpleTrianglesSketch from "./simple-triangles";
-import ColoredTrianglesSketch from "./colored-triangles";
+import {
+  ColoredTriangleOptions,
+  ColoredTrianglesSketch,
+} from "./colored-triangles";
 import AsciiSketch from "./ascii";
 import FlowfieldSketch from "./flow-field";
 
@@ -18,7 +21,8 @@ export function assign_sketch(
   canvasHeight: number,
   table: p5Types.Table,
   selectedSeed: string,
-  selectedStyle: string
+  selectedStyle: string,
+  opts: any = {}
 ) {
   let sketch = new SimpleSquaresSketch(
     p5,
@@ -29,12 +33,19 @@ export function assign_sketch(
   );
   switch (selectedStyle) {
     case "colored-triangles":
+      let coloredTriangleOptions: ColoredTriangleOptions = {
+        numOfBoxes: opts.numOfBoxes,
+        smearing: opts.smearing,
+        opacity: opts.opacity,
+        strokeWidth: opts.strokeWidth,
+      };
       sketch = new ColoredTrianglesSketch(
         p5,
         canvasWidth,
         canvasHeight,
         table,
-        parseInt(selectedSeed)
+        parseInt(selectedSeed),
+        coloredTriangleOptions
       );
       break;
     case "ascii":
