@@ -78,6 +78,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const save = (e: React.SyntheticEvent) => {
     console.log("sent to backend...");
+    // TODO
   };
 
   const styleSelector = (
@@ -97,28 +98,48 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const colorPalette = (
     <div>
-      {colors.map((c, i) => (
+      {load_colors().rows.map((c, i) => (
         <div className="panel" key={i}>
           <span className="panelIndex">{i}</span>
           <div
             className="box"
-            style={{ backgroundColor: `rgb(${c["R1"]},${c["G1"]},${c["B1"]})` }}
+            style={{
+              backgroundColor: `rgb(${c.getNum(0)},${c.getNum(1)},${c.getNum(
+                2
+              )})`,
+            }}
           ></div>
           <div
             className="box"
-            style={{ backgroundColor: `rgb(${c["R2"]},${c["G2"]},${c["B2"]})` }}
+            style={{
+              backgroundColor: `rgb(${c.getNum(3)},${c.getNum(4)},${c.getNum(
+                5
+              )})`,
+            }}
           ></div>
           <div
             className="box"
-            style={{ backgroundColor: `rgb(${c["R3"]},${c["G3"]},${c["B3"]})` }}
+            style={{
+              backgroundColor: `rgb(${c.getNum(6)},${c.getNum(7)},${c.getNum(
+                8
+              )})`,
+            }}
           ></div>
           <div
             className="box"
-            style={{ backgroundColor: `rgb(${c["R4"]},${c["G4"]},${c["B4"]})` }}
+            style={{
+              backgroundColor: `rgb(${c.getNum(9)},${c.getNum(10)},${c.getNum(
+                11
+              )})`,
+            }}
           ></div>
           <div
             className="box"
-            style={{ backgroundColor: `rgb(${c["R5"]},${c["G5"]},${c["B5"]})` }}
+            style={{
+              backgroundColor: `rgb(${c.getNum(12)},${c.getNum(13)},${c.getNum(
+                14
+              )})`,
+            }}
           ></div>
         </div>
       ))}
