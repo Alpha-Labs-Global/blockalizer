@@ -1,6 +1,7 @@
 import p5Types from "p5";
 
-import colors from "../data/colors.json";
+// import colors from "../data/default.json";
+import colors from "../data/palette.json";
 
 import SimpleSquaresSketch from "./simple-squares";
 import ColoredRectanglesSketch from "./colored-rectangles";

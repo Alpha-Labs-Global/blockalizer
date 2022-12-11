@@ -29,8 +29,13 @@ export default class ColoredTriangleSketch extends GenericSketch {
   largest: number; // the maximum size of triangle to draw (2-10)
   factorIncrease: number; // factor of increase for noise
   mixTwoColors: boolean; // whether to mix two sets of colors or not
-  setBackground: boolean; // whether to have a background or not; relevant when lower alpha
   totalNumberOfPalettes: number; // count of palettes to choose from
+  colorsPerPaletteCount: number; // number of colors in a palette
+  useDefaultBackground: boolean; // whether to use default background or override
+  useDefaultStrokeColor: boolean; // whether to use default stroke color or override
+  backgroundOverrideColor: p5Types.Color; // background color to use if overridden
+  strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
+  strokeWidth: number; // stroke width to use
 
   factor: number;
   rez: number;
@@ -45,18 +50,23 @@ export default class ColoredTriangleSketch extends GenericSketch {
   ) {
     super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
     this.totalNumberOfPalettes = colorTable.rows.length;
+    this.colorsPerPaletteCount = colorTable.getColumnCount() / 3; // always RGB
 
     // CONTROLS
     this.factorIncrease = 10000;
     this.setStroke = true;
     this.rez = this.p5.random(0.003, 0.01);
     this.mixTwoColors = false;
-    this.setBackground = false;
     // higher value creates overlayed effect of triangles
     // 2 would create only triangles
     this.largest = 2;
     let numberOfBoxesPerWidth = 9;
     this.alpha = 255; // lowers values create a layered effect
+    this.useDefaultBackground = false; // uses the first RGB color from palette
+    this.useDefaultStrokeColor = false; // uses the first RGB color from palette
+    this.backgroundOverrideColor = this.p5.color(0, 0, 0);
+    this.strokeOverrideColor = this.p5.color(176, 245, 212);
+    this.strokeWidth = 2;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -76,37 +86,83 @@ export default class ColoredTriangleSketch extends GenericSketch {
       `Palette selected: ${this.paletteIndex1}, ${this.paletteIndex2}`
     );
     this.printColors(this.paletteIndex1);
-    this.printColors(this.paletteIndex2);
+    if (this.mixTwoColors) this.printColors(this.paletteIndex2);
+    console.log(`stroke width: ${this.strokeWidth}px`);
   }
 
   draw() {
     if (!this.setStroke) {
       this.p5.noStroke();
+    } else {
+      if (this.useDefaultStrokeColor) this.fillDefaultStroke();
+      else {
+        this.p5.stroke(this.strokeOverrideColor);
+        this.p5.strokeWeight(this.strokeWidth);
+        let r = this.p5.red(this.strokeOverrideColor);
+        let g = this.p5.green(this.strokeOverrideColor);
+        let b = this.p5.blue(this.strokeOverrideColor);
+        console.log(
+          `stroke: rgb(${r},${g},${b}) %c  `,
+          `background: rgb(${r},${g},${b});`
+        );
+      }
     }
 
-    if (this.setBackground) this.drawBackground();
+    if (this.useDefaultBackground) {
+      this.fillDefaultBackground();
+    } else {
+      let r = this.p5.red(this.backgroundOverrideColor);
+      let g = this.p5.green(this.backgroundOverrideColor);
+      let b = this.p5.blue(this.backgroundOverrideColor);
+      console.log(
+        `background: rgb(${r},${g},${b}) %c  `,
+        `background: rgb(${r},${g},${b});`
+      );
+      this.p5.background(this.backgroundOverrideColor);
+    }
 
     this.drawShapes();
   }
 
-  drawBackground() {
-    let r0 =
-      (this.colorTable.getNum(this.paletteIndex1, 0) +
-        this.colorTable.getNum(this.paletteIndex2, 0)) /
-      2;
-    let g0 =
-      (this.colorTable.getNum(this.paletteIndex1, 1) +
-        this.colorTable.getNum(this.paletteIndex2, 1)) /
-      2;
-    let b0 =
-      (this.colorTable.getNum(this.paletteIndex1, 2) +
-        this.colorTable.getNum(this.paletteIndex2, 2)) /
-      2;
+  fillDefaultStroke() {
+    let [r, g, b] = [
+      this.colorTable.getNum(this.paletteIndex1, 0),
+      this.colorTable.getNum(this.paletteIndex1, 1),
+      this.colorTable.getNum(this.paletteIndex1, 2),
+    ];
     console.log(
-      `background: rgb(${r0},${g0},${b0}) %c  `,
-      `background: rgb(${r0},${g0},${b0});`
+      `stroke: rgb(${r},${g},${b}) %c  `,
+      `background: rgb(${r},${g},${b});`
     );
-    this.p5.background(r0, g0, b0);
+    this.p5.stroke(r, g, b);
+    this.p5.strokeWeight(this.strokeWidth);
+  }
+
+  fillDefaultBackground() {
+    let r, g, b;
+    if (this.mixTwoColors) {
+      r =
+        (this.colorTable.getNum(this.paletteIndex1, 0) +
+          this.colorTable.getNum(this.paletteIndex2, 0)) /
+        2;
+      g =
+        (this.colorTable.getNum(this.paletteIndex1, 1) +
+          this.colorTable.getNum(this.paletteIndex2, 1)) /
+        2;
+      b =
+        (this.colorTable.getNum(this.paletteIndex1, 2) +
+          this.colorTable.getNum(this.paletteIndex2, 2)) /
+        2;
+    } else {
+      r = this.colorTable.getNum(this.paletteIndex1, 0);
+      g = this.colorTable.getNum(this.paletteIndex1, 1);
+      b = this.colorTable.getNum(this.paletteIndex1, 2);
+    }
+    console.log(
+      `background: rgb(${r},${g},${b}) %c  `,
+      `background: rgb(${r},${g},${b});`
+    );
+    this.p5.background(r, g, b);
   }
 
   drawShapes() {
@@ -127,20 +183,10 @@ export default class ColoredTriangleSketch extends GenericSketch {
   }
 
   drawShape(i: number, j: number) {
-    // console.log(
-    //   "noise1 (x,y): ",
-    //   i * this.rez + this.factor,
-    //   j * this.rez + this.factor
-    // );
     let noiseColor1 = this.p5.noise(
       i * this.rez + this.factor,
       j * this.rez + this.factor
     );
-    // console.log(
-    //   "noise2 (x,y): ",
-    //   i * this.rez + this.factor + 10000,
-    //   j * this.rez + this.factor + 10000
-    // );
     let noiseColor2 = this.p5.noise(
       i * this.rez + this.factor + this.factorIncrease,
       j * this.rez + this.factor + this.factorIncrease
@@ -148,17 +194,11 @@ export default class ColoredTriangleSketch extends GenericSketch {
 
     let r1, g1, b1, r2, g2, b2;
     [r1, g1, b1] = this.pickColors(this.paletteIndex1, noiseColor1);
-    [r2, g2, b2] = this.pickColors(this.paletteIndex2, noiseColor2);
-    // console.log(
-    //   `color1: rgb(${r1},${g1},${b1}) %c  `,
-    //   `background: rgb(${r1},${g1},${b1});`
-    // );
-    // console.log(
-    //   `color2: rgb(${r2},${g2},${b2}) %c  `,
-    //   `background: rgb(${r2},${g2},${b2});`
-    // );
-    // [r1, g1, b1] = [255, 0, 0];
-    // [r2, g2, b2] = [0, 255, 0];
+    if (this.mixTwoColors) {
+      [r2, g2, b2] = this.pickColors(this.paletteIndex2, noiseColor2);
+    } else {
+      [r2, g2, b2] = this.pickColors(this.paletteIndex1, noiseColor2);
+    }
 
     // selects size of the triangle (number of blocks to occupy)
     let size = this.sizeOfBox * this.p5.floor(this.p5.random(1, this.largest));
@@ -166,6 +206,21 @@ export default class ColoredTriangleSketch extends GenericSketch {
       i * this.rez + this.factor + 2 * this.factorIncrease,
       j * this.rez + this.factor + 2 * this.factorIncrease
     );
+    this.drawDoublePalettePatterns(n3, i, j, r1, g1, b1, r2, g2, b2, size);
+  }
+
+  drawDoublePalettePatterns(
+    n3: number,
+    i: number,
+    j: number,
+    r1: number,
+    g1: number,
+    b1: number,
+    r2: number,
+    g2: number,
+    b2: number,
+    size: number
+  ) {
     if (n3 < 0.25) {
       // ◣ Lower left triangle
       this.p5.fill(r1, g1, b1, this.alpha);
@@ -198,19 +253,22 @@ export default class ColoredTriangleSketch extends GenericSketch {
   }
 
   pickColors(paletteIndex: number, n: number) {
-    let colorIndex;
+    let colorIndex = 0;
+    // this.colorsPerPaletteCount
     let col = this.p5.map(n, 0, 1, 0, 360);
     let dec = this.p5.fract(col / this.sF);
-    if (dec < 0.2) {
-      colorIndex = 0;
-    } else if (dec < 0.4) {
-      colorIndex = 1;
-    } else if (dec < 0.6) {
-      colorIndex = 2;
-    } else if (dec < 0.8) {
-      colorIndex = 3;
-    } else {
-      colorIndex = 4;
+    // distribute this range among the palette
+    let segmentSize = 1 / this.colorsPerPaletteCount;
+    for (
+      let rangeEnd = segmentSize, i = 0;
+      rangeEnd <= 1;
+      rangeEnd += segmentSize
+    ) {
+      if (dec <= rangeEnd) {
+        colorIndex = i;
+        break;
+      }
+      i++;
     }
 
     // selects random color from the palette for each r, g, b
@@ -222,29 +280,16 @@ export default class ColoredTriangleSketch extends GenericSketch {
   }
 
   printColors(index: number) {
-    let r1 = this.colorTable.getNum(index, 0);
-    let g1 = this.colorTable.getNum(index, 1);
-    let b1 = this.colorTable.getNum(index, 2);
-    let r2 = this.colorTable.getNum(index, 3);
-    let g2 = this.colorTable.getNum(index, 4);
-    let b2 = this.colorTable.getNum(index, 5);
-    let r3 = this.colorTable.getNum(index, 6);
-    let g3 = this.colorTable.getNum(index, 7);
-    let b3 = this.colorTable.getNum(index, 8);
-    let r4 = this.colorTable.getNum(index, 9);
-    let g4 = this.colorTable.getNum(index, 10);
-    let b4 = this.colorTable.getNum(index, 11);
-    let r5 = this.colorTable.getNum(index, 12);
-    let g5 = this.colorTable.getNum(index, 13);
-    let b5 = this.colorTable.getNum(index, 14);
-
-    console.log(
-      `palette ${index}: %c  %c  %c  %c  %c  `,
-      `background: rgb(${r1},${g1},${b1});`,
-      `background: rgb(${r2},${g2},${b2});`,
-      `background: rgb(${r3},${g3},${b3});`,
-      `background: rgb(${r4},${g4},${b4});`,
-      `background: rgb(${r5},${g5},${b5});`
-    );
+    let str = `palette ${index}: `;
+    let css_arr = [];
+    for (let i = 0; i < this.colorsPerPaletteCount; i++) {
+      let r = this.colorTable.getNum(index, 3 * i);
+      let g = this.colorTable.getNum(index, 3 * i + 1);
+      let b = this.colorTable.getNum(index, 3 * i + 2);
+      console.log("rgb: ", r, g, b);
+      str += "%c  ";
+      css_arr.push(`background: rgb(${r},${g},${b});`);
+    }
+    console.log(str, ...css_arr);
   }
 }

@@ -4,8 +4,6 @@ import p5Types from "p5";
 
 import "./App.css";
 
-import colors from "./data/colors.json";
-
 import GenericSketch from "./art-styles/generic_sketch";
 
 import {
@@ -87,51 +85,25 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
+  const colorPaletteColumnIndices = Array.from(
+    { length: load_colors().columns.length / 3 },
+    (_, i) => i * 3
+  );
   const colorPalette = (
     <div>
       {load_colors().rows.map((c, i) => (
         <div className="panel" key={i}>
-          <span className="panelIndex">{i}</span>
-          <div
-            className="box"
-            style={{
-              backgroundColor: `rgb(${c.getNum(0)},${c.getNum(1)},${c.getNum(
-                2
-              )})`,
-            }}
-          ></div>
-          <div
-            className="box"
-            style={{
-              backgroundColor: `rgb(${c.getNum(3)},${c.getNum(4)},${c.getNum(
-                5
-              )})`,
-            }}
-          ></div>
-          <div
-            className="box"
-            style={{
-              backgroundColor: `rgb(${c.getNum(6)},${c.getNum(7)},${c.getNum(
-                8
-              )})`,
-            }}
-          ></div>
-          <div
-            className="box"
-            style={{
-              backgroundColor: `rgb(${c.getNum(9)},${c.getNum(10)},${c.getNum(
-                11
-              )})`,
-            }}
-          ></div>
-          <div
-            className="box"
-            style={{
-              backgroundColor: `rgb(${c.getNum(12)},${c.getNum(13)},${c.getNum(
-                14
-              )})`,
-            }}
-          ></div>
+          <span className="panelIndex">{i + 1}</span>
+          {colorPaletteColumnIndices.map((i) => (
+            <div
+              className="box"
+              style={{
+                backgroundColor: `rgb(${c.getNum(i)},${c.getNum(
+                  i + 1
+                )},${c.getNum(i + 2)})`,
+              }}
+            ></div>
+          ))}
         </div>
       ))}
     </div>
