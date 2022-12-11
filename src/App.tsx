@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
@@ -27,7 +27,24 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     setSeed(e.currentTarget.value);
   };
 
-  const [uniqueKey, setUniqueKey] = useState(selectedSeed + selectedStyle);
+  /* CONTROL */
+  const [numOfBoxes, setNumOfBoxes] = useState(9);
+  const [smearing, setSmearing] = useState(2);
+  const [opacity, setOpacity] = useState(255);
+  const [strokeWidth, setStrokeWidth] = useState(2);
+
+  const keyGenerator = () => {
+    return (
+      selectedSeed +
+      selectedStyle +
+      numOfBoxes.toString() +
+      smearing.toString() +
+      opacity.toString() +
+      strokeWidth.toString()
+    );
+  };
+
+  const [uniqueKey, setUniqueKey] = useState(keyGenerator());
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
@@ -35,6 +52,12 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const preload = (p5: p5Types) => {
     let table: p5Types.Table = load_colors();
+    let opts = {
+      numOfBoxes: numOfBoxes,
+      smearing: smearing,
+      opacity: opacity,
+      strokeWidth: strokeWidth,
+    };
 
     sketch = assign_sketch(
       p5,
@@ -42,7 +65,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
       canvasHeight,
       table,
       selectedSeed,
-      selectedStyle
+      selectedStyle,
+      opts
     );
   };
 
@@ -58,10 +82,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const regenerate = (e: React.SyntheticEvent) => {
-    if (uniqueKey != selectedSeed + selectedStyle) {
-      setUniqueKey(selectedSeed + selectedStyle);
+    if (uniqueKey != keyGenerator()) {
+      setUniqueKey(keyGenerator());
       // p5Instance.redraw();
-      console.log("random seed changed...");
+      console.log("unique key changed...");
     }
   };
 
@@ -97,6 +121,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
           {colorPaletteColumnIndices.map((i) => (
             <div
               className="box"
+              key={i}
               style={{
                 backgroundColor: `rgb(${c.getNum(i)},${c.getNum(
                   i + 1
@@ -109,17 +134,94 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
+  const numOfBoxesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumOfBoxes(parseInt(e.currentTarget.value));
+    regenerate(e);
+  };
+
+  const smearingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSmearing(parseInt(e.currentTarget.value));
+    regenerate(e);
+  };
+
+  const opacityHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpacity(parseInt(e.currentTarget.value));
+    regenerate(e);
+  };
+
+  const strokeWidthHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStrokeWidth(parseInt(e.currentTarget.value));
+    regenerate(e);
+  };
+
   return (
     <div className="App">
       {showStyle ? styleSelector : null}
       <div>
-        <input
-          type="number"
-          value={selectedSeed.toString()}
-          onChange={seedHandler}
-        />
-        <button onClick={regenerate}>Regenerate</button>
-        <button onClick={save}>Save</button>
+        <div>
+          Block Number{" "}
+          <input
+            type="number"
+            value={selectedSeed.toString()}
+            onChange={seedHandler}
+          />
+          <button onClick={regenerate}>Regenerate</button>
+        </div>
+        <div>
+          <div>
+            Number of Boxes
+            <input
+              type="range"
+              min="2"
+              max="12"
+              defaultValue="9"
+              step="1"
+              onChange={numOfBoxesHandler}
+            />
+            {numOfBoxes}
+          </div>
+          <div>
+            Smearing
+            <input
+              type="range"
+              min="2"
+              max="10"
+              defaultValue="2"
+              step="1"
+              onChange={smearingHandler}
+            />
+            {smearing}
+          </div>
+          <div>
+            Opacity
+            <input
+              type="range"
+              min="0"
+              max="255"
+              defaultValue="255"
+              step="10"
+              onChange={opacityHandler}
+            />
+            {opacity}
+          </div>
+          <div>
+            Stroke Width
+            <input
+              type="range"
+              min="0"
+              max="5"
+              defaultValue="2"
+              step="1"
+              onChange={strokeWidthHandler}
+            />
+            {strokeWidth}
+          </div>
+        </div>
+        <div>
+          <button disabled={true} onClick={save}>
+            Mint
+          </button>
+        </div>
       </div>
       <hr />
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
