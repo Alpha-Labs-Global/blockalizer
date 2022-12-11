@@ -75,6 +75,8 @@ export default class ColoredTriangleSketch extends GenericSketch {
     console.log(
       `Palette selected: ${this.paletteIndex1}, ${this.paletteIndex2}`
     );
+    this.printColors(this.paletteIndex1);
+    this.printColors(this.paletteIndex2);
   }
 
   draw() {
@@ -217,5 +219,32 @@ export default class ColoredTriangleSketch extends GenericSketch {
     g = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 1);
     b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
     return [r, g, b];
+  }
+
+  printColors(index: number) {
+    let r1 = this.colorTable.getNum(index, 0);
+    let g1 = this.colorTable.getNum(index, 1);
+    let b1 = this.colorTable.getNum(index, 2);
+    let r2 = this.colorTable.getNum(index, 3);
+    let g2 = this.colorTable.getNum(index, 4);
+    let b2 = this.colorTable.getNum(index, 5);
+    let r3 = this.colorTable.getNum(index, 6);
+    let g3 = this.colorTable.getNum(index, 7);
+    let b3 = this.colorTable.getNum(index, 8);
+    let r4 = this.colorTable.getNum(index, 9);
+    let g4 = this.colorTable.getNum(index, 10);
+    let b4 = this.colorTable.getNum(index, 11);
+    let r5 = this.colorTable.getNum(index, 12);
+    let g5 = this.colorTable.getNum(index, 13);
+    let b5 = this.colorTable.getNum(index, 14);
+
+    console.log(
+      `palette ${index}: %c  %c  %c  %c  %c  `,
+      `background: rgb(${r1},${g1},${b1});`,
+      `background: rgb(${r2},${g2},${b2});`,
+      `background: rgb(${r3},${g3},${b3});`,
+      `background: rgb(${r4},${g4},${b4});`,
+      `background: rgb(${r5},${g5},${b5});`
+    );
   }
 }
