@@ -192,12 +192,12 @@ export default class ColoredTriangleSketch extends GenericSketch {
       j * this.rez + this.factor + this.factorIncrease
     );
 
-    let r1, g1, b1, r2, g2, b2;
-    [r1, g1, b1] = this.pickColors(this.paletteIndex1, noiseColor1);
+    let color1, color2;
+    color1 = this.pickColors(this.paletteIndex1, noiseColor1);
     if (this.mixTwoColors) {
-      [r2, g2, b2] = this.pickColors(this.paletteIndex2, noiseColor2);
+      color2 = this.pickColors(this.paletteIndex2, noiseColor2);
     } else {
-      [r2, g2, b2] = this.pickColors(this.paletteIndex1, noiseColor2);
+      color2 = this.pickColors(this.paletteIndex1, noiseColor2);
     }
 
     // selects size of the triangle (number of blocks to occupy)
@@ -206,48 +206,44 @@ export default class ColoredTriangleSketch extends GenericSketch {
       i * this.rez + this.factor + 2 * this.factorIncrease,
       j * this.rez + this.factor + 2 * this.factorIncrease
     );
-    this.drawDoublePalettePatterns(n3, i, j, r1, g1, b1, r2, g2, b2, size);
+    this.drawDoublePalettePatterns(n3, i, j, color1, color2, size);
   }
 
   drawDoublePalettePatterns(
     n3: number,
     i: number,
     j: number,
-    r1: number,
-    g1: number,
-    b1: number,
-    r2: number,
-    g2: number,
-    b2: number,
+    color1: p5Types.Color,
+    color2: p5Types.Color,
     size: number
   ) {
     if (n3 < 0.25) {
       // ◣ Lower left triangle
-      this.p5.fill(r1, g1, b1, this.alpha);
+      this.p5.fill(color1);
       this.p5.triangle(i, j, i + size, j + size, i, j + size);
       // ◥ Upper right triangle
-      this.p5.fill(r2, g2, b2, this.alpha);
+      this.p5.fill(color2);
       this.p5.triangle(i, j, i + size, j + size, i + size, j);
     } else if (n3 < 0.5) {
       // ◢ Lower right triangle
-      this.p5.fill(r1, g1, b1, this.alpha);
+      this.p5.fill(color1);
       this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
       // ◤ Upper left triangle
-      this.p5.fill(r2, g2, b2, this.alpha);
+      this.p5.fill(color2);
       this.p5.triangle(i, j + size, i, j, i + size, j);
     } else if (n3 < 0.75) {
       // ◥ Upper right triangle
-      this.p5.fill(r1, g1, b1, this.alpha);
+      this.p5.fill(color1);
       this.p5.triangle(i, j, i + size, j + size, i + size, j);
       // ◣ Lower left triangle
-      this.p5.fill(r2, g2, b2, this.alpha);
+      this.p5.fill(color2);
       this.p5.triangle(i, j, i + size, j + size, i, j + size);
     } else {
       // ◤ Upper left triangle
-      this.p5.fill(r1, g1, b1, this.alpha);
+      this.p5.fill(color1);
       this.p5.triangle(i, j + size, i, j, i + size, j);
       // ◢ Lower right triangle
-      this.p5.fill(r2, g2, b2, this.alpha);
+      this.p5.fill(color2);
       this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
     }
   }
@@ -276,7 +272,9 @@ export default class ColoredTriangleSketch extends GenericSketch {
     r = this.colorTable.getNum(paletteIndex, colorIndex * 3);
     g = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 1);
     b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
-    return [r, g, b];
+    let color = this.p5.color(r, g, b);
+    color.setAlpha(this.alpha);
+    return color;
   }
 
   printColors(index: number) {
