@@ -5,17 +5,23 @@ export default class GenericSketch {
   canvasWidth: number;
   canvasHeight: number;
   colorTable: p5Types.Table;
+  seedValue: number;
 
   constructor(
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
-    colorTable: p5Types.Table
+    colorTable: p5Types.Table,
+    seedValue: number
   ) {
     this.p5 = p5Instance;
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.colorTable = colorTable;
+    this.seedValue = seedValue;
+
+    this.p5.randomSeed(this.seedValue);
+    this.p5.noiseSeed(this.seedValue);
   }
 
   setup(canvasParentRef: Element) {

@@ -1,3 +1,18 @@
 .App {
   margin: 10px;
 }
+
+.panel {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.box {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+}
+
+.panelIndex {
+  margin-right: 10px;
+}

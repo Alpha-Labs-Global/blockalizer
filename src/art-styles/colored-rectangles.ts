@@ -10,9 +10,10 @@ export default class ColoredRectanglesSketch extends GenericSketch {
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
-    colorTable: p5Types.Table
+    colorTable: p5Types.Table,
+    seedValue: number
   ) {
-    super(p5Instance, canvasWidth, canvasHeight, colorTable);
+    super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
     this.size = 30;
     this.widthMult = 4;
     this.heightMult = 4;
