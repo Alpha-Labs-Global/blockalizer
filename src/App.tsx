@@ -134,6 +134,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   return (
     <div className="pageContainer">
+      
       {page === "Home" && 
         <div className="contentContainer">
           <div className="view">
@@ -246,6 +247,20 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
       </div>
       <hr />
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />*/}
+      <div className="area" >
+            <ul className="circles">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+            </ul>
+    </div >
     </div>
   );
 };
