@@ -141,14 +141,21 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
             {/*md:w-9/12*/}
           
             <div className="m-auto lg:w-6/12 md:w-9/12 sm:w-9/12 break-words">
-              <h1 className="lg:text-6xl md:text-5xl sm:text-3xl">Blockalizer</h1>
+              <h1 className="lg:text-5xl md:text-4xl sm:text-3xl">Blockalizer</h1>
               <p className="lg:text-2xl md:text-xl sm:text-md">
                 Blockchain transaction hash art processor
                 <br></br>
                 <span className="block mb-4"></span>
                 Mint blocks that mean something to you
               </p>
+              {/*<span className="block mb-5"></span>
+              <div className="w-9/12">
+                <div className="float-left h-2 mt-3 w-8/12 bg-white"></div>
+                <div className="point"></div>
+  </div>*/}
               <span className="block mb-5"></span>
+              <br></br>
+              <br></br>
               <p className="lg:text-3xl md:text-2xl sm:text-lg" onClick={(e) => {setPage("Search")}}>
                 Try it out
               </p>

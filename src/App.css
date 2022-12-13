@@ -62,7 +62,7 @@ body {
 }
 
 
-@media only screen and (min-width: 700px) and (max-width: 1000px)
+@media only screen and (min-width: 700px) and (max-width: 1100px)
 {
   .visualizer {
     display: none;
@@ -211,4 +211,21 @@ z-index: 100;
       border-radius: 50%;
   }
 
+}
+
+.line {
+  margin-top: 14px;
+  width: 90px;
+  background: blue;
+  height: 10px;
+  float: left;
+}
+
+.point {
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 30px solid blue;
+  float: right;
 }
