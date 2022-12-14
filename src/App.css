@@ -29,6 +29,7 @@
   width: 60%;
   height: 100vh;
   display: flex;
+  background-color: #121212;
 }
 
 .searchView {

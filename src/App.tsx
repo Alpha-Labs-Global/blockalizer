@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
+import placeHolder from "./media/square.png";
 
 import "./App.css";
 import colors from "./data/colors.json";
@@ -140,7 +141,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
           <div className="view">
             {/*md:w-9/12*/}
           
-            <div className="m-auto lg:w-6/12 md:w-9/12 sm:w-9/12 break-words">
+            <div className="m-auto lg:w-4/6 md:w-9/12 sm:w-9/12 break-words">
+              <div className="">
               <h1 className="lg:text-5xl md:text-4xl sm:text-3xl">Blockalizer</h1>
               <p className="lg:text-2xl md:text-xl sm:text-md">
                 Blockchain transaction hash art processor
@@ -159,12 +161,20 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               <p className="lg:text-3xl md:text-2xl sm:text-lg" onClick={(e) => {setPage("Search")}}>
                 Try it out
               </p>
+              </div>
 
             </div>
           </div>
 
           <div className="visualizer">
-            <img src={visual} className="m-auto w-7/12"></img>
+            <div className="m-auto w-6/12">
+              <h1 className="lg:text-xl md:text-lg sm:text-md">Latest Minted Block</h1>
+              <span className="block mb-3"></span>
+              <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">#12345 | 3 hours ago</h1>
+              <span className="block mb-2"></span>
+              <img src={placeHolder} className="m-auto w-12/12"></img>
+            </div>
+            
           </div>
       </div>}
 
@@ -254,20 +264,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
       </div>
       <hr />
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />*/}
-      <div className="area" >
-            <ul className="circles">
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-            </ul>
-    </div >
+     
     </div>
   );
 };
