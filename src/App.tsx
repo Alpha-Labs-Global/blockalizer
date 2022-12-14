@@ -161,6 +161,9 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               <p className="lg:text-3xl md:text-2xl sm:text-lg" onClick={(e) => {setPage("Search")}}>
                 Try it out
               </p>
+              <p className="lg:text-3xl md:text-2xl sm:text-lg" onClick={(e) => {setPage("Sandbox")}}>
+                Sandbox
+              </p>
               </div>
 
             </div>
@@ -240,6 +243,13 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
             </div>
             
           </div>
+
+      </div>}
+
+      {page === "Sandbox" && 
+        <div className="contentContainer">
+        <h1>this is  a sanbox</h1>
+          
 
       </div>}
       
