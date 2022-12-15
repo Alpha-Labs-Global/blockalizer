@@ -1,5 +1,8 @@
 import React, { useEffect, useState, SyntheticEvent } from "react";
 import placeHolder from "./media/square.png";
+import logo from "./media/logo.png"
+import "./collapsible.scss"; 
+import Collapsible from 'react-collapsible';
 
 import "./App.css";
 import Generator from "./components/Generator";
@@ -31,39 +34,63 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
             <div className="m-auto lg:w-4/6 md:w-9/12 sm:w-9/12 break-words">
               <div className="">
-                <h1 className="lg:text-5xl md:text-4xl sm:text-3xl">
-                  Blockalizer
-                </h1>
-                <p className="lg:text-2xl md:text-xl sm:text-md">
-                  Blockchain transaction hash art processor
-                  <br></br>
-                  <span className="block mb-4"></span>
-                  Mint blocks that mean something to you
-                </p>
-                {/*<span className="block mb-5"></span>
-              <div className="w-9/12">
-                <div className="float-left h-2 mt-3 w-8/12 bg-white"></div>
-                <div className="point"></div>
-  </div>*/}
-                <span className="block mb-5"></span>
+              <h1 className="lg:text-7xl md:text-4xl sm:text-3xl pt-8"><span className="text-emerald-400 lg:text-7xl md:text-5xl sm:text-4xl float-left" >|</span>Blockalizer</h1>
+              <span className="block mb-4" onClick={() => {}}></span>
+              <p className="lg:text-lg md:text-sm sm:text-sm text-neutral-500 lg:ml-12 md:ml-8 sm:ml-6"> {/*lg:text-2xl md:text-xl sm:text-md">*/}
+                Blockchain transaction hash art processor.
                 <br></br>
-                <br></br>
-                <p
-                  className="lg:text-3xl md:text-2xl sm:text-lg"
-                  onClick={(e) => {
-                    setPage("Search");
-                  }}
-                >
-                  Try it out
-                </p>
-                <p
-                  className="lg:text-3xl md:text-2xl sm:text-lg"
-                  onClick={(e) => {
-                    setPage("Sandbox");
-                  }}
-                >
-                  Sandbox
-                </p>
+                <span className="block mb-4" onClick={() => {}}></span>
+                Mint blocks that mean something to you.
+              </p>
+              <span className="block mb-5"></span>
+              <span className="block mb-4"></span>
+      
+              <p className="lg:text-2xl md:text-md sm:text-sm lg:ml-12 md:ml-8 sm:ml-6 " onClick={(e) => {setPage("Search")}}>
+                Try it out&nbsp;
+                                  {/*<div className="h-0.5 mb-1.5 w-5/12 bg-emerald-400 inline-block text-emerald-400">
+                                
+                    </div>*/}
+  
+                <svg width="216" height="41" viewBox="0 0 216 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="inline-block">
+              <path d="M0 20H215" stroke="#B6FFCF"/>
+              <path d="M195 1L214.5 20.5L195 40" stroke="#B6FFCF"/>
+              </svg>
+
+  
+
+              </p>
+              <br></br>
+              <span className="block mb-5"></span>
+              <Collapsible trigger="&nbsp;&nbsp;What">
+              <p>Blockalizer is a platform designed for users to own pieces of the blockchain that mean something to them. Maybe you bought your ENS name at block 1234, or minted your first Cool Cat at block 5678. Own the blocks that mean something to you.</p>
+                </Collapsible>
+                <Collapsible trigger="&nbsp;&nbsp;Why">
+              <p>Blockalizer is a platform designed for users to own pieces of the blockchain that mean something to them. Maybe you bought your ENS name at block 1234, or minted your first Cool Cat at block 5678. Own the blocks that mean something to you.</p>
+                </Collapsible>
+                <Collapsible trigger="&nbsp;&nbsp;How">
+              <p>Blockalizer is a platform designed for users to own pieces of the blockchain that mean something to them. Maybe you bought your ENS name at block 1234, or minted your first Cool Cat at block 5678. Own the blocks that mean something to you.</p>
+                </Collapsible>
+                <Collapsible trigger="&nbsp;&nbsp;Mechanics">
+              <p>Blockalizer is a platform designed for users to own pieces of the blockchain that mean something to them. Maybe you bought your ENS name at block 1234, or minted your first Cool Cat at block 5678. Own the blocks that mean something to you.</p>
+                </Collapsible>
+
+
+
+
+
+
+
+
+                <span className="block mb-20"></span>
+               
+                <h1 className="mb-auto mt-auto lg:ml-12 md:ml-8 sm:ml-6">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other</h1>
+
+
+
+
+                                      {/*<p className="lg:text-3xl md:text-2xl sm:text-lg " onClick={(e) => {setPage("Sandbox")}}>
+                                        Sandbox
+                        </p>*/}
               </div>
             </div>
           </div>

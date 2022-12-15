@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
+
+
+hr {
+  display: inline-block;
+  width: 100%;
+}
 .pageContainer {
   background-color: black;
   height: 100vh;
@@ -24,12 +30,21 @@
 
 }
 
+.navbar {
+  position: fixed; /* Set the navbar to fixed position */
+  bottom: 0; /* Position the navbar at the bottom of the page */
+  left: 0;
+  width: 60%; /* Full width */
+  background-color: white;
+}
+
 .view {
   /*border: solid 3px red;*/
   width: 60%;
   height: 100vh;
   display: flex;
   background-color: #121212;
+  overflow: scroll;
 }
 
 .searchView {
