@@ -230,18 +230,3 @@ z-index: 100;
   border-left: 30px solid blue;
   float: right;
 }
-
-.panel {
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.box {
-  height: 20px;
-  width: 20px;
-  margin-right: 5px;
-}
-
-.panelIndex {
-  margin-right: 10px;
-}
