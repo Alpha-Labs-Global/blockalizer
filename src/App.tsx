@@ -85,7 +85,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               </svg>
               </div>
       
-              <p className="lg:text-2xl md:text-md sm:text-sm lg:ml-12 md:ml-8 sm:ml-6 " onClick={(e) => {setPage("Search")}}>
+              <p className="lg:text-2xl md:text-md sm:text-lg lg:ml-12 md:ml-8 sm:ml-6 " onClick={(e) => {setPage("Search")}}>
                 Try it out&nbsp;
                                   {/*<div className="h-0.5 mb-1.5 w-5/12 bg-emerald-400 inline-block text-emerald-400">
                                 
