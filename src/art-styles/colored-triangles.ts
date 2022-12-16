@@ -1,137 +1,300 @@
 import p5Types from "p5";
 import GenericSketch from "./generic_sketch";
 
-export default class ColoredTriangleSketch extends GenericSketch {
+/* Palette has a collection of 5 colors and we consider two palettes
+
+{
+  R1, G1, B1, // used for background
+  R2, G2, B2, //   randomly
+  R3, G3, B3, //     used
+  R4, G4, B4, //    in the
+  R5, G5, B5  //    palette 1
+}
+
+{
+  R1, G1, B1, // used for background
+  R2, G2, B2, //   randomly
+  R3, G3, B3, //     used
+  R4, G4, B4, //    in the
+  R5, G5, B5  //    palette 2
+}
+*/
+
+export interface ColoredTriangleOptions {
+  numOfBoxes: number;
+  smearing: number;
+  opacity: number;
+  strokeWidth: number;
+}
+
+export class ColoredTrianglesSketch extends GenericSketch {
+  sizeOfBox: number; // size in px of each individual square
+  alpha: number; // color opacity for each shape
+  paletteIndex1: number; // randomly selected index from the palette table
+  paletteIndex2: number; // randomly selected index from the palette table
+  setStroke: boolean; // true or false if stroke should be set
+  largest: number; // the maximum size of triangle to draw (2-10)
+  factorIncrease: number; // factor of increase for noise
+  mixTwoColors: boolean; // whether to mix two sets of colors or not
+  totalNumberOfPalettes: number; // count of palettes to choose from
+  colorsPerPaletteCount: number; // number of colors in a palette
+  useDefaultBackground: boolean; // whether to use default background or override
+  useDefaultStrokeColor: boolean; // whether to use default stroke color or override
+  backgroundOverrideColor: p5Types.Color; // background color to use if overridden
+  strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
+  strokeWidth: number; // stroke width to use
+
   factor: number;
-  size: number;
-  largest: number;
-  alph: number;
+  rez: number;
   sF: number;
-  palette1: number;
-  palette2: number;
-  // let canv, col, col2, col3, col4, dec1, dec2, pos, n;
-  // let r1, g1, b1, sF, seed;
 
   constructor(
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
-    colorTable: p5Types.Table
+    colorTable: p5Types.Table,
+    seedValue: number,
+    opts: ColoredTriangleOptions
   ) {
-    super(p5Instance, canvasWidth, canvasHeight, colorTable);
+    super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
+    this.totalNumberOfPalettes = colorTable.rows.length;
+    this.colorsPerPaletteCount = colorTable.getColumnCount() / 3; // always RGB
+
+    // CONTROLS
+    this.factorIncrease = 10000;
+    this.setStroke = true;
+    this.rez = this.p5.random(0.003, 0.01);
+    this.mixTwoColors = false;
+    // higher value creates overlayed effect of triangles
+    // 2 would create only triangles
+    this.largest = opts.smearing;
+    let numberOfBoxesPerWidth = opts.numOfBoxes;
+    this.alpha = opts.opacity; // lowers values create a layered effect
+    this.useDefaultBackground = false; // uses the first RGB color from palette
+    this.useDefaultStrokeColor = false; // uses the first RGB color from palette
+    this.backgroundOverrideColor = this.p5.color(0, 0, 0);
+    this.strokeOverrideColor = this.p5.color(176, 245, 212);
+    this.strokeWidth = opts.strokeWidth;
 
     this.factor = 0;
-    let numb = this.p5.floor(this.p5.random(3, 20));
-    this.size = this.canvasWidth / numb;
-    this.largest = this.p5.floor(this.p5.random(1, 10));
-    this.alph = this.p5.random(120, 220);
-    if (this.p5.random(15) < 1) {
-      this.alph = 255;
-    }
+    this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
+    this.sF = 360 / this.p5.random(2, 40);
+    this.paletteIndex1 = this.p5.floor(
+      this.p5.random(this.totalNumberOfPalettes)
+    );
+    this.paletteIndex2 = this.p5.floor(
+      this.p5.random(this.totalNumberOfPalettes)
+    );
 
-    this.sF = 0;
-    this.palette1 = 0;
-    this.palette2 = 0;
+    console.log(`size of box: ${this.sizeOfBox}px`);
+    console.log("largest:", this.largest);
+    console.log("alpha:", this.alpha);
+    console.log("sF: ", this.sF);
+    console.log(
+      `Palette selected: ${this.paletteIndex1}, ${this.paletteIndex2}`
+    );
+    this.printColors(this.paletteIndex1);
+    if (this.mixTwoColors) this.printColors(this.paletteIndex2);
+    console.log(`stroke width: ${this.strokeWidth}px`);
   }
 
   draw() {
-    this.p5.noStroke();
-    this.palette1 = this.p5.floor(this.p5.random(676));
-    this.palette2 = this.p5.floor(this.p5.random(676));
-    let r0 =
-      this.colorTable.getNum(this.palette1, 0) +
-      this.colorTable.getNum(this.palette2, 0) / 2;
-    let g0 =
-      (this.colorTable.getNum(this.palette1, 1) +
-        this.colorTable.getNum(this.palette2, 1)) /
-      2;
-    let b0 =
-      (this.colorTable.getNum(this.palette1, 2) +
-        this.colorTable.getNum(this.palette2, 2)) /
-      2;
-    this.p5.background(r0, g0, b0);
+    if (!this.setStroke) {
+      this.p5.noStroke();
+    } else {
+      if (this.useDefaultStrokeColor) this.fillDefaultStroke();
+      else {
+        this.p5.stroke(this.strokeOverrideColor);
+        this.p5.strokeWeight(this.strokeWidth);
+        let r = this.p5.red(this.strokeOverrideColor);
+        let g = this.p5.green(this.strokeOverrideColor);
+        let b = this.p5.blue(this.strokeOverrideColor);
+        console.log(
+          `stroke: rgb(${r},${g},${b}) %c  `,
+          `background: rgb(${r},${g},${b});`
+        );
+      }
+    }
+
+    if (this.useDefaultBackground) {
+      this.fillDefaultBackground();
+    } else {
+      let r = this.p5.red(this.backgroundOverrideColor);
+      let g = this.p5.green(this.backgroundOverrideColor);
+      let b = this.p5.blue(this.backgroundOverrideColor);
+      console.log(
+        `background: rgb(${r},${g},${b}) %c  `,
+        `background: rgb(${r},${g},${b});`
+      );
+      this.p5.background(this.backgroundOverrideColor);
+    }
+
     this.drawShapes();
   }
 
+  fillDefaultStroke() {
+    let [r, g, b] = [
+      this.colorTable.getNum(this.paletteIndex1, 0),
+      this.colorTable.getNum(this.paletteIndex1, 1),
+      this.colorTable.getNum(this.paletteIndex1, 2),
+    ];
+    console.log(
+      `stroke: rgb(${r},${g},${b}) %c  `,
+      `background: rgb(${r},${g},${b});`
+    );
+    this.p5.stroke(r, g, b);
+    this.p5.strokeWeight(this.strokeWidth);
+  }
+
+  fillDefaultBackground() {
+    let r, g, b;
+    if (this.mixTwoColors) {
+      r =
+        (this.colorTable.getNum(this.paletteIndex1, 0) +
+          this.colorTable.getNum(this.paletteIndex2, 0)) /
+        2;
+      g =
+        (this.colorTable.getNum(this.paletteIndex1, 1) +
+          this.colorTable.getNum(this.paletteIndex2, 1)) /
+        2;
+      b =
+        (this.colorTable.getNum(this.paletteIndex1, 2) +
+          this.colorTable.getNum(this.paletteIndex2, 2)) /
+        2;
+    } else {
+      r = this.colorTable.getNum(this.paletteIndex1, 0);
+      g = this.colorTable.getNum(this.paletteIndex1, 1);
+      b = this.colorTable.getNum(this.paletteIndex1, 2);
+    }
+    console.log(
+      `background: rgb(${r},${g},${b}) %c  `,
+      `background: rgb(${r},${g},${b});`
+    );
+    this.p5.background(r, g, b);
+  }
+
   drawShapes() {
-    let rez = this.p5.random(0.003, 0.01);
-    this.factor += 1000;
-    this.sF = 360 / this.p5.random(2, 40);
+    console.log(`rez: ${this.rez} (0.003, 0.01), sF: ${this.sF}°`);
     for (
       let i = this.canvasWidth;
-      i > -this.size * this.largest;
-      i -= this.size
+      i > -this.sizeOfBox * this.largest;
+      i -= this.sizeOfBox
     ) {
       for (
         let j = this.canvasHeight;
-        j > -this.size * this.largest;
-        j -= this.size
+        j > -this.sizeOfBox * this.largest;
+        j -= this.sizeOfBox
       ) {
-        let n1 = this.p5.noise(i * rez + this.factor, j * rez + this.factor);
-        let n2 = this.p5.noise(
-          i * rez + this.factor + 10000,
-          j * rez + this.factor + 10000
-        );
-        let n3 = this.p5.noise(
-          i * rez + this.factor + 20000,
-          j * rez + this.factor + 20000
-        );
-        let col3, col4, r1, g1, b1, r2, g2, b2;
-        let col1 = this.p5.map(n1, 0, 1, 0, 360);
-        let col2 = this.p5.map(n2, 0, 1, 0, 360);
-        let dec1 = this.p5.fract(col1 / this.sF);
-        let dec2 = this.p5.fract(col2 / this.sF);
-        if (dec1 < 0.2) {
-          col3 = 0;
-        } else if (dec1 < 0.4) {
-          col3 = 1;
-        } else if (dec1 < 0.6) {
-          col3 = 2;
-        } else if (dec1 < 0.8) {
-          col3 = 3;
-        } else {
-          col3 = 4;
-        }
-        if (dec2 < 0.2) {
-          col4 = 0;
-        } else if (dec2 < 0.4) {
-          col4 = 1;
-        } else if (dec2 < 0.6) {
-          col4 = 2;
-        } else if (dec2 < 0.8) {
-          col4 = 3;
-        } else {
-          col4 = 4;
-        }
-        r1 = this.colorTable.getNum(this.palette1, col3 * 3);
-        g1 = this.colorTable.getNum(this.palette1, col3 * 3 + 1);
-        b1 = this.colorTable.getNum(this.palette1, col3 * 3 + 2);
-        r2 = this.colorTable.getNum(this.palette2, col4 * 3);
-        g2 = this.colorTable.getNum(this.palette2, col4 * 3 + 1);
-        b2 = this.colorTable.getNum(this.palette2, col4 * 3 + 2);
-        let size2 = this.size * this.p5.floor(this.p5.random(1, this.largest));
-        if (n3 < 0.25) {
-          this.p5.fill(r1, g1, b1, this.alph);
-          this.p5.triangle(i, j, i + size2, j + size2, i, j + size2);
-          this.p5.fill(r2, g2, b2, this.alph);
-          this.p5.triangle(i, j, i + size2, j + size2, i + size2, j);
-        } else if (n3 < 0.5) {
-          this.p5.fill(r1, g1, b1, this.alph);
-          this.p5.triangle(i + size2, j, i + size2, j + size2, i, j + size2);
-          this.p5.fill(r2, g2, b2, this.alph);
-          this.p5.triangle(i, j + size2, i, j, i + size2, j);
-        } else if (n3 < 0.75) {
-          this.p5.fill(r1, g1, b1, this.alph);
-          this.p5.triangle(i, j, i + size2, j + size2, i + size2, j);
-          this.p5.fill(r2, g2, b2, this.alph);
-          this.p5.triangle(i, j, i + size2, j + size2, i, j + size2);
-        } else {
-          this.p5.fill(r1, g1, b1, this.alph);
-          this.p5.triangle(i, j + size2, i, j, i + size2, j);
-          this.p5.fill(r2, g2, b2, this.alph);
-          this.p5.triangle(i + size2, j, i + size2, j + size2, i, j + size2);
-        }
+        this.drawShape(i, j);
       }
     }
+  }
+
+  drawShape(i: number, j: number) {
+    let noiseColor1 = this.p5.noise(
+      i * this.rez + this.factor,
+      j * this.rez + this.factor
+    );
+    let noiseColor2 = this.p5.noise(
+      i * this.rez + this.factor + this.factorIncrease,
+      j * this.rez + this.factor + this.factorIncrease
+    );
+
+    let color1, color2;
+    color1 = this.pickColors(this.paletteIndex1, noiseColor1);
+    if (this.mixTwoColors) {
+      color2 = this.pickColors(this.paletteIndex2, noiseColor2);
+    } else {
+      color2 = this.pickColors(this.paletteIndex1, noiseColor2);
+    }
+
+    // selects size of the triangle (number of blocks to occupy)
+    let size = this.sizeOfBox * this.p5.floor(this.p5.random(1, this.largest));
+    let n3 = this.p5.noise(
+      i * this.rez + this.factor + 2 * this.factorIncrease,
+      j * this.rez + this.factor + 2 * this.factorIncrease
+    );
+    this.drawDoublePalettePatterns(n3, i, j, color1, color2, size);
+  }
+
+  drawDoublePalettePatterns(
+    n3: number,
+    i: number,
+    j: number,
+    color1: p5Types.Color,
+    color2: p5Types.Color,
+    size: number
+  ) {
+    if (n3 < 0.25) {
+      // ◣ Lower left triangle
+      this.p5.fill(color1);
+      this.p5.triangle(i, j, i + size, j + size, i, j + size);
+      // ◥ Upper right triangle
+      this.p5.fill(color2);
+      this.p5.triangle(i, j, i + size, j + size, i + size, j);
+    } else if (n3 < 0.5) {
+      // ◢ Lower right triangle
+      this.p5.fill(color1);
+      this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
+      // ◤ Upper left triangle
+      this.p5.fill(color2);
+      this.p5.triangle(i, j + size, i, j, i + size, j);
+    } else if (n3 < 0.75) {
+      // ◥ Upper right triangle
+      this.p5.fill(color1);
+      this.p5.triangle(i, j, i + size, j + size, i + size, j);
+      // ◣ Lower left triangle
+      this.p5.fill(color2);
+      this.p5.triangle(i, j, i + size, j + size, i, j + size);
+    } else {
+      // ◤ Upper left triangle
+      this.p5.fill(color1);
+      this.p5.triangle(i, j + size, i, j, i + size, j);
+      // ◢ Lower right triangle
+      this.p5.fill(color2);
+      this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
+    }
+  }
+
+  pickColors(paletteIndex: number, n: number) {
+    let colorIndex = 0;
+    // this.colorsPerPaletteCount
+    let col = this.p5.map(n, 0, 1, 0, 360);
+    let dec = this.p5.fract(col / this.sF);
+    // distribute this range among the palette
+    let segmentSize = 1 / this.colorsPerPaletteCount;
+    for (
+      let rangeEnd = segmentSize, i = 0;
+      rangeEnd <= 1;
+      rangeEnd += segmentSize
+    ) {
+      if (dec <= rangeEnd) {
+        colorIndex = i;
+        break;
+      }
+      i++;
+    }
+
+    // selects random color from the palette for each r, g, b
+    let r, g, b;
+    r = this.colorTable.getNum(paletteIndex, colorIndex * 3);
+    g = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 1);
+    b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
+    let color = this.p5.color(r, g, b);
+    color.setAlpha(this.alpha);
+    return color;
+  }
+
+  printColors(index: number) {
+    let str = `palette ${index}: `;
+    let css_arr = [];
+    for (let i = 0; i < this.colorsPerPaletteCount; i++) {
+      let r = this.colorTable.getNum(index, 3 * i);
+      let g = this.colorTable.getNum(index, 3 * i + 1);
+      let b = this.colorTable.getNum(index, 3 * i + 2);
+      str += "%c  ";
+      css_arr.push(`background: rgb(${r},${g},${b});`);
+    }
+    console.log(str, ...css_arr);
   }
 }
