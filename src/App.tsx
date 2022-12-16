@@ -135,7 +135,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                 <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-0 lg:pl-7 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:block md:hiden sm:hidden">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other</h1>
                 
               </div>
-              <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-20 lg:pl-10 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:hidden md:block sm:block">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other</h1>
+              <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-20 lg:pl-10 lg:mb-6 md:mb-20 sm:mb-20 md:pb-5 sm:pb-5 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:hidden md:block sm:block">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other</h1>
             </div>
           </div>
 
