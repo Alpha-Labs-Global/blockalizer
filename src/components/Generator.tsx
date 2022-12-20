@@ -2,7 +2,18 @@ import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  darkTheme,
+} from "@rainbow-me/rainbowkit";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { goerli } from "wagmi/chains";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 import "./Generator.css";
+import "@rainbow-me/rainbowkit/styles.css";
 
 import {
   assign_sketch,
@@ -12,9 +23,29 @@ import {
 
 import GenericSketch from "../art-styles/generic_sketch";
 
+const { REACT_APP_ALCHEMY_API_KEY } = process.env;
+const ALCHEMY_API_KEY = REACT_APP_ALCHEMY_API_KEY || "alchemy_api_key";
+
 interface ComponentProps {}
 
 const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
+  let chains, provider;
+  ({ chains, provider } = configureChains(
+    [goerli],
+    [alchemyProvider({ apiKey: ALCHEMY_API_KEY })]
+  ));
+
+  const { connectors } = getDefaultWallets({
+    appName: "Blockalizer",
+    chains,
+  });
+
+  const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+  });
+
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("triangles");
 
@@ -127,54 +158,59 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   ));
 
   return (
-    <div className="Generator">
-      <div className="actualApp">
-        <div>
-          Block Number{" "}
-          <input
-            type="number"
-            value={selectedSeed.toString()}
-            onChange={seedHandler}
-          />
-          <button onClick={regenerate}>Regenerate</button>
-        </div>
-        <div>
-          <div>
-            Grid Size
-            <input
-              type="range"
-              min="3"
-              max="12"
-              defaultValue="9"
-              step="3"
-              onChange={numOfBoxesHandler}
-            />
-            {numOfBoxes}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains} theme={darkTheme()}>
+        <div className="Generator">
+          <ConnectButton />
+          <div className="actualApp">
+            <div>
+              Block Number{" "}
+              <input
+                type="number"
+                value={selectedSeed.toString()}
+                onChange={seedHandler}
+              />
+              <button onClick={regenerate}>Regenerate</button>
+            </div>
+            <div>
+              <div>
+                Grid Size
+                <input
+                  type="range"
+                  min="3"
+                  max="12"
+                  defaultValue="9"
+                  step="3"
+                  onChange={numOfBoxesHandler}
+                />
+                {numOfBoxes}
+              </div>
+              <div>
+                Tetri
+                <input
+                  type="range"
+                  min="2"
+                  max="5"
+                  defaultValue="2"
+                  step="1"
+                  onChange={smearingHandler}
+                />
+                {smearing}
+              </div>
+              <div>Chroma</div>
+              {chromeSelector}
+            </div>
+            <div>
+              <button disabled={true} onClick={save}>
+                Mint
+              </button>
+            </div>
           </div>
-          <div>
-            Tetri
-            <input
-              type="range"
-              min="2"
-              max="5"
-              defaultValue="2"
-              step="1"
-              onChange={smearingHandler}
-            />
-            {smearing}
-          </div>
-          <div>Chroma</div>
-          {chromeSelector}
+          <hr />
+          <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
         </div>
-        <div>
-          <button disabled={true} onClick={save}>
-            Mint
-          </button>
-        </div>
-      </div>
-      <hr />
-      <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
-    </div>
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 };
 
