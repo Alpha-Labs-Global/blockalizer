@@ -27,6 +27,7 @@ export interface ColoredTriangleOptions {
   strokeWidth: number;
   paletteIndex: number;
   opacitySwitch: boolean;
+  noFill: boolean;
 }
 
 export class ColoredTrianglesSketch extends GenericSketch {
@@ -43,6 +44,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
   strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
   strokeWidth: number; // stroke width to use
   toggleOpacity: boolean; // when set to true it toggles opacity as opposed to color
+  noFill: boolean; // setting it to false removes all color
 
   factor: number;
   rez: number;
@@ -74,6 +76,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.strokeOverrideColor = this.p5.color(255, 255, 255);
     this.strokeWidth = opts.strokeWidth;
     this.toggleOpacity = opts.opacitySwitch;
+    this.noFill = opts.noFill;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -252,6 +255,9 @@ export class ColoredTrianglesSketch extends GenericSketch {
   pickAlpha() {
     if (!this.toggleOpacity) {
       return this.alpha;
+    }
+    if (this.noFill) {
+      return 0;
     }
     return 255 * this.p5.random([0.2, 0.4, 0.6, 0.8, 1]);
   }

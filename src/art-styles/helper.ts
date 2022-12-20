@@ -37,6 +37,7 @@ export function assign_sketch(
         strokeWidth: opts.strokeWidth,
         paletteIndex: opts.paletteIndex,
         opacitySwitch: opts.opacitySwitch || false,
+        noFill: opts.noFill || false,
       };
       sketch = new ColoredTrianglesSketch(
         p5,

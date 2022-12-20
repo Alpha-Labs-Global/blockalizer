@@ -48,11 +48,12 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("triangles");
-
   const [selectedSeed, setSeed] = useState("8");
   const seedHandler = (e: any) => {
     setSeed(e.currentTarget.value);
   };
+  const [noFill, setNoFill] = useState(false);
+  const tetriToggle = false;
 
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
@@ -70,7 +71,8 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       selectedStyle +
       numOfBoxes.toString() +
       smearing.toString() +
-      chroma
+      chroma +
+      noFill.toString()
     );
   };
 
@@ -94,6 +96,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       strokeWidth: 2, // using fixed stroke width
       paletteIndex: paletteIndex,
       opacitySwitch: true,
+      noFill: noFill,
     };
 
     sketch = assign_sketch(
@@ -143,6 +146,12 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     setChroma(e.target.value);
   };
 
+  const fillHandler = (e: any) => {
+    const noFill = e.currentTarget.value === "No" ? true : false;
+    console.log(noFill);
+    setNoFill(noFill);
+  };
+
   const chromeSelector = colorNames.map((c, i) => (
     <div>
       <label>
@@ -156,6 +165,63 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       </label>
     </div>
   ));
+
+  const tetri = (
+    <div>
+      Tetri
+      <input
+        type="range"
+        min="2"
+        max="5"
+        defaultValue="2"
+        step="1"
+        onChange={smearingHandler}
+      />
+      {smearing}
+    </div>
+  );
+
+  const gridControl = (
+    <div>
+      Grid Size
+      <input
+        type="range"
+        min="3"
+        max="12"
+        defaultValue="9"
+        step="3"
+        onChange={numOfBoxesHandler}
+      />
+      {numOfBoxes}
+    </div>
+  );
+
+  const fillSelector = (
+    <div>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value={"Yes"}
+            checked={!noFill}
+            onChange={fillHandler}
+          />
+          Yes
+        </label>
+      </div>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value={"No"}
+            checked={noFill}
+            onChange={fillHandler}
+          />
+          No
+        </label>
+      </div>
+    </div>
+  );
 
   return (
     <WagmiConfig client={wagmiClient}>
@@ -173,32 +239,16 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
               <button onClick={regenerate}>Regenerate</button>
             </div>
             <div>
+              {gridControl}
+              {tetriToggle ? tetri : null}
               <div>
-                Grid Size
-                <input
-                  type="range"
-                  min="3"
-                  max="12"
-                  defaultValue="9"
-                  step="3"
-                  onChange={numOfBoxesHandler}
-                />
-                {numOfBoxes}
+                Chroma
+                {chromeSelector}
               </div>
               <div>
-                Tetri
-                <input
-                  type="range"
-                  min="2"
-                  max="5"
-                  defaultValue="2"
-                  step="1"
-                  onChange={smearingHandler}
-                />
-                {smearing}
+                Fill
+                {fillSelector}
               </div>
-              <div>Chroma</div>
-              {chromeSelector}
             </div>
             <div>
               <button disabled={true} onClick={save}>
