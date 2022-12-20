@@ -2,6 +2,7 @@ import { tab } from "@testing-library/user-event/dist/tab";
 import p5Types from "p5";
 
 // import colors from "../data/default.json";
+// import colors from "../data/fourcolornostroke.json";
 import colors from "../data/palette.json";
 
 import {
@@ -35,6 +36,7 @@ export function assign_sketch(
         opacity: opts.opacity,
         strokeWidth: opts.strokeWidth,
         paletteIndex: opts.paletteIndex,
+        opacitySwitch: opts.opacitySwitch || false,
       };
       sketch = new ColoredTrianglesSketch(
         p5,
@@ -66,7 +68,7 @@ export function load_colors(): p5Types.Table {
   }
 
   let row: p5Types.TableRow;
-  colors.map((color) => {
+  colors.map((color: any) => {
     row = table.addRow();
     let prop: keyof typeof color;
     for (prop in color) {

@@ -26,6 +26,7 @@ export interface ColoredTriangleOptions {
   opacity: number;
   strokeWidth: number;
   paletteIndex: number;
+  opacitySwitch: boolean;
 }
 
 export class ColoredTrianglesSketch extends GenericSketch {
@@ -37,10 +38,11 @@ export class ColoredTrianglesSketch extends GenericSketch {
   factorIncrease: number; // factor of increase for noise
   totalNumberOfPalettes: number; // count of palettes to choose from
   colorsPerPaletteCount: number; // number of colors in a palette
-  useDefaultStrokeColor: boolean; // whether to use default stroke color or override
+  firstColorForStroke: boolean; // whether to use default stroke color or override
   backgroundOverrideColor: p5Types.Color; // background color to use if overridden
   strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
   strokeWidth: number; // stroke width to use
+  toggleOpacity: boolean; // when set to true it toggles opacity as opposed to color
 
   factor: number;
   rez: number;
@@ -67,10 +69,11 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.largest = opts.smearing;
     let numberOfBoxesPerWidth = opts.numOfBoxes;
     this.alpha = opts.opacity; // lowers values create a layered effect
-    this.useDefaultStrokeColor = false; // uses the first RGB color from palette
+    this.firstColorForStroke = true; // uses the first RGB color from palette
     this.backgroundOverrideColor = this.p5.color(14, 15, 15);
     this.strokeOverrideColor = this.p5.color(255, 255, 255);
     this.strokeWidth = opts.strokeWidth;
+    this.toggleOpacity = opts.opacitySwitch;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -91,7 +94,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
     if (!this.setStroke) {
       this.p5.noStroke();
     } else {
-      if (this.useDefaultStrokeColor) this.fillDefaultStroke();
+      if (this.firstColorForStroke) this.fillDefaultStroke();
       else {
         this.p5.stroke(this.strokeOverrideColor);
         this.p5.strokeWeight(this.strokeWidth);
@@ -217,12 +220,18 @@ export class ColoredTrianglesSketch extends GenericSketch {
     let dec = this.p5.fract(col / this.sF);
     // distribute this range among the palette
     let segmentSize = 1 / this.colorsPerPaletteCount;
+
+    // if first color used for stroke that exclude it from the range
+    let endOfFirstRange = this.firstColorForStroke
+      ? 2 * segmentSize
+      : segmentSize;
+    let i = this.firstColorForStroke ? 1 : 0;
     for (
-      let rangeEnd = segmentSize, i = 0;
-      rangeEnd <= 1;
-      rangeEnd += segmentSize
+      let endOfRange = endOfFirstRange;
+      endOfRange <= 1;
+      endOfRange += segmentSize
     ) {
-      if (dec <= rangeEnd) {
+      if (dec <= endOfRange) {
         colorIndex = i;
         break;
       }
@@ -235,8 +244,16 @@ export class ColoredTrianglesSketch extends GenericSketch {
     g = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 1);
     b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
     let color = this.p5.color(r, g, b);
-    color.setAlpha(this.alpha);
+    let alpha = this.pickAlpha();
+    color.setAlpha(alpha);
     return color;
+  }
+
+  pickAlpha() {
+    if (!this.toggleOpacity) {
+      return this.alpha;
+    }
+    return 255 * this.p5.random([0.2, 0.4, 0.6, 0.8, 1]);
   }
 
   printColors(index: number) {

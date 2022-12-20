@@ -26,14 +26,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
   // that later
-  const colorNames = [
-    "Alpine",
-    "Lavendar",
-    "Tidal",
-    "Crimson",
-    "Sunshine",
-    "Noir",
-  ];
+  const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
 
   /* CONTROL */
@@ -69,6 +62,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacity: 255, // using fixed opacity
       strokeWidth: 2, // using fixed stroke width
       paletteIndex: paletteIndex,
+      opacitySwitch: true,
     };
 
     sketch = assign_sketch(

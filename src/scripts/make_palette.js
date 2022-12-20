@@ -17,13 +17,13 @@ function hexToRgb(hex) {
     : null;
 }
 
-var alpine = ["#C0E7D7", "#52D9A5", "#6FA88E", "#151C18"];
-var lavendar = ["#D5BFEF", "#8764B3", "#8A3BEC", "#131118"];
-var tidal = ["#BFE3EF", "#64A0B3", "#3BC0EC", "#111718"];
-var crimson = ["#EFBFC7", "#B36473", "#EC3B5B", "#181113"];
-var sunshine = ["#FFDAA8", "#FFAA2C", "#FF9218", "#311400"];
-var noir = ["#E6E6E6", "#979797", "#8A8A8A", "#070707"];
-var allColors = [alpine, lavendar, tidal, crimson, sunshine, noir];
+var alpine = ["#22FC93", "#ADFFD8"];
+var lavendar = ["#CE66FF", "#D1ADFF"];
+var tidal = ["#22CAFF", "#63A9FB"];
+var crimson = ["#FF0033", "#FF597A"];
+// var sunshine = ["#FFDAA8", "#FFAA2C", "#FF9218", "#311400"];
+// var noir = ["#E6E6E6", "#979797", "#8A8A8A", "#070707"];
+var allColors = [alpine, lavendar, tidal, crimson];
 
 var data = [];
 var obj = {};
