@@ -35,7 +35,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
             {/*md:w-9/12*/}
           
             <div className="m-auto lg:w-full md:w-full sm:w-full break-words">
-              <div className="m-auto lg:12/12 md:w-6/12 sm:w-9/12">
+              <div className="lg:m-auto md:m-auto sm:m-[10%] lg:12/12 md:w-6/12 sm:w-9/12">
 
                 
               <span className="block mb-8" onClick={() => {}}></span>
@@ -80,20 +80,11 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               <span className="block mb-5"></span>
               <span className="block mb-4"></span>
 
-              <div className="lg:ml-12 md:ml-8 sm:ml-6 w-9/12">
-              <svg viewBox="0 0 216 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="lg:hidden md:hidden sm:inline-block">
-                  <path d="M0 20H215" stroke="#B6FFCF"/>
-                  <path d="M195 1L214.5 20.5L195 40" stroke="#B6FFCF"/>
-              </svg>
-              </div>
       
               <p className="lg:text-2xl md:text-xl sm:text-lg lg:ml-12 md:ml-8 sm:ml-6 " onClick={(e) => {setPage("Search")}}>
                 Try it out&nbsp;
-                                  {/*<div className="h-0.5 mb-1.5 w-5/12 bg-emerald-400 inline-block text-emerald-400">
-                                
-                    </div>*/}
        
-                <svg viewBox="0 0 216 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="lg:inline-block md:inline-block sm:hidden w-6/12">
+                <svg viewBox="0 0 216 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="lg:inline-block md:inline-block sm:inline-block lg:w-6/12 md:w-6/12 sm:w-5/12">
                   <path d="M0 20H215" stroke="#B6FFCF"/>
                   <path d="M195 1L214.5 20.5L195 40" stroke="#B6FFCF"/>
               </svg>
