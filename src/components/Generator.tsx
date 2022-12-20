@@ -256,7 +256,6 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
               </button>
             </div>
           </div>
-          <hr />
           <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
         </div>
       </RainbowKitProvider>
