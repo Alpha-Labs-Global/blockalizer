@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
@@ -16,22 +16,22 @@ interface ComponentProps {}
 
 const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
-  const [selectedStyle, setStyle] = useState("colored-triangles");
-  const styleHandler = (e: any) => {
-    setStyle(e.currentTarget.value);
-  };
-  const [showStyle, setShowStyle] = useState(false);
+  const [selectedStyle, setStyle] = useState("triangles");
 
   const [selectedSeed, setSeed] = useState("8");
   const seedHandler = (e: any) => {
     setSeed(e.currentTarget.value);
   };
 
+  // In order of how the palette is generated. Ideally it would be
+  // best if the names would come from the data. But I will get to
+  // that later
+  const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
+  const [chroma, setChroma] = useState("Alpine");
+
   /* CONTROL */
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [smearing, setSmearing] = useState(2);
-  const [opacity, setOpacity] = useState(255);
-  const [strokeWidth, setStrokeWidth] = useState(2);
 
   const keyGenerator = () => {
     return (
@@ -39,24 +39,30 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       selectedStyle +
       numOfBoxes.toString() +
       smearing.toString() +
-      opacity.toString() +
-      strokeWidth.toString()
+      chroma
     );
   };
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
+
+  useEffect(() => {
+    regenerate();
+  });
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
   let sketch: GenericSketch;
 
   const preload = (p5: p5Types) => {
+    let paletteIndex = colorNames.indexOf(chroma);
     let table: p5Types.Table = load_colors();
     let opts = {
       numOfBoxes: numOfBoxes,
       smearing: smearing,
-      opacity: opacity,
-      strokeWidth: strokeWidth,
+      opacity: 255, // using fixed opacity
+      strokeWidth: 2, // using fixed stroke width
+      paletteIndex: paletteIndex,
+      opacitySwitch: true,
     };
 
     sketch = assign_sketch(
@@ -81,7 +87,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     sketch.draw();
   };
 
-  const regenerate = (e: React.SyntheticEvent) => {
+  const regenerate = () => {
     if (uniqueKey != keyGenerator()) {
       setUniqueKey(keyGenerator());
       // p5Instance.redraw();
@@ -94,69 +100,34 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     // TODO
   };
 
-  const styleSelector = (
-    <div>
-      Style:{" "}
-      <select name="select" value={selectedStyle} onChange={styleHandler}>
-        {styles.map(function (n, i) {
-          return (
-            <option value={n} key={i}>
-              {n}
-            </option>
-          );
-        })}
-      </select>
-    </div>
-  );
-
-  const colorPaletteColumnIndices = Array.from(
-    { length: load_colors().columns.length / 3 },
-    (_, i) => i * 3
-  );
-  const colorPalette = (
-    <div>
-      {load_colors().rows.map((c, i) => (
-        <div className="panel" key={i}>
-          <span className="panelIndex">{i + 1}</span>
-          {colorPaletteColumnIndices.map((i) => (
-            <div
-              className="box"
-              key={i}
-              style={{
-                backgroundColor: `rgb(${c.getNum(i)},${c.getNum(
-                  i + 1
-                )},${c.getNum(i + 2)})`,
-              }}
-            ></div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-
   const numOfBoxesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumOfBoxes(parseInt(e.currentTarget.value));
-    regenerate(e);
   };
 
   const smearingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSmearing(parseInt(e.currentTarget.value));
-    regenerate(e);
   };
 
-  const opacityHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOpacity(parseInt(e.currentTarget.value));
-    regenerate(e);
+  const chromaHandler = (e: any) => {
+    setChroma(e.target.value);
   };
 
-  const strokeWidthHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStrokeWidth(parseInt(e.currentTarget.value));
-    regenerate(e);
-  };
+  const chromeSelector = colorNames.map((c, i) => (
+    <div>
+      <label>
+        <input
+          type="radio"
+          value={c}
+          checked={chroma === c}
+          onChange={chromaHandler}
+        />
+        {c}
+      </label>
+    </div>
+  ));
 
   return (
     <div className="Generator">
-      {showStyle ? styleSelector : null}
       <div className="actualApp">
         <div>
           Block Number{" "}
@@ -169,53 +140,31 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
         <div>
           <div>
-            Number of Boxes
+            Grid Size
             <input
               type="range"
-              min="2"
+              min="3"
               max="12"
               defaultValue="9"
-              step="1"
+              step="3"
               onChange={numOfBoxesHandler}
             />
             {numOfBoxes}
           </div>
           <div>
-            Smearing
+            Tetri
             <input
               type="range"
               min="2"
-              max="10"
+              max="5"
               defaultValue="2"
               step="1"
               onChange={smearingHandler}
             />
             {smearing}
           </div>
-          <div>
-            Opacity
-            <input
-              type="range"
-              min="0"
-              max="255"
-              defaultValue="255"
-              step="10"
-              onChange={opacityHandler}
-            />
-            {opacity}
-          </div>
-          <div>
-            Stroke Width
-            <input
-              type="range"
-              min="0"
-              max="5"
-              defaultValue="2"
-              step="1"
-              onChange={strokeWidthHandler}
-            />
-            {strokeWidth}
-          </div>
+          <div>Chroma</div>
+          {chromeSelector}
         </div>
         <div>
           <button disabled={true} onClick={save}>
@@ -225,9 +174,6 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       </div>
       <hr />
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
-      <hr />
-      <h2>Color Palette</h2>
-      {colorPalette}
     </div>
   );
 };
