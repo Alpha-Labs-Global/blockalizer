@@ -19,7 +19,7 @@ interface ComponentProps {}
 
 const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   //Home, Search, Mint pages
-  const [page, setPage] = useState("Mint");
+  const [page, setPage] = useState("Home");
 
   useEffect(() => {
     //alert("here")
