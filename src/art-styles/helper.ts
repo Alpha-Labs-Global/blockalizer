@@ -1,19 +1,15 @@
+import { tab } from "@testing-library/user-event/dist/tab";
 import p5Types from "p5";
 
 // import colors from "../data/default.json";
 import colors from "../data/palette.json";
 
-import SimpleSquaresSketch from "./simple-squares";
-import ColoredRectanglesSketch from "./colored-rectangles";
-import TenPrintSketch from "./ten-print";
-import DiamondSketch from "./diamond";
-import SimpleTrianglesSketch from "./simple-triangles";
 import {
   ColoredTriangleOptions,
   ColoredTrianglesSketch,
 } from "./colored-triangles";
-import AsciiSketch from "./ascii";
-import FlowfieldSketch from "./flow-field";
+import GenericSketch from "./generic_sketch";
+import NoiseSketch from "./noise_sketch";
 
 export function assign_sketch(
   p5: p5Types,
@@ -24,7 +20,7 @@ export function assign_sketch(
   selectedStyle: string,
   opts: any = {}
 ) {
-  let sketch = new SimpleSquaresSketch(
+  let sketch = new GenericSketch(
     p5,
     canvasWidth,
     canvasHeight,
@@ -32,12 +28,13 @@ export function assign_sketch(
     parseInt(selectedSeed)
   );
   switch (selectedStyle) {
-    case "colored-triangles":
+    case "triangles":
       let coloredTriangleOptions: ColoredTriangleOptions = {
         numOfBoxes: opts.numOfBoxes,
         smearing: opts.smearing,
         opacity: opts.opacity,
         strokeWidth: opts.strokeWidth,
+        paletteIndex: opts.paletteIndex,
       };
       sketch = new ColoredTrianglesSketch(
         p5,
@@ -48,60 +45,14 @@ export function assign_sketch(
         coloredTriangleOptions
       );
       break;
-    case "ascii":
-      sketch = new AsciiSketch(
+    case "noise":
+      sketch = new NoiseSketch(
         p5,
         canvasWidth,
         canvasHeight,
         table,
         parseInt(selectedSeed)
       );
-      break;
-    case "colored-rectangles":
-      sketch = new ColoredRectanglesSketch(
-        p5,
-        canvasWidth,
-        canvasHeight,
-        table,
-        parseInt(selectedSeed)
-      );
-      break;
-    case "ten-print":
-      sketch = new TenPrintSketch(
-        p5,
-        canvasWidth,
-        canvasHeight,
-        table,
-        parseInt(selectedSeed)
-      );
-      break;
-    case "diamond":
-      sketch = new DiamondSketch(
-        p5,
-        canvasWidth,
-        canvasHeight,
-        table,
-        parseInt(selectedSeed)
-      );
-      break;
-    case "simple-triangles":
-      sketch = new SimpleTrianglesSketch(
-        p5,
-        canvasWidth,
-        canvasHeight,
-        table,
-        parseInt(selectedSeed)
-      );
-      break;
-    case "flow-field":
-      sketch = new FlowfieldSketch(
-        p5,
-        canvasWidth,
-        canvasHeight,
-        table,
-        parseInt(selectedSeed)
-      );
-      break;
   }
   return sketch;
 }
@@ -127,13 +78,17 @@ export function load_colors(): p5Types.Table {
 
 export function all_sketch_styles(): Array<string> {
   return [
-    "colored-triangles",
-    "simple-squares",
-    "ascii",
-    "colored-rectangles",
-    "ten-print",
-    "diamond",
-    "simple-triangles",
-    "flow-field",
+    "triangles",
+    "noise",
+
+    // deprecated styles
+
+    // "simple-squares",
+    // "ascii",
+    // "colored-rectangles",
+    // "ten-print",
+    // "diamond",
+    // "simple-triangles",
+    // "flow-field",
   ];
 }

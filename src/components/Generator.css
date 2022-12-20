@@ -1,31 +1,35 @@
-
 .panel {
-    display: flex;
-    margin-bottom: 10px;
-  }
-  
-  .box {
-    height: 20px;
-    width: 20px;
-    margin-right: 5px;
-  }
-  
-  .panelIndex {
-    margin-right: 10px;
-  }
+  display: flex;
+  margin-bottom: 10px;
+}
 
-  .Generator {
-    color: white;
-  }
+.box {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+}
+
+.panelIndex {
+  margin-right: 10px;
+}
+
+.Generator {
+  color: white;
+}
 
 input {
-    color: black;
+  color: black;
 }
 
 button {
-    background-color: grey;
+  background-color: grey;
 }
 
 hr {
-    margin: 10px;
+  margin: 10px;
+}
+
+.colorSelector {
+  width: 200px;
+  color: black;
 }
