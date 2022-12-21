@@ -12,7 +12,7 @@ import { goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-import "./Generator.css";
+import "./Playground.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import {

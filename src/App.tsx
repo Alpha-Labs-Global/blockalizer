@@ -5,7 +5,7 @@ import "./collapsible.scss";
 import Collapsible from "react-collapsible";
 
 import "./App.css";
-import Generator from "./components/Generator";
+import Playground from "./components/Playground";
 
 import visual from "./media/block-floater.png";
 
@@ -345,7 +345,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
       )}
 
-      {page === "Sandbox" && <Generator></Generator>}
+      {page === "Sandbox" && <Playground></Playground>}
     </div>
   );
 };
