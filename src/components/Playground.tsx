@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
-import { ConnectKitProvider, ConnectKitButton } from "connectkit";
-import { WagmiConfig } from "wagmi";
+import { ConnectKitButton } from "connectkit";
+import { useSigner } from "wagmi";
 
-import { client } from "../helper/wallet";
+import { createSiweMessage } from "../helper/wallet";
 
 import "./Playground.css";
 
@@ -13,20 +13,21 @@ import {
   assign_sketch,
   load_colors,
   all_sketch_styles,
-} from "../art-styles/helper";
+} from "../helper/sketch";
 
 import GenericSketch from "../art-styles/generic_sketch";
 
 interface ComponentProps {}
 
-const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
+const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
-  const [selectedStyle, setStyle] = useState("triangles");
+  const [selectedStyle, setStyle] = useState("none");
   const [selectedSeed, setSeed] = useState("8");
   const seedHandler = (e: any) => {
     setSeed(e.currentTarget.value);
   };
   const [noFill, setNoFill] = useState(false);
+  const authorizeRequired = false;
 
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
@@ -53,6 +54,12 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   useEffect(() => {
     regenerate();
+
+    if (signer === null) {
+      setStyle("none");
+    } else {
+      setStyle("triangles");
+    }
   });
 
   const canvasWidth: number = 400;
@@ -103,8 +110,14 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   };
 
-  const authorize = () => {
-    console.log("unique key changed...");
+  const { data: signer, isError, isLoading } = useSigner();
+
+  const authorize = async () => {
+    if (!signer) return;
+
+    const address = await signer.getAddress();
+    const message = createSiweMessage(address, "This is a test statement.");
+    signer.signMessage(message);
   };
 
   const save = (e: React.SyntheticEvent) => {
@@ -202,44 +215,40 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   );
 
   return (
-    <WagmiConfig client={client()}>
-      <ConnectKitProvider theme="midnight">
-        <div className="Generator">
-          <ConnectKitButton />
-          <button onClick={authorize}>Authorize</button>
-          <div className="actualApp">
-            <div>
-              Block Number{" "}
-              <input
-                type="number"
-                value={selectedSeed.toString()}
-                onChange={seedHandler}
-              />
-              <button onClick={regenerate}>Regenerate</button>
-            </div>
-            <div>
-              {gridControl}
-              <div>
-                Chroma
-                {chromeSelector}
-              </div>
-              <div>
-                Fill
-                {fillSelector}
-              </div>
-              {tetriControl}
-            </div>
-            <div>
-              <button disabled={true} onClick={save}>
-                Mint
-              </button>
-            </div>
-          </div>
-          <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
+    <div className="Generator">
+      <ConnectKitButton />
+      {authorizeRequired ? <button onClick={authorize}>Sign</button> : null}
+      <div className="actualApp">
+        <div>
+          Block Number{" "}
+          <input
+            type="number"
+            value={selectedSeed.toString()}
+            onChange={seedHandler}
+          />
+          <button onClick={regenerate}>Regenerate</button>
         </div>
-      </ConnectKitProvider>
-    </WagmiConfig>
+        <div>
+          {gridControl}
+          <div>
+            Chroma
+            {chromeSelector}
+          </div>
+          <div>
+            Fill
+            {fillSelector}
+          </div>
+          {tetriControl}
+        </div>
+        <div>
+          <button disabled={true} onClick={save}>
+            Mint
+          </button>
+        </div>
+      </div>
+      <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
+    </div>
   );
 };
 
-export default Sandbox;
+export default Playground;
