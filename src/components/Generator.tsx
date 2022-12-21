@@ -53,7 +53,6 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     setSeed(e.currentTarget.value);
   };
   const [noFill, setNoFill] = useState(false);
-  const tetriToggle = false;
 
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
@@ -63,14 +62,14 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   /* CONTROL */
   const [numOfBoxes, setNumOfBoxes] = useState(9);
-  const [smearing, setSmearing] = useState(2);
+  const [tetri, setTetri] = useState(0);
 
   const keyGenerator = () => {
     return (
       selectedSeed +
       selectedStyle +
       numOfBoxes.toString() +
-      smearing.toString() +
+      tetri.toString() +
       chroma +
       noFill.toString()
     );
@@ -91,12 +90,13 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     let table: p5Types.Table = load_colors();
     let opts = {
       numOfBoxes: numOfBoxes,
-      smearing: smearing,
+      smearing: 2, // using default value to have no smearing
       opacity: 255, // using fixed opacity
       strokeWidth: 1.5, // using fixed stroke width
       paletteIndex: paletteIndex,
       opacitySwitch: true,
       noFill: noFill,
+      removeBlocks: tetri,
     };
 
     sketch = assign_sketch(
@@ -138,8 +138,8 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     setNumOfBoxes(parseInt(e.currentTarget.value));
   };
 
-  const smearingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSmearing(parseInt(e.currentTarget.value));
+  const tetriHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTetri(parseInt(e.currentTarget.value));
   };
 
   const chromaHandler = (e: any) => {
@@ -165,21 +165,6 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       </label>
     </div>
   ));
-
-  const tetri = (
-    <div>
-      Tetri
-      <input
-        type="range"
-        min="2"
-        max="5"
-        defaultValue="2"
-        step="1"
-        onChange={smearingHandler}
-      />
-      {smearing}
-    </div>
-  );
 
   const gridControl = (
     <div>
@@ -223,6 +208,21 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
+  const tetriControl = (
+    <div>
+      Tetri
+      <input
+        type="range"
+        min="0"
+        max="3"
+        defaultValue="0"
+        step="1"
+        onChange={tetriHandler}
+      />
+      {tetri}
+    </div>
+  );
+
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} theme={darkTheme()}>
@@ -240,7 +240,6 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
             </div>
             <div>
               {gridControl}
-              {tetriToggle ? tetri : null}
               <div>
                 Chroma
                 {chromeSelector}
@@ -249,6 +248,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
                 Fill
                 {fillSelector}
               </div>
+              {tetriControl}
             </div>
             <div>
               <button disabled={true} onClick={save}>
