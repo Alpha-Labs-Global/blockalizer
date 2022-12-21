@@ -2,18 +2,12 @@ import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
-import {
-  getDefaultWallets,
-  RainbowKitProvider,
-  darkTheme,
-} from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { goerli } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectKitProvider, ConnectKitButton } from "connectkit";
+import { WagmiConfig } from "wagmi";
+
+import { client } from "../helper/wallet";
 
 import "./Playground.css";
-import "@rainbow-me/rainbowkit/styles.css";
 
 import {
   assign_sketch,
@@ -23,29 +17,9 @@ import {
 
 import GenericSketch from "../art-styles/generic_sketch";
 
-const { REACT_APP_ALCHEMY_API_KEY } = process.env;
-const ALCHEMY_API_KEY = REACT_APP_ALCHEMY_API_KEY || "alchemy_api_key";
-
 interface ComponentProps {}
 
 const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
-  let chains, provider;
-  ({ chains, provider } = configureChains(
-    [goerli],
-    [alchemyProvider({ apiKey: ALCHEMY_API_KEY })]
-  ));
-
-  const { connectors } = getDefaultWallets({
-    appName: "Blockalizer",
-    chains,
-  });
-
-  const wagmiClient = createClient({
-    autoConnect: true,
-    connectors,
-    provider,
-  });
-
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("triangles");
   const [selectedSeed, setSeed] = useState("8");
@@ -127,6 +101,10 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       // p5Instance.redraw();
       console.log("unique key changed...");
     }
+  };
+
+  const authorize = () => {
+    console.log("unique key changed...");
   };
 
   const save = (e: React.SyntheticEvent) => {
@@ -224,10 +202,11 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   );
 
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={darkTheme()}>
+    <WagmiConfig client={client()}>
+      <ConnectKitProvider theme="midnight">
         <div className="Generator">
-          <ConnectButton />
+          <ConnectKitButton />
+          <button onClick={authorize}>Authorize</button>
           <div className="actualApp">
             <div>
               Block Number{" "}
@@ -258,7 +237,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
           </div>
           <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
         </div>
-      </RainbowKitProvider>
+      </ConnectKitProvider>
     </WagmiConfig>
   );
 };
