@@ -16,6 +16,18 @@ module.exports = {
         // => @media (min-width: 1440px) { ... }
       }
     },
+
+      colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
+        special: {
+          light: '#85d7ff',
+          DEFAULT: '#121212',
+          dark: '#009eeb',
+        },
+       
+      
+    }
   },
   plugins: [],
 }

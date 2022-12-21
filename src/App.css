@@ -11,10 +11,8 @@ hr {
   height: 100vh;
   width: 100vw;
   -ms-overflow-style: none; 
-  scrollbar-width: none; 
-  overflow-y: hidden; 
-  overflow-x: hidden;  
-  overflow: hidden;
+  scrollbar-width: none;   
+  overflow: scroll;
   
 }
 
@@ -27,9 +25,8 @@ hr {
   margin: 0 auto;
   position: relative;
   z-index: 999;
-
-
 }
+
 
 .navbar {
   position: fixed; /* Set the navbar to fixed position */
@@ -38,6 +35,7 @@ hr {
   width: 60%; /* Full width */
   background-color: white;
 }
+
 
 .view {
   /*border: solid 3px red;*/
