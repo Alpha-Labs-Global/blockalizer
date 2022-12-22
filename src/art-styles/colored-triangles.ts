@@ -27,6 +27,8 @@ export interface ColoredTriangleOptions {
   strokeWidth: number;
   paletteIndex: number;
   opacitySwitch: boolean;
+  noFill: boolean;
+  removeBlocks: number;
 }
 
 export class ColoredTrianglesSketch extends GenericSketch {
@@ -43,6 +45,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
   strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
   strokeWidth: number; // stroke width to use
   toggleOpacity: boolean; // when set to true it toggles opacity as opposed to color
+  noFill: boolean; // setting it to false removes all color
+  removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
 
   factor: number;
   rez: number;
@@ -74,6 +78,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.strokeOverrideColor = this.p5.color(255, 255, 255);
     this.strokeWidth = opts.strokeWidth;
     this.toggleOpacity = opts.opacitySwitch;
+    this.noFill = opts.noFill;
+    this.removeBlocks = opts.removeBlocks;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -171,7 +177,34 @@ export class ColoredTrianglesSketch extends GenericSketch {
       i * this.rez + this.factor + 2 * this.factorIncrease,
       j * this.rez + this.factor + 2 * this.factorIncrease
     );
-    this.drawDoublePalettePatterns(n3, i, j, color1, color2, size);
+    if (this.shouldDrawBlock()) {
+      this.drawDoublePalettePatterns(n3, i, j, color1, color2, size);
+    }
+    this.drawOuterEdge();
+  }
+
+  shouldDrawBlock() {
+    let percentRemoval = 0;
+    switch (this.removeBlocks) {
+      case 0:
+        percentRemoval = 0;
+        break;
+      case 1:
+        percentRemoval = 0.05;
+        break;
+      case 2:
+        percentRemoval = 0.15;
+        break;
+      case 3:
+        percentRemoval = 0.35;
+        break;
+    }
+    return this.p5.random() > percentRemoval;
+  }
+
+  drawOuterEdge() {
+    this.p5.fill(0, 0, 0, 0);
+    this.p5.rect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
   drawDoublePalettePatterns(
@@ -252,6 +285,9 @@ export class ColoredTrianglesSketch extends GenericSketch {
   pickAlpha() {
     if (!this.toggleOpacity) {
       return this.alpha;
+    }
+    if (this.noFill) {
+      return 0; // simplest way to have no fill
     }
     return 255 * this.p5.random([0.2, 0.4, 0.6, 0.8, 1]);
   }

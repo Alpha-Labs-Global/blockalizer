@@ -1,19 +1,13 @@
-import React, { useEffect, useState, SyntheticEvent } from "react";
+import React, { useEffect, useState } from "react";
 import placeHolder from "./media/square.png";
 import logo from "./media/logo.png";
 import "./collapsible.scss";
 import Collapsible from "react-collapsible";
 
 import "./App.css";
-import Generator from "./components/Generator";
+import Sandbox from "./components/Sandbox";
 
 import visual from "./media/block-floater.png";
-
-import {
-  assign_sketch,
-  load_colors,
-  all_sketch_styles,
-} from "./art-styles/helper";
 
 interface ComponentProps {}
 
@@ -345,7 +339,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
       )}
 
-      {page === "Sandbox" && <Generator></Generator>}
+      {page === "Sandbox" && <Sandbox></Sandbox>}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import { tab } from "@testing-library/user-event/dist/tab";
 import p5Types from "p5";
 
 // import colors from "../data/default.json";
@@ -8,9 +7,21 @@ import colors from "../data/palette.json";
 import {
   ColoredTriangleOptions,
   ColoredTrianglesSketch,
-} from "./colored-triangles";
-import GenericSketch from "./generic_sketch";
-import NoiseSketch from "./noise_sketch";
+} from "../art-styles/colored-triangles";
+import GenericSketch from "../art-styles/generic_sketch";
+import NoiseSketch from "../art-styles/noise_sketch";
+import NoneSketch from "../art-styles/none_sketch";
+
+interface SketchOptions {
+  numOfBoxes?: number;
+  smearing?: number;
+  opacity?: number;
+  strokeWidth?: number;
+  paletteIndex?: number;
+  opacitySwitch?: boolean;
+  noFill?: boolean;
+  removeBlocks?: number;
+}
 
 export function assign_sketch(
   p5: p5Types,
@@ -19,7 +30,7 @@ export function assign_sketch(
   table: p5Types.Table,
   selectedSeed: string,
   selectedStyle: string,
-  opts: any = {}
+  opts: SketchOptions = {}
 ) {
   let sketch = new GenericSketch(
     p5,
@@ -31,12 +42,14 @@ export function assign_sketch(
   switch (selectedStyle) {
     case "triangles":
       let coloredTriangleOptions: ColoredTriangleOptions = {
-        numOfBoxes: opts.numOfBoxes,
-        smearing: opts.smearing,
-        opacity: opts.opacity,
-        strokeWidth: opts.strokeWidth,
-        paletteIndex: opts.paletteIndex,
+        numOfBoxes: opts.numOfBoxes || 9,
+        smearing: opts.smearing || 2,
+        opacity: opts.opacity || 255,
+        strokeWidth: opts.strokeWidth || 2,
+        paletteIndex: opts.paletteIndex || 0,
         opacitySwitch: opts.opacitySwitch || false,
+        noFill: opts.noFill || false,
+        removeBlocks: opts.removeBlocks || 0,
       };
       sketch = new ColoredTrianglesSketch(
         p5,
@@ -55,6 +68,16 @@ export function assign_sketch(
         table,
         parseInt(selectedSeed)
       );
+      break;
+    case "none":
+      sketch = new NoneSketch(
+        p5,
+        canvasWidth,
+        canvasWidth,
+        table,
+        parseInt(selectedSeed)
+      );
+      break;
   }
   return sketch;
 }
@@ -82,6 +105,7 @@ export function all_sketch_styles(): Array<string> {
   return [
     "triangles",
     "noise",
+    "none",
 
     // deprecated styles
 
