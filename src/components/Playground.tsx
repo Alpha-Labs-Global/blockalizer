@@ -6,6 +6,7 @@ import { ConnectKitButton } from "connectkit";
 import { useSigner } from "wagmi";
 
 import { createSiweMessage } from "../helper/wallet";
+import { fetchBlocks } from "../helper/server";
 
 import "./Playground.css";
 
@@ -23,9 +24,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("none");
   const [selectedSeed, setSeed] = useState("8");
-  const seedHandler = (e: any) => {
-    setSeed(e.currentTarget.value);
-  };
   const [noFill, setNoFill] = useState(false);
   const authorizeRequired = false;
 
@@ -34,6 +32,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // that later
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
+  const [blocks, setBlocks] = useState([]);
+  const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
+
+  const signedOutApp = () => {
+    setStyle("none");
+    setAddress("");
+    setBlocks([]);
+  };
+
+  const signedInApp = () => {
+    setStyle("triangles");
+  };
 
   /* CONTROL */
   const [numOfBoxes, setNumOfBoxes] = useState(9);
@@ -52,15 +62,36 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
 
+  const lazySetBlocks = async () => {
+    if (signer) {
+      const newAddress = await signer.getAddress();
+      if (newAddress == address) return;
+
+      setAddress(newAddress);
+      try {
+        const result = await fetchBlocks(newAddress);
+        setBlocks(result);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   useEffect(() => {
     regenerate();
 
     if (signer === null) {
-      setStyle("none");
+      signedOutApp();
     } else {
-      setStyle("triangles");
+      lazySetBlocks();
     }
   });
+
+  useEffect(() => {
+    if (blocks.length > 0) {
+      signedInApp();
+    }
+  }, [blocks]);
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
@@ -143,6 +174,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     setNoFill(noFill);
   };
 
+  const blockHandler = (e: any) => {
+    console.log(e.target.value, e.currentTarget.value);
+    setSeed(e.target.value);
+  };
+
   const chromeSelector = colorNames.map((c, i) => (
     <div>
       <label>
@@ -214,20 +250,20 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
+  const blocksControl = blocks.map((b) => (
+    <span style={{ marginRight: "10px" }}>
+      <button key={b} onClick={blockHandler} value={b}>
+        {b}
+      </button>
+    </span>
+  ));
+
   return (
     <div className="Generator">
       <ConnectKitButton />
       {authorizeRequired ? <button onClick={authorize}>Sign</button> : null}
       <div className="actualApp">
-        <div>
-          Block Number{" "}
-          <input
-            type="number"
-            value={selectedSeed.toString()}
-            onChange={seedHandler}
-          />
-          <button onClick={regenerate}>Regenerate</button>
-        </div>
+        <div>Blocks {blocksControl}</div>
         <div>
           {gridControl}
           <div>

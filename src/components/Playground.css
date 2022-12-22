@@ -33,3 +33,7 @@ hr {
   width: 200px;
   color: black;
 }
+
+button {
+  padding: 1px 6px !important;
+}
