@@ -43,7 +43,6 @@ export function assign_sketch(
     case "triangles":
       let coloredTriangleOptions: ColoredTriangleOptions = {
         numOfBoxes: opts.numOfBoxes || 9,
-        smearing: opts.smearing || 2,
         opacity: opts.opacity || 255,
         strokeWidth: opts.strokeWidth || 2,
         paletteIndex: opts.paletteIndex || 0,
