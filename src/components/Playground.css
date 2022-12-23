@@ -1,0 +1,35 @@
+.panel {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.box {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+}
+
+.panelIndex {
+  margin-right: 10px;
+}
+
+.Generator {
+  color: white;
+}
+
+input {
+  color: black;
+}
+
+button {
+  background-color: grey;
+}
+
+hr {
+  margin: 10px;
+}
+
+.colorSelector {
+  width: 200px;
+  color: black;
+}

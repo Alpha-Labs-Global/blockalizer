@@ -1,19 +1,13 @@
-import React, { useEffect, useState, SyntheticEvent } from "react";
+import React, { useEffect, useState } from "react";
 import placeHolder from "./media/square.png";
-import logo from "./media/logo.png"
-import "./collapsible.scss"; 
-import Collapsible from 'react-collapsible';
+import logo from "./media/logo.png";
+import "./collapsible.scss";
+import Collapsible from "react-collapsible";
 
 import "./App.css";
-import Generator from "./components/Generator";
+import Sandbox from "./components/Sandbox";
 
 import visual from "./media/block-floater.png";
-
-import {
-  assign_sketch,
-  load_colors,
-  all_sketch_styles,
-} from "./art-styles/helper";
 
 interface ComponentProps {}
 
@@ -106,15 +100,24 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                   <h1 className="lg:text-md md:text-md sm:text-md">Latest Minted Block</h1>
                   <span className="block mb-3"></span>
                   <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">#12345 | 3 hours ago</h1>
+
                   <span className="block mb-2"></span>
                   <img src={placeHolder} className="m-auto w-full"></img>
                 </div>
 
                 <span className="block mb-10"></span>
-                <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-0 lg:pl-7 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:block md:hiden sm:hidden">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other&nbsp;&nbsp;&nbsp;<span onClick={(e) => {setPage("Sandbox")}}>Sandbox</span></h1>
-                
+                <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-0 lg:pl-7 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:block md:hiden sm:hidden">
+                  FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other&nbsp;&nbsp;&nbsp;
+                  <span
+                    onClick={(e) => {
+                      setPage("Sandbox");
+                    }}
+                  >
+                    Sandbox
+                  </span>
+                </h1>
               </div>
-
+              
               <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-20 lg:pl-10 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:hidden md:block sm:block">FAQ&nbsp;&nbsp;&nbsp;Twitter&nbsp;&nbsp;&nbsp;Other&nbsp;&nbsp;&nbsp;<span onClick={(e) => {setPage("Sandbox")}}>Sandbox</span></h1>
               <span className="block mb-5"></span>
             </div>
@@ -299,7 +302,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
       )}
 
-      {page === "Sandbox" && <Generator></Generator>}
+      {page === "Sandbox" && <Sandbox></Sandbox>}
     </div>
   );
 };
