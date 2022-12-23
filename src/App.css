@@ -7,28 +7,26 @@ hr {
   width: 100%;
 }
 .pageContainer {
-  background-color: black;
+  background-color: #121212;
   height: 100vh;
   width: 100vw;
   -ms-overflow-style: none; 
-  scrollbar-width: none; 
-  overflow-y: hidden; 
-  overflow-x: hidden;  
-  overflow: hidden;
+  scrollbar-width: none;   
+  overflow: scroll;
   
 }
 
 .contentContainer {
   display: flex;
   flex-direction: row;
+  flex-flow: row wrap;
   width: auto;
   max-width: none;
   margin: 0 auto;
   position: relative;
   z-index: 999;
-
-
 }
+
 
 .navbar {
   position: fixed; /* Set the navbar to fixed position */
@@ -38,10 +36,27 @@ hr {
   background-color: white;
 }
 
+
 .view {
   /*border: solid 3px red;*/
   width: 60%;
   height: 100vh;
+  display: flex;
+  background-color: #121212;
+  overflow: scroll;
+}
+
+.blockalizerDivLeft {
+  width: 60%;
+  height: auto;
+  display: flex;
+  background-color: #121212;
+  overflow: scroll;
+}
+
+.blockalizerDivRight {
+  width: 40%;
+  height: auto;
   display: flex;
   background-color: #121212;
   overflow: scroll;
@@ -87,6 +102,14 @@ body {
   .view {
     width: 100%;
   }
+
+  .blockalizerDivLeft {
+    width: 100%;
+  }
+
+  .blockalizerDivRight {
+    width: 100%;
+  }
 }
 
 @media only screen and (min-width: 0px) and (max-width: 700px)
@@ -96,6 +119,14 @@ body {
   }
 
   .view {
+    width: 100%;
+  }
+
+  .blockalizerDivLeft {
+    width: 100%;
+  }
+
+  .blockalizerDivRight {
     width: 100%;
   }
 
