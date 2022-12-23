@@ -22,7 +22,6 @@ import GenericSketch from "./generic_sketch";
 
 export interface ColoredTriangleOptions {
   numOfBoxes: number;
-  smearing: number;
   opacity: number;
   strokeWidth: number;
   paletteIndex: number;
@@ -36,7 +35,6 @@ export class ColoredTrianglesSketch extends GenericSketch {
   alpha: number; // color opacity for each shape
   paletteIndex: number; // selected index from the palette table
   setStroke: boolean; // true or false if stroke should be set
-  largest: number; // the maximum size of triangle to draw (2-10)
   factorIncrease: number; // factor of increase for noise
   totalNumberOfPalettes: number; // count of palettes to choose from
   colorsPerPaletteCount: number; // number of colors in a palette
@@ -47,6 +45,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
   toggleOpacity: boolean; // when set to true it toggles opacity as opposed to color
   noFill: boolean; // setting it to false removes all color
   removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
+  drawHalf: boolean; // only draw half of the block (1 triangle only)
 
   factor: number;
   rez: number;
@@ -70,7 +69,6 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.rez = this.p5.random(0.003, 0.01);
     // higher value creates overlayed effect of triangles
     // 2 would create only triangles
-    this.largest = opts.smearing;
     let numberOfBoxesPerWidth = opts.numOfBoxes;
     this.alpha = opts.opacity; // lowers values create a layered effect
     this.firstColorForStroke = true; // uses the first RGB color from palette
@@ -80,6 +78,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.toggleOpacity = opts.opacitySwitch;
     this.noFill = opts.noFill;
     this.removeBlocks = opts.removeBlocks;
+    this.drawHalf = true;
 
     this.factor = 0;
     this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
@@ -87,7 +86,6 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.paletteIndex = opts.paletteIndex;
 
     console.log(`size of box: ${this.sizeOfBox}px`);
-    console.log("largest:", this.largest);
     console.log("alpha:", this.alpha);
     console.log("sF: ", this.sF);
     console.log(`Palette selected: ${this.paletteIndex}`);
@@ -142,14 +140,10 @@ export class ColoredTrianglesSketch extends GenericSketch {
 
   drawShapes() {
     console.log(`rez: ${this.rez} (0.003, 0.01), sF: ${this.sF}°`);
-    for (
-      let i = this.canvasWidth;
-      i > -this.sizeOfBox * this.largest;
-      i -= this.sizeOfBox
-    ) {
+    for (let i = this.canvasWidth; i > -this.sizeOfBox; i -= this.sizeOfBox) {
       for (
         let j = this.canvasHeight;
-        j > -this.sizeOfBox * this.largest;
+        j > -this.sizeOfBox;
         j -= this.sizeOfBox
       ) {
         this.drawShape(i, j);
@@ -170,9 +164,9 @@ export class ColoredTrianglesSketch extends GenericSketch {
     let color1, color2;
     color1 = this.pickColors(this.paletteIndex, noiseColor1);
     color2 = this.pickColors(this.paletteIndex, noiseColor2);
+    if (this.drawHalf) color2.setAlpha(0);
 
-    // selects size of the triangle (number of blocks to occupy)
-    let size = this.sizeOfBox * this.p5.floor(this.p5.random(1, this.largest));
+    let size = this.sizeOfBox;
     let n3 = this.p5.noise(
       i * this.rez + this.factor + 2 * this.factorIncrease,
       j * this.rez + this.factor + 2 * this.factorIncrease
@@ -278,7 +272,18 @@ export class ColoredTrianglesSketch extends GenericSketch {
     b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
     let color = this.p5.color(r, g, b);
     let alpha = this.pickAlpha();
-    color.setAlpha(alpha);
+    if (alpha === 0) {
+      // hack to make exception for special color
+      r = this.colorTable.getNum(paletteIndex, 0);
+      g = this.colorTable.getNum(paletteIndex, 1);
+      b = this.colorTable.getNum(paletteIndex, 2);
+      color = this.p5.color(r, g, b);
+    } else {
+      color.setAlpha(alpha);
+    }
+    if (this.noFill) {
+      color.setAlpha(0); // simplest way to have no fill
+    }
     return color;
   }
 
@@ -286,10 +291,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
     if (!this.toggleOpacity) {
       return this.alpha;
     }
-    if (this.noFill) {
-      return 0; // simplest way to have no fill
-    }
-    return 255 * this.p5.random([0.2, 0.4, 0.6, 0.8, 1]);
+    // simple hack to add 0 for additional color
+    return 255 * this.p5.random([0, 0.2, 0.4, 0.6, 0.8, 1]);
   }
 
   printColors(index: number) {

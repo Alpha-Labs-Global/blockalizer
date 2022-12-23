@@ -102,7 +102,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     let table: p5Types.Table = load_colors();
     let opts = {
       numOfBoxes: numOfBoxes,
-      smearing: 2, // using default value to have no smearing
       opacity: 255, // using fixed opacity
       strokeWidth: 1.5, // using fixed stroke width
       paletteIndex: paletteIndex,
