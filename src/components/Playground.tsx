@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
@@ -6,7 +6,7 @@ import { ConnectKitButton } from "connectkit";
 import { useSigner } from "wagmi";
 
 import { createSiweMessage } from "../helper/wallet";
-import { fetchBlocks } from "../helper/server";
+import { fetchBlocks, sendImage } from "../helper/server";
 
 import "./Playground.css";
 
@@ -150,9 +150,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     signer.signMessage(message);
   };
 
-  const save = (e: React.SyntheticEvent) => {
-    console.log("sent to backend...");
-    // TODO
+  const save = async (e: React.SyntheticEvent) => {
+    if (sketchRef && sketchRef.current) {
+      // @ts-ignore: Object is possibly 'null'.
+      const canvas: any = sketchRef.current.sketch.canvas;
+      const dataURL = canvas.toDataURL();
+      try {
+        const result = await sendImage(dataURL);
+        console.log("successfully sent", result);
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const numOfBoxesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,7 +245,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const tetriControl = (
     <div>
-      Tetri
+      Anti-Block
       <input
         type="range"
         min="0"
@@ -257,6 +266,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     </span>
   ));
 
+  const sketchRef = useRef(null);
+
   return (
     <div className="Generator">
       <ConnectKitButton />
@@ -276,12 +287,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           {tetriControl}
         </div>
         <div>
-          <button disabled={true} onClick={save}>
-            Mint
-          </button>
+          <button onClick={save}>Mint</button>
         </div>
       </div>
-      <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
+      <Sketch
+        ref={sketchRef}
+        key={uniqueKey}
+        setup={setup}
+        draw={draw}
+        preload={preload}
+      />
     </div>
   );
 };
