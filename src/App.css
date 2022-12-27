@@ -27,6 +27,17 @@ hr {
   z-index: 999;
 }
 
+.innerContainer {
+  display: flex;
+  flex-direction: row;
+  flex-flow: row wrap;
+  width: 100vw;
+  max-width: none;
+  margin: 0 auto;
+  position: relative;
+  z-index: 999;
+}
+
 
 .navbar {
   position: fixed; /* Set the navbar to fixed position */
