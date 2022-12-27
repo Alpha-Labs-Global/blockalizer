@@ -13,8 +13,10 @@
   margin-right: 10px;
 }
 
-.Generator {
+.generatorContainer {
   color: white;
+  background-color: transparent;
+  width: 100%;
 }
 
 input {
@@ -36,4 +38,8 @@ hr {
 
 button {
   padding: 1px 6px !important;
+}
+
+canvas {
+  width: 100% !important;
 }
