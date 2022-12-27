@@ -18,3 +18,20 @@ export const fetchBlocks = async (address: string) => {
   const content = await response.json();
   return content.data;
 };
+
+export const sendImage = async (image: string) => {
+  const endpoint = "/api/mint";
+  const body = JSON.stringify({ image });
+  const response = await fetch(SERVER_URL + endpoint, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+  if (!response.ok) throw new Error();
+
+  const content = await response.json();
+  return content.data;
+};
