@@ -25,7 +25,7 @@ interface ComponentProps {}
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("none");
-  const [selectedSeed, setSeed] = useState("8");
+  const [selectedSeed, setSeed] = useState("0");
   const [noFill, setNoFill] = useState(false);
   const authorizeRequired = false;
 
@@ -34,8 +34,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // that later
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
-  const [blocks, setBlocks] = useState([]);
+  const [blocks, setBlocks] = useState([""]);
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
+  const [numberOfBlocks, setNumberOfBlocks] = useState(0);
+  const [index, setIndex] = useState(0);
+  
 
   const signedOutApp = () => {
     setStyle("none");
@@ -73,6 +76,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       try {
         const result = await fetchBlocks(newAddress);
         setBlocks(result);
+        setNumberOfBlocks(result.length);
+        //add if conditional for empty case
+        setSeed(result[0])
+    
       } catch (e) {
         console.error(e);
       }
@@ -86,6 +93,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       signedOutApp();
     } else {
       lazySetBlocks();
+      
     }
   });
 
@@ -187,6 +195,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockHandler = (e: any) => {
     console.log(e.target.value, e.currentTarget.value);
     setSeed(e.target.value);
+    //console.log(e)
     
   };
 
@@ -261,8 +270,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
-  const blocksControl = blocks.map((b) => (
-      <button key={b} onClick={blockHandler} value={b} className={`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} mt-2 mb-2 py-1 px-4 shadow-md no-underline rounded-full text-sm mr-2 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}`}>
+  const blocksControl = blocks.map((b, i) => (
+      <button id={b} onClick={blockHandler} value={b} className={`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} mt-2 mb-2 py-1 px-4 shadow-md no-underline rounded-full text-sm mr-2 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}`}>
         #{b}
       </button>
  
@@ -270,23 +279,107 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const sketchRef = useRef(null);
 
+  
+
   return (
-    <div className="innerContainer">
+    <div className="innerContainer" onKeyDown={(e) => {
+
+      if((e.key == "ArrowRight") )
+      {
+        if(((blocks.indexOf(selectedSeed) + 1) === blocks.length))
+        {
+          setSeed(blocks[0])
+        }
+        else
+        {
+        setSeed(blocks[(blocks.indexOf(selectedSeed) + 1)])
+        }
+      }
+      else if((e.key == "ArrowLeft") )
+      {
+        if((blocks.indexOf(selectedSeed) - 1) === -1)
+                    {
+                      setSeed(blocks[blocks.length - 1])
+                    }
+                    else
+                    {
+                    setSeed(blocks[(blocks.indexOf(selectedSeed) - 1)])
+                    }
+      }
+
+    }} tabIndex={0}>
       <div className="w-6/12 pt-4 lg:block md:hidden sm:hidden">
-                <div className="w-6/12 ml-[35%]">
-                  <h1 className="lg:text-lg md:text-lg sm:text-md text-neutral-500">
-                    #{uniqueKey}
+                <div className="w-[70%] ml-[30%]">
+                  <h1 className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]" id="specialIndicator">
+                    #{selectedSeed}
                   </h1>
                   <span className="block mt-4"></span>
 
-                  <div className="m-auto w-full">
-                  <Sketch
+                  <div className="m-auto w-[100%] flex flex-row">
+                    
+                  <button className="w-[10%] flex" onClick={(e) => {
+                    if((blocks.indexOf(selectedSeed) - 1) === -1)
+                    {
+                      setSeed(blocks[blocks.length - 1])
+                    }
+                    else
+                    {
+                    setSeed(blocks[(blocks.indexOf(selectedSeed) - 1)])
+                    }
+                  }}>
+                    <svg className="align-middle w-full m-auto w-[60%] mr-[40%]" viewBox="0 0 26 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M23 66L3 34L23 2" stroke="#EBEBEB" stroke-opacity="0.24" stroke-width="5"/>
+</svg>
+
+                    </button>
+                <div className="w-[90%]">
+                <div className="m-auto w-full">
+                    <svg
+                      viewBox="0 0 353 351"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <rect
+                        x="1"
+                        y="1"
+                        width="351"
+                        height="348"
+                        stroke="white"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M351 2L3.5 349.5"
+                        stroke="#EBEBEB"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </div>
+                  {/*<Sketch
                     ref={sketchRef}
                     key={uniqueKey}
                     setup={setup}
                     draw={draw}
                     preload={preload}
-                  />
+  />*/}
+                  </div>
+                  {/*right arrow*/}
+                  <button className="w-[10%] flex" onClick={(e) => {
+                    if((blocks.indexOf(selectedSeed) + 1) === blocks.length)
+                    {
+                      setSeed(blocks[0])
+                    }
+                    else
+                    {
+                    setSeed(blocks[(blocks.indexOf(selectedSeed) + 1)])
+                    }
+                  }}>
+                  <svg className="align-middle w-full m-auto w-[60%] ml-[40%]"  viewBox="0 0 26 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 2L23 34L3 66" stroke="#EBEBEB" stroke-opacity="0.24" stroke-width="5"/>
+                  </svg>
+              </button>
+
+
+
                   </div>
 
                   <span className="block mt-8"></span>
@@ -299,7 +392,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 </div>
               </div>
 
-              <div className="w-6/12 pt-4 pl-[2%] bg-special lg:block md:hidden sm:hidden">
+              <div className="w-6/12 pt-4 pl-[3%] bg-special lg:block md:hidden sm:hidden">
                 <div className="w-[60%]">
                   <div className="w-[80%] float-left">
                     <ConnectKitButton.Custom>
@@ -338,7 +431,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                               <div>
                                 <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
                                   {truncatedAddress}&nbsp;|&nbsp;
-                                  <span onClick={show}>Disconnect</span>
+                                  <span onClick={show}>Disconnect {blocks.length}</span>
                                 </h1>
                               </div>
                             )}
