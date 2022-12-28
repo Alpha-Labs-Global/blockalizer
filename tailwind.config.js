@@ -14,9 +14,7 @@ module.exports = {
   
         'lg': '1100px',
         // => @media (min-width: 1440px) { ... }
-      }
-    },
-
+      },
       colors: {
         transparent: 'transparent',
         current: 'currentColor',
@@ -25,6 +23,12 @@ module.exports = {
           DEFAULT: '#121212',
           dark: '#009eeb',
         },
+        button: '#464646',
+        buttonText: '#BDBDBD',
+        buttonActiveText: '#121212'
+    },
+
+
        
       
     }

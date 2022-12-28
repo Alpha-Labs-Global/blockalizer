@@ -18,6 +18,7 @@ import {
 } from "../helper/sketch";
 
 import GenericSketch from "../art-styles/generic_sketch";
+import ReactPaginate from 'react-paginate';
 
 interface ComponentProps {}
 
@@ -186,6 +187,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockHandler = (e: any) => {
     console.log(e.target.value, e.currentTarget.value);
     setSeed(e.target.value);
+    
   };
 
   const chromeSelector = colorNames.map((c, i) => (
@@ -260,18 +262,17 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   );
 
   const blocksControl = blocks.map((b) => (
-    <span style={{ marginRight: "10px" }}>
-      <button key={b} onClick={blockHandler} value={b}>
-        {b}
+      <button key={b} onClick={blockHandler} value={b} className={`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} mt-2 mb-2 py-1 px-4 shadow-md no-underline rounded-full text-sm mr-2 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}`}>
+        #{b}
       </button>
-    </span>
+ 
   ));
 
   const sketchRef = useRef(null);
 
   return (
     <div className="innerContainer">
-      <div className="w-6/12 pt-4 bg-special lg:block md:hidden sm:hidden">
+      <div className="w-6/12 pt-4 lg:block md:hidden sm:hidden">
                 <div className="w-6/12 ml-[35%]">
                   <h1 className="lg:text-lg md:text-lg sm:text-md text-neutral-500">
                     #{uniqueKey}
@@ -360,21 +361,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                     </svg>
                   </div>
 
-                  <div className="text-left w-[80%]">
+                  
+                </div>
+                <div className="text-left w-[80%]">
                     <br></br>
                     <span className="block mt-10"></span>
-                    <p className="text-left lg:text-sm md:text-sm sm:text-sm text-white">
-                      Step 1. Connect Wallet
-                      <span className="block mt-3"></span>
-                      Step 2. Choose a block you’d like to mint from your
-                      previous TXs
-                      <span className="block mt-3"></span>
-                      Step 3. Customize block if you so desire
-                      <span className="block mt-3"></span>
-                      Step 4. Mint! Share your unique block with the world
-                    </p>
+                    <div>{blocksControl}</div>
+
+                    
                   </div>
-                </div>
               </div>
 
 
@@ -383,7 +378,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
      {/*} <ConnectKitButton />
       {authorizeRequired ? <button onClick={authorize}>Sign</button> : null}*/}
       <div className="actualApp">
-        <div>Blocks {blocksControl}</div>
+        
         <div>
           {gridControl}
           <div>

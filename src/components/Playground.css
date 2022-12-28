@@ -23,9 +23,7 @@ input {
   color: black;
 }
 
-button {
-  background-color: grey;
-}
+
 
 hr {
   margin: 10px;
@@ -36,9 +34,7 @@ hr {
   color: black;
 }
 
-button {
-  padding: 1px 6px !important;
-}
+
 
 canvas {
   width: 100% !important;
