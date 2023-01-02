@@ -22,9 +22,9 @@ export const fetchBlocks = async (address: string) => {
   return blockNumbers;
 };
 
-export const sendImage = async (image: string) => {
+export const sendImage = async (name: string, image: string) => {
   const endpoint = "/api/mint";
-  const body = JSON.stringify({ image });
+  const body = JSON.stringify({ name, image });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
     headers: {
