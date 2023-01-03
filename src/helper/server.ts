@@ -13,10 +13,13 @@ export const fetchBlocks = async (address: string) => {
     },
     body,
   });
+  console.log(response);
   if (!response.ok) throw new Error();
 
   const content = await response.json();
-  return content.data;
+  // console.log(content);
+  const blockNumbers = content.data.map((d: any) => d.blockNumber);
+  return blockNumbers;
 };
 
 export const sendImage = async (image: string) => {
