@@ -6,7 +6,7 @@ import "../App.css";
 import { ConnectKitButton } from "connectkit";
 import { useSigner } from "wagmi";
 
-import { createSiweMessage, mintToken } from "../helper/wallet";
+import { mintToken } from "../helper/wallet";
 import { fetchBlocks, sendImage } from "../helper/server";
 
 import "./Playground.css";
@@ -29,10 +29,9 @@ interface ComponentProps {
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("none");
-  const [selectedSeed, setSeed] = useState("0");
+  const [blockNumber, setBlockNumber] = useState<number>(-1);
   const [blockInfo, setBlockInfo] = useState({});
   const [noFill, setNoFill] = useState(false);
-  const authorizeRequired = false;
 
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
@@ -40,7 +39,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
   const [blocks, setBlocks] = useState<string[]>([]);
-  const [blockInformation, setBlockInformation] = useState(new Map());
+  const [blocksInformation, setBlocksInformation] = useState(new Map());
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
   const [numberOfBlocks, setNumberOfBlocks] = useState(0);
   const [index, setIndex] = useState(0);
@@ -56,7 +55,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const signedInApp = () => {
-    setStyle("noise");
+    setStyle("triangles");
   };
 
   /* CONTROL */
@@ -65,7 +64,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const keyGenerator = () => {
     return (
-      selectedSeed +
+      blockNumber +
       selectedStyle +
       numOfBoxes.toString() +
       tetri.toString() +
@@ -82,16 +81,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       if (newAddress == address) return;
 
       setAddress(newAddress);
+      console.log("Fetching blocks...");
       try {
         const result = await fetchBlocks(newAddress);
-        const keys: string[] = Array.from(result.keys());
-        setBlocks(keys);
-        setBlockInformation(result);
+        setBlocksInformation(result);
       } catch (e) {
         console.error(e);
       }
     }
   };
+
+  // blockInformation --> blocks
+  // blockNumber --> blockInfo --> signedInApp
 
   useEffect(() => {
     regenerate();
@@ -103,11 +104,29 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   });
 
+  useEffect(() => {}, [blocks]);
+
   useEffect(() => {
-    if (blocks.length > 0) {
+    if (blocksInformation.size > 0) {
+      const keys: string[] = Array.from(blocksInformation.keys());
+      setBlocks(keys);
+    }
+  }, [blocksInformation]);
+
+  useEffect(() => {
+    if (blockNumber > 0) {
+      const info = blocksInformation.get(blockNumber.toString());
+      console.log("selected", info, blockNumber, blocksInformation);
+      setBlockInfo(info);
+    }
+  }, [blockNumber]);
+
+  useEffect(() => {
+    if (Object.keys(blockInfo).length !== 0) {
+      console.log(blockInfo);
       signedInApp();
     }
-  }, [blocks]);
+  }, [blockInfo]);
 
   useEffect(() => {
     setTrueCanvasWidth(document.getElementById("widthIndicator")?.clientWidth);
@@ -137,7 +156,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       canvasWidth,
       canvasHeight,
       table,
-      selectedSeed,
+      blockNumber.toString(),
       blockInfo,
       selectedStyle,
       opts
@@ -145,13 +164,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    console.log("canvas setup again...");
     sketch.setup(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
-    console.log("DRAW", selectedStyle);
-    // p5.background(230);
     sketch.draw();
   };
 
@@ -165,19 +181,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const { data: signer, isError, isLoading } = useSigner();
 
-  const authorize = async () => {
-    if (!signer) return;
-
-    const address = await signer.getAddress();
-    const message = createSiweMessage(address, "This is a test statement.");
-    signer.signMessage(message);
-  };
-
   const save = async (e: React.SyntheticEvent) => {
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: any = sketchRef.current.sketch.canvas;
-      const name: string = selectedSeed;
+      const name: string = blockNumber.toString();
       const dataURL = canvas.toDataURL();
       try {
         const result = await sendImage(name, dataURL);
@@ -207,10 +215,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const blockHandler = (e: any) => {
-    const selectedBlockNumber: string = e.currentTarget.value;
-    setSeed(selectedBlockNumber);
-    const info = blockInformation.get(selectedBlockNumber);
-    setBlockInfo(info);
+    const selectedBlockNumber: number = Number(e.currentTarget.value);
+    setBlockNumber(selectedBlockNumber);
   };
 
   const chromeSelector = colorNames.map((c, i) => (
@@ -291,9 +297,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       onClick={blockHandler}
       value={b}
       className={`{ ${
-        selectedSeed === b ? "bg-white" : "bg-button"
+        blockNumber.toString() === b ? "bg-white" : "bg-button"
       } w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
-        selectedSeed === b ? "text-buttonActiveText" : "text-buttonText"
+        blockNumber.toString() === b
+          ? "text-buttonActiveText"
+          : "text-buttonText"
       }`}
     >
       #{b}
@@ -311,9 +319,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         onClick={blockHandler}
         value={b}
         className={`{ ${
-          selectedSeed === b ? "bg-white" : "bg-button"
+          blockNumber.toString() === b ? "bg-white" : "bg-button"
         } w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
-          selectedSeed === b ? "text-buttonActiveText" : "text-buttonText"
+          blockNumber.toString() === b
+            ? "text-buttonActiveText"
+            : "text-buttonText"
         }`}
       >
         #{b}
@@ -328,16 +338,20 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       className="innerContainer"
       onKeyDown={(e) => {
         if (e.key == "ArrowRight") {
-          if (blocks.indexOf(selectedSeed) + 1 === blocks.length) {
-            setSeed(blocks[0]);
+          if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
+            setBlockNumber(Number(blocks[0]));
           } else {
-            setSeed(blocks[blocks.indexOf(selectedSeed) + 1]);
+            setBlockNumber(
+              Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+            );
           }
         } else if (e.key == "ArrowLeft") {
-          if (blocks.indexOf(selectedSeed) - 1 === -1) {
-            setSeed(blocks[blocks.length - 1]);
+          if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
+            setBlockNumber(Number(blocks[blocks.length - 1]));
           } else {
-            setSeed(blocks[blocks.indexOf(selectedSeed) - 1]);
+            setBlockNumber(
+              Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+            );
           }
         }
       }}
@@ -421,6 +435,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               <span className="block mb-4"></span>
             </div>
 
+            {address !== "" && blocks.length == 0 ? "Loading..." : null}
+            {address !== "" && blocks.length > 0 && blockNumber == -1
+              ? "Click Block to get started"
+              : null}
+
             <div
               className="w-[65%] lg:ml-5 md:ml-2 sm:ml-2"
               onClick={(e) => {
@@ -503,7 +522,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]"
             id="specialIndicator"
           >
-            #{selectedSeed}
+            #{blockNumber}
           </h1>
           <span className="block mt-4"></span>
 
@@ -511,10 +530,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             <button
               className="w-[10%] flex"
               onClick={(e) => {
-                if (blocks.indexOf(selectedSeed) - 1 === -1) {
-                  setSeed(blocks[blocks.length - 1]);
+                if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
+                  setBlockNumber(Number(blocks[blocks.length - 1]));
                 } else {
-                  setSeed(blocks[blocks.indexOf(selectedSeed) - 1]);
+                  setBlockNumber(
+                    Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+                  );
                 }
               }}
             >
@@ -546,10 +567,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             <button
               className="w-[10%] flex"
               onClick={(e) => {
-                if (blocks.indexOf(selectedSeed) + 1 === blocks.length) {
-                  setSeed(blocks[0]);
+                if (
+                  blocks.indexOf(blockNumber.toString()) + 1 ===
+                  blocks.length
+                ) {
+                  setBlockNumber(Number(blocks[0]));
                 } else {
-                  setSeed(blocks[blocks.indexOf(selectedSeed) + 1]);
+                  setBlockNumber(
+                    Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+                  );
                 }
               }}
             >
@@ -894,10 +920,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             <button
               className="w-[10%] flex"
               onClick={(e) => {
-                if (blocks.indexOf(selectedSeed) + 1 === blocks.length) {
-                  setSeed(blocks[0]);
+                if (
+                  blocks.indexOf(blockNumber.toString()) + 1 ===
+                  blocks.length
+                ) {
+                  setBlockNumber(Number(blocks[0]));
                 } else {
-                  setSeed(blocks[blocks.indexOf(selectedSeed) + 1]);
+                  setBlockNumber(
+                    Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+                  );
                 }
               }}
             ></button>

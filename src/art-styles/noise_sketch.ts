@@ -1,6 +1,14 @@
 import p5Types from "p5";
 import GenericSketch from "./generic_sketch";
 
+interface BlockInfo {
+  blockHash: string;
+  blockNumber: string;
+  from: string;
+  timeStamp: string;
+  to: string;
+}
+
 export default class NoiseSketch extends GenericSketch {
   boxSize: number;
   rez: number; // resolution
@@ -12,11 +20,14 @@ export default class NoiseSketch extends GenericSketch {
     canvasHeight: number,
     colorTable: p5Types.Table,
     blockNumber: number,
-    blockInfo: Object,
+    blockInfo: any,
     opts: any
   ) {
     super(p5Instance, canvasWidth, canvasHeight, colorTable, blockNumber);
-    console.log(blockInfo);
+    console.log("info", blockInfo);
+    const info = blockInfo as BlockInfo;
+    const hashBinary = this.hex2bin(info.blockHash);
+    console.log(hashBinary);
 
     this.options = 100;
     const numOfBoxes = opts.numOfBoxes;
@@ -49,5 +60,66 @@ export default class NoiseSketch extends GenericSketch {
         this.p5.text(bucketText, x + this.boxSize / 4, y + this.boxSize / 2);
       }
     }
+  }
+
+  hex2bin(hex: string) {
+    hex = hex.replace("0x", "").toLowerCase();
+    var out = "";
+    for (var c of hex) {
+      switch (c) {
+        case "0":
+          out += "0000";
+          break;
+        case "1":
+          out += "0001";
+          break;
+        case "2":
+          out += "0010";
+          break;
+        case "3":
+          out += "0011";
+          break;
+        case "4":
+          out += "0100";
+          break;
+        case "5":
+          out += "0101";
+          break;
+        case "6":
+          out += "0110";
+          break;
+        case "7":
+          out += "0111";
+          break;
+        case "8":
+          out += "1000";
+          break;
+        case "9":
+          out += "1001";
+          break;
+        case "a":
+          out += "1010";
+          break;
+        case "b":
+          out += "1011";
+          break;
+        case "c":
+          out += "1100";
+          break;
+        case "d":
+          out += "1101";
+          break;
+        case "e":
+          out += "1110";
+          break;
+        case "f":
+          out += "1111";
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return out;
   }
 }

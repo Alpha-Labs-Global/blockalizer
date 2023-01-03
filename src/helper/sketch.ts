@@ -29,7 +29,7 @@ export function assign_sketch(
   canvasHeight: number,
   table: p5Types.Table,
   blockNumber: string,
-  blockInfo: Object,
+  blockInfo: any,
   selectedStyle: string,
   opts: SketchOptions = {}
 ) {
