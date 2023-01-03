@@ -11,10 +11,12 @@ export default class NoiseSketch extends GenericSketch {
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
-    seedValue: number,
+    blockNumber: number,
+    blockInfo: Object,
     opts: any
   ) {
-    super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
+    super(p5Instance, canvasWidth, canvasHeight, colorTable, blockNumber);
+    console.log(blockInfo);
 
     this.options = 100;
     const numOfBoxes = opts.numOfBoxes;

@@ -28,7 +28,8 @@ export function assign_sketch(
   canvasWidth: number,
   canvasHeight: number,
   table: p5Types.Table,
-  selectedSeed: string,
+  blockNumber: string,
+  blockInfo: Object,
   selectedStyle: string,
   opts: SketchOptions = {}
 ) {
@@ -37,7 +38,7 @@ export function assign_sketch(
     canvasWidth,
     canvasHeight,
     table,
-    parseInt(selectedSeed)
+    parseInt(blockNumber)
   );
   switch (selectedStyle) {
     case "triangles":
@@ -55,7 +56,7 @@ export function assign_sketch(
         canvasWidth,
         canvasHeight,
         table,
-        parseInt(selectedSeed),
+        parseInt(blockNumber),
         coloredTriangleOptions
       );
       break;
@@ -68,7 +69,8 @@ export function assign_sketch(
         canvasWidth,
         canvasHeight,
         table,
-        parseInt(selectedSeed),
+        parseInt(blockNumber),
+        blockInfo,
         noiseOptions
       );
       break;
@@ -78,7 +80,7 @@ export function assign_sketch(
         canvasWidth,
         canvasWidth,
         table,
-        parseInt(selectedSeed)
+        parseInt(blockNumber)
       );
       break;
   }

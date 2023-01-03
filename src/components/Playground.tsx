@@ -30,6 +30,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = all_sketch_styles();
   const [selectedStyle, setStyle] = useState("none");
   const [selectedSeed, setSeed] = useState("0");
+  const [blockInfo, setBlockInfo] = useState({});
   const [noFill, setNoFill] = useState(false);
   const authorizeRequired = false;
 
@@ -38,7 +39,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // that later
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
-  const [blocks, setBlocks] = useState([""]);
+  const [blocks, setBlocks] = useState<string[]>([]);
+  const [blockInformation, setBlockInformation] = useState(new Map());
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
   const [numberOfBlocks, setNumberOfBlocks] = useState(0);
   const [index, setIndex] = useState(0);
@@ -54,7 +56,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const signedInApp = () => {
-    setStyle("triangles");
+    setStyle("noise");
   };
 
   /* CONTROL */
@@ -82,10 +84,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       setAddress(newAddress);
       try {
         const result = await fetchBlocks(newAddress);
-        setBlocks(result);
-        setNumberOfBlocks(result.length);
-        //add if conditional for empty case
-        setSeed(result[0]);
+        const keys: string[] = Array.from(result.keys());
+        setBlocks(keys);
+        setBlockInformation(result);
       } catch (e) {
         console.error(e);
       }
@@ -137,6 +138,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       canvasHeight,
       table,
       selectedSeed,
+      blockInfo,
       selectedStyle,
       opts
     );
@@ -201,14 +203,14 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const fillHandler = (e: any) => {
     const noFill = e.currentTarget.value === "No" ? true : false;
-    console.log(noFill);
     setNoFill(noFill);
   };
 
   const blockHandler = (e: any) => {
-    console.log(e.target.value, e.currentTarget.value);
-    setSeed(e.target.value);
-    //console.log(e)
+    const selectedBlockNumber: string = e.currentTarget.value;
+    setSeed(selectedBlockNumber);
+    const info = blockInformation.get(selectedBlockNumber);
+    setBlockInfo(info);
   };
 
   const chromeSelector = colorNames.map((c, i) => (
