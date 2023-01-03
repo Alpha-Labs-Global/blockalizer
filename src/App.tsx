@@ -286,7 +286,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                                 ) : (
                                   <div>
                                     <h1 className="lg:text-md md:text-md sm:text-md bg-transparent">
-                                      {truncatedAddress}&nbsp;|&nbsp;
+                                    {truncatedAddress}&nbsp;|&nbsp;
                                       <span onClick={show} role="button">Disconnect</span>
                                     </h1>
                                   </div>
