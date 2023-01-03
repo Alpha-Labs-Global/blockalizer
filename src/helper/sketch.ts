@@ -60,12 +60,16 @@ export function assign_sketch(
       );
       break;
     case "noise":
+      let noiseOptions = {
+        numOfBoxes: opts.numOfBoxes || 9,
+      };
       sketch = new NoiseSketch(
         p5,
         canvasWidth,
         canvasHeight,
         table,
-        parseInt(selectedSeed)
+        parseInt(selectedSeed),
+        noiseOptions
       );
       break;
     case "none":

@@ -1,7 +1,7 @@
 import p5Types from "p5";
 import GenericSketch from "./generic_sketch";
 
-/* Palette has a collection of 5 colors and we consider two palettes
+/* Palette has a collection of 5 colors and we consider two palettes or one
 
 {
   R1, G1, B1, // used for background
@@ -32,10 +32,8 @@ export interface ColoredTriangleOptions {
 
 export class ColoredTrianglesSketch extends GenericSketch {
   sizeOfBox: number; // size in px of each individual square
-  alpha: number; // color opacity for each shape
   paletteIndex: number; // selected index from the palette table
   setStroke: boolean; // true or false if stroke should be set
-  factorIncrease: number; // factor of increase for noise
   totalNumberOfPalettes: number; // count of palettes to choose from
   colorsPerPaletteCount: number; // number of colors in a palette
   firstColorForStroke: boolean; // whether to use default stroke color or override
@@ -46,6 +44,11 @@ export class ColoredTrianglesSketch extends GenericSketch {
   noFill: boolean; // setting it to false removes all color
   removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
   drawHalf: boolean; // only draw half of the block (1 triangle only)
+
+  factorIncrease: number; // factor of increase for noise
+
+  // DEPRECATED
+  alpha: number; // color opacity for each shape
 
   factor: number;
   rez: number;
