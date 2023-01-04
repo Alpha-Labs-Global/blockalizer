@@ -15,6 +15,7 @@ import {
   assign_sketch,
   load_colors,
   all_sketch_styles,
+  BlockInfo,
 } from "../helper/sketch";
 
 import GenericSketch from "../art-styles/generic_sketch";
@@ -116,14 +117,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     if (blockNumber > 0) {
       const info = blocksInformation.get(blockNumber.toString());
-      console.log("selected", info, blockNumber, blocksInformation);
       setBlockInfo(info);
     }
   }, [blockNumber]);
 
   useEffect(() => {
     if (Object.keys(blockInfo).length !== 0) {
-      console.log(blockInfo);
       signedInApp();
     }
   }, [blockInfo]);
@@ -157,7 +156,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       canvasHeight,
       table,
       blockNumber.toString(),
-      blockInfo,
+      blockInfo as BlockInfo,
       selectedStyle,
       opts
     );
@@ -189,7 +188,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       const dataURL = canvas.toDataURL();
       try {
         const result = await sendImage(name, dataURL);
-        console.log("successful: ", result);
         await mintToken(signer as ethers.Signer, result);
       } catch (e) {
         console.error(e);
