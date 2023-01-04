@@ -13,17 +13,17 @@
   margin-right: 10px;
 }
 
-.Generator {
+.generatorContainer {
   color: white;
+  background-color: transparent;
+  width: 100%;
 }
 
 input {
   color: black;
 }
 
-button {
-  background-color: grey;
-}
+
 
 hr {
   margin: 10px;
@@ -34,6 +34,8 @@ hr {
   color: black;
 }
 
-button {
-  padding: 1px 6px !important;
+
+
+canvas {
+  width: 100% !important;
 }

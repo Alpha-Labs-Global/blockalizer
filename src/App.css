@@ -2,6 +2,21 @@
 
 
 
+/* Track */
+.blockSearch::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.blockSearch::-webkit-scrollbar-thumb {
+  background: red;
+}
+
+/* Handle on hover */
+.blockSearch::-webkit-scrollbar-thumb:hover {
+  background: red;
+}
+
 hr {
   display: inline-block;
   width: 100%;
@@ -26,6 +41,18 @@ hr {
   position: relative;
   z-index: 999;
 }
+
+.innerContainer {
+  display: flex;
+  flex-direction: row;
+  flex-flow: row wrap;
+  width: 100vw;
+  max-width: none;
+  margin: 0 auto;
+  position: relative;
+  z-index: 999;
+}
+
 
 
 .navbar {
