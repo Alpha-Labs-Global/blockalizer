@@ -285,7 +285,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     </div>
   );
 
-  const blocksControl = blocks.map((b, i) => (
+  //oldest filter
+  const oldestBlock = blocks.map((b, i) => (
   
       <button id={b} onClick={blockHandler} value={b} className={`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}`}>
         #{b}
@@ -293,6 +294,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       </button>
  
   ));
+
+  //newest filter
+  const newestBlocks = (blocks.slice(0).reverse()).map((b, i) => (
+  
+    <button id={b} onClick={blockHandler} value={b} className={`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}`}>
+      #{b}
+        {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
+    </button>
+
+));
 
   const sketchRef = useRef(null);
 
@@ -712,7 +723,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
         <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-full sm:w-full">
       
-          <div className={`scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}>{blocksControl}</div>
+          <div className={`scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}>
+            {sort === "Oldest" && 
+              oldestBlock
+            }
+
+            {sort === "Newest" &&
+              newestBlocks
+            }
+            
+          </div>
             <br></br>
           </div>
       </div>
