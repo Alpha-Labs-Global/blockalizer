@@ -44,6 +44,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
   blockOrientation: Array<number>; // Inform the shape of the block. 1 is ◣ and 0 is ◢.
   colorPalette: Array<Color>; // Color Palette to be used
   paletteIndex: number; // Selected index from color table
+  gridSize: number; // Size of the grid
+  blocksToRemove: Set<number>; // Set of blocks to remove
 
   // DEPRECATED
   alpha: number; // color opacity for each shape
@@ -64,7 +66,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.setStroke = true;
     // higher value creates overlayed effect of triangles
     // 2 would create only triangles
-    let numberOfBoxesPerWidth = opts.numOfBoxes;
+    this.gridSize = opts.numOfBoxes;
     this.alpha = opts.opacity; // lowers values create a layered effect
     this.firstColorForStroke = true; // uses the first RGB color from palette
     this.backgroundOverrideColor = this.p5.color(14, 15, 15);
@@ -75,11 +77,10 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.removeBlocks = opts.removeBlocks;
     this.drawHalf = true;
 
-    const lengthOfBlockOrientation =
-      numberOfBoxesPerWidth * numberOfBoxesPerWidth;
+    const lengthOfBlockOrientation = this.gridSize * this.gridSize;
     this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
 
-    this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
+    this.sizeOfBox = this.canvasWidth / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
     console.log(`size of box: ${this.sizeOfBox}px`);
@@ -92,6 +93,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
     } else {
       this.colorPalette = this.generatePalette(this.paletteIndex);
     }
+
+    this.blocksToRemove = this.computeBlocksToRemove();
 
     console.log(`stroke width: ${this.strokeWidth}px`);
   }
@@ -142,13 +145,15 @@ export class ColoredTrianglesSketch extends GenericSketch {
 
   drawShapes() {
     let bitIndex = 0;
-    for (let i = this.canvasWidth; i > -this.sizeOfBox; i -= this.sizeOfBox) {
-      for (
-        let j = this.canvasHeight;
-        j > -this.sizeOfBox;
-        j -= this.sizeOfBox
-      ) {
+    for (let j = 0; j < this.canvasHeight; j += this.sizeOfBox) {
+      for (let i = 0; i < this.canvasWidth; i += this.sizeOfBox) {
         this.drawShape(i, j, bitIndex);
+        // const bucketText = bitIndex.toString();
+        // this.p5.push();
+        // this.p5.fill(255);
+        // this.p5.noStroke();
+        // this.p5.text(bucketText, i, j + this.sizeOfBox / 4);
+        // this.p5.pop();
         bitIndex += 1;
       }
     }
@@ -163,29 +168,30 @@ export class ColoredTrianglesSketch extends GenericSketch {
     const rez2 = 0.1;
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
-    if (this.shouldDrawBlock()) {
+    if (this.shouldDrawBlock(bitIndex)) {
       this.drawDoublePalettePatterns(n3, i, j, color, this.sizeOfBox, bitIndex);
     }
     this.drawOuterEdge();
   }
 
-  shouldDrawBlock() {
-    let percentRemoval = 0;
-    switch (this.removeBlocks) {
-      case 0:
-        percentRemoval = 0;
-        break;
-      case 1:
-        percentRemoval = 0.05;
-        break;
-      case 2:
-        percentRemoval = 0.15;
-        break;
-      case 3:
-        percentRemoval = 0.35;
-        break;
-    }
-    return this.p5.random() > percentRemoval;
+  shouldDrawBlock(bitIndex: number) {
+    return !this.blocksToRemove.has(bitIndex);
+    // let percentRemoval = 0;
+    // switch (this.removeBlocks) {
+    //   case 0:
+    //     percentRemoval = 0;
+    //     break;
+    //   case 1:
+    //     percentRemoval = 0.1;
+    //     break;
+    //   case 2:
+    //     percentRemoval = 0.2;
+    //     break;
+    //   case 3:
+    //     percentRemoval = 0.3;
+    //     break;
+    // }
+    // return this.p5.random() > percentRemoval;
   }
 
   drawOuterEdge() {
@@ -202,39 +208,45 @@ export class ColoredTrianglesSketch extends GenericSketch {
     bitIndex: number
   ) {
     // 1 is ◣ and 0 is ◢
+    this.p5.strokeJoin(this.p5.BEVEL);
     const orientation = this.blockOrientation[bitIndex];
     const noColor = this.p5.color(0, 0, 0, 0);
-    if (orientation == 0) {
+    const offset = 0;
+    const startI = i + offset;
+    const endI = i + size - offset;
+    const startJ = j + offset;
+    const endJ = j + size - offset;
+    if (orientation === 0) {
       if (n3 < 0.5) {
         // ◢ Lower right triangle
         this.p5.fill(randomColor);
-        this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
+        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
         // ◤ Upper left triangle
         this.p5.fill(noColor);
-        this.p5.triangle(i, j + size, i, j, i + size, j);
+        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
       } else {
         // ◢ Lower right triangle
         this.p5.fill(noColor);
-        this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
+        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
         // ◤ Upper left triangle
         this.p5.fill(randomColor);
-        this.p5.triangle(i, j + size, i, j, i + size, j);
+        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
       }
     } else {
       if (n3 < 0.5) {
         // ◣ Lower left triangle
         this.p5.fill(randomColor);
-        this.p5.triangle(i, j, i + size, j + size, i, j + size);
+        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
         // ◥ Upper right triangle
         this.p5.fill(noColor);
-        this.p5.triangle(i, j, i + size, j + size, i + size, j);
+        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
       } else {
         // ◥ Upper right triangle
         this.p5.fill(randomColor);
-        this.p5.triangle(i, j, i + size, j + size, i + size, j);
+        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
         // ◣ Lower left triangle
         this.p5.fill(noColor);
-        this.p5.triangle(i, j, i + size, j + size, i, j + size);
+        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
       }
     }
   }
@@ -252,16 +264,16 @@ export class ColoredTrianglesSketch extends GenericSketch {
     );
 
     let colorList = [strokeColor];
-    [0.2, 0.4, 0.6, 0.8, 1].map((opacity) => {
+    let opacityAdjustedColorlist = [0.2, 0.4, 0.6, 0.8, 1].map((opacity) => {
       const newColor = this.p5.color(
         this.p5.red(otherColor),
         this.p5.green(otherColor),
         this.p5.blue(otherColor)
       );
       newColor.setAlpha(opacity * 255);
-      colorList.push(newColor);
+      return newColor;
     });
-    return colorList;
+    return colorList.concat(opacityAdjustedColorlist);
   }
 
   generatePalette(paletteIndex: number) {
@@ -294,13 +306,6 @@ export class ColoredTrianglesSketch extends GenericSketch {
     }
 
     let selectedColor = this.colorPalette[colorIndex];
-    console.log(
-      "index: ",
-      colorIndex,
-      n,
-      segmentSize,
-      selectedColor.toString()
-    );
     if (this.noFill) {
       selectedColor.setAlpha(0); // simplest way to have no fill
     }
@@ -319,5 +324,52 @@ export class ColoredTrianglesSketch extends GenericSketch {
       css_arr.push(`background: rgb(${r},${g},${b});`);
     }
     console.log(str, ...css_arr);
+  }
+
+  computeBlocksToRemove(): Set<number> {
+    let result = new Set<number>();
+    const blockRemovalMatrix = [
+      [0, 1, 2, 3],
+      [0, 2, 5, 13],
+      [0, 4, 12, 28],
+      [0, 7, 21, 42],
+    ];
+    let countOfBlockToRemove;
+    switch (this.gridSize) {
+      case 3:
+        countOfBlockToRemove = blockRemovalMatrix[0][this.removeBlocks];
+        break;
+      case 6:
+        countOfBlockToRemove = blockRemovalMatrix[1][this.removeBlocks];
+        break;
+      case 9:
+        countOfBlockToRemove = blockRemovalMatrix[2][this.removeBlocks];
+        break;
+      case 12:
+        countOfBlockToRemove = blockRemovalMatrix[3][this.removeBlocks];
+        break;
+      default:
+        countOfBlockToRemove = 0;
+        break;
+    }
+    const rez = 0.1;
+    let noiseGrid: Array<number> = [];
+    for (let i = 0; i < this.gridSize; i++) {
+      let noiseRow: Array<number> = [];
+      for (let j = 0; j < this.gridSize; j++) {
+        noiseRow.push(this.p5.noise(i * rez, j * rez));
+      }
+      noiseGrid = noiseGrid.concat(noiseRow);
+    }
+
+    let i = 0;
+    while (i < countOfBlockToRemove) {
+      const max = Math.max(...noiseGrid);
+      const index = noiseGrid.indexOf(max);
+      noiseGrid[index] = 0;
+      result.add(index);
+      i++;
+    }
+    return result;
   }
 }
