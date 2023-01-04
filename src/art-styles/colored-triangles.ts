@@ -1,7 +1,7 @@
-import p5Types from "p5";
+import p5Types, { Color } from "p5";
 import GenericSketch from "./generic_sketch";
 
-/* Palette has a collection of 5 colors and we consider two palettes
+/* Palette has a collection of 5 colors and we consider two palettes or one
 
 {
   R1, G1, B1, // used for background
@@ -32,12 +32,7 @@ export interface ColoredTriangleOptions {
 
 export class ColoredTrianglesSketch extends GenericSketch {
   sizeOfBox: number; // size in px of each individual square
-  alpha: number; // color opacity for each shape
-  paletteIndex: number; // selected index from the palette table
   setStroke: boolean; // true or false if stroke should be set
-  factorIncrease: number; // factor of increase for noise
-  totalNumberOfPalettes: number; // count of palettes to choose from
-  colorsPerPaletteCount: number; // number of colors in a palette
   firstColorForStroke: boolean; // whether to use default stroke color or override
   backgroundOverrideColor: p5Types.Color; // background color to use if overridden
   strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
@@ -46,30 +41,32 @@ export class ColoredTrianglesSketch extends GenericSketch {
   noFill: boolean; // setting it to false removes all color
   removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
   drawHalf: boolean; // only draw half of the block (1 triangle only)
+  blockOrientation: Array<number>; // Inform the shape of the block. 1 is ◣ and 0 is ◢.
+  colorPalette: Array<Color>; // Color Palette to be used
+  paletteIndex: number; // Selected index from color table
+  gridSize: number; // Size of the grid
+  blocksToRemove: Set<number>; // Set of blocks to remove
 
-  factor: number;
-  rez: number;
-  sF: number;
+  // DEPRECATED
+  alpha: number; // color opacity for each shape
 
   constructor(
     p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
-    seedValue: number,
+    blockNumber: number,
+    blockBits: string,
     opts: ColoredTriangleOptions
   ) {
-    super(p5Instance, canvasWidth, canvasHeight, colorTable, seedValue);
-    this.totalNumberOfPalettes = colorTable.rows.length;
-    this.colorsPerPaletteCount = colorTable.getColumnCount() / 3; // always RGB
+    super(p5Instance, canvasWidth, canvasHeight, colorTable, blockNumber);
+    const blockBitsDecomp = blockBits.split("").map((b) => Number(b));
 
     // CONTROLS
-    this.factorIncrease = 10000;
     this.setStroke = true;
-    this.rez = this.p5.random(0.003, 0.01);
     // higher value creates overlayed effect of triangles
     // 2 would create only triangles
-    let numberOfBoxesPerWidth = opts.numOfBoxes;
+    this.gridSize = opts.numOfBoxes;
     this.alpha = opts.opacity; // lowers values create a layered effect
     this.firstColorForStroke = true; // uses the first RGB color from palette
     this.backgroundOverrideColor = this.p5.color(14, 15, 15);
@@ -80,16 +77,24 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.removeBlocks = opts.removeBlocks;
     this.drawHalf = true;
 
-    this.factor = 0;
-    this.sizeOfBox = this.canvasWidth / numberOfBoxesPerWidth;
-    this.sF = 360 / this.p5.random(2, 40);
+    const lengthOfBlockOrientation = this.gridSize * this.gridSize;
+    this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
+
+    this.sizeOfBox = this.canvasWidth / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
     console.log(`size of box: ${this.sizeOfBox}px`);
     console.log("alpha:", this.alpha);
-    console.log("sF: ", this.sF);
     console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
+
+    if (this.toggleOpacity) {
+      this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
+    } else {
+      this.colorPalette = this.generatePalette(this.paletteIndex);
+    }
+
+    this.blocksToRemove = this.computeBlocksToRemove();
 
     console.log(`stroke width: ${this.strokeWidth}px`);
   }
@@ -139,61 +144,54 @@ export class ColoredTrianglesSketch extends GenericSketch {
   }
 
   drawShapes() {
-    console.log(`rez: ${this.rez} (0.003, 0.01), sF: ${this.sF}°`);
-    for (let i = this.canvasWidth; i > -this.sizeOfBox; i -= this.sizeOfBox) {
-      for (
-        let j = this.canvasHeight;
-        j > -this.sizeOfBox;
-        j -= this.sizeOfBox
-      ) {
-        this.drawShape(i, j);
+    let bitIndex = 0;
+    for (let j = 0; j < this.canvasHeight; j += this.sizeOfBox) {
+      for (let i = 0; i < this.canvasWidth; i += this.sizeOfBox) {
+        this.drawShape(i, j, bitIndex);
+        // const bucketText = bitIndex.toString();
+        // this.p5.push();
+        // this.p5.fill(255);
+        // this.p5.noStroke();
+        // this.p5.text(bucketText, i, j + this.sizeOfBox / 4);
+        // this.p5.pop();
+        bitIndex += 1;
       }
     }
   }
 
-  drawShape(i: number, j: number) {
-    let noiseColor1 = this.p5.noise(
-      i * this.rez + this.factor,
-      j * this.rez + this.factor
-    );
-    let noiseColor2 = this.p5.noise(
-      i * this.rez + this.factor + this.factorIncrease,
-      j * this.rez + this.factor + this.factorIncrease
-    );
+  drawShape(i: number, j: number, bitIndex: number) {
+    // const rez1 = 100;
+    // let noiseColor = this.p5.noise(i * rez1, j * rez1);
+    let noiseColor = this.p5.random();
+    let color = this.pickColors(noiseColor);
 
-    let color1, color2;
-    color1 = this.pickColors(this.paletteIndex, noiseColor1);
-    color2 = this.pickColors(this.paletteIndex, noiseColor2);
-    if (this.drawHalf) color2.setAlpha(0);
+    const rez2 = 0.1;
+    let n3 = this.p5.noise(i * rez2, j * rez2);
 
-    let size = this.sizeOfBox;
-    let n3 = this.p5.noise(
-      i * this.rez + this.factor + 2 * this.factorIncrease,
-      j * this.rez + this.factor + 2 * this.factorIncrease
-    );
-    if (this.shouldDrawBlock()) {
-      this.drawDoublePalettePatterns(n3, i, j, color1, color2, size);
+    if (this.shouldDrawBlock(bitIndex)) {
+      this.drawDoublePalettePatterns(n3, i, j, color, this.sizeOfBox, bitIndex);
     }
     this.drawOuterEdge();
   }
 
-  shouldDrawBlock() {
-    let percentRemoval = 0;
-    switch (this.removeBlocks) {
-      case 0:
-        percentRemoval = 0;
-        break;
-      case 1:
-        percentRemoval = 0.05;
-        break;
-      case 2:
-        percentRemoval = 0.15;
-        break;
-      case 3:
-        percentRemoval = 0.35;
-        break;
-    }
-    return this.p5.random() > percentRemoval;
+  shouldDrawBlock(bitIndex: number) {
+    return !this.blocksToRemove.has(bitIndex);
+    // let percentRemoval = 0;
+    // switch (this.removeBlocks) {
+    //   case 0:
+    //     percentRemoval = 0;
+    //     break;
+    //   case 1:
+    //     percentRemoval = 0.1;
+    //     break;
+    //   case 2:
+    //     percentRemoval = 0.2;
+    //     break;
+    //   case 3:
+    //     percentRemoval = 0.3;
+    //     break;
+    // }
+    // return this.p5.random() > percentRemoval;
   }
 
   drawOuterEdge() {
@@ -205,100 +203,120 @@ export class ColoredTrianglesSketch extends GenericSketch {
     n3: number,
     i: number,
     j: number,
-    color1: p5Types.Color,
-    color2: p5Types.Color,
-    size: number
+    randomColor: p5Types.Color,
+    size: number,
+    bitIndex: number
   ) {
-    if (n3 < 0.25) {
-      // ◣ Lower left triangle
-      this.p5.fill(color1);
-      this.p5.triangle(i, j, i + size, j + size, i, j + size);
-      // ◥ Upper right triangle
-      this.p5.fill(color2);
-      this.p5.triangle(i, j, i + size, j + size, i + size, j);
-    } else if (n3 < 0.5) {
-      // ◢ Lower right triangle
-      this.p5.fill(color1);
-      this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
-      // ◤ Upper left triangle
-      this.p5.fill(color2);
-      this.p5.triangle(i, j + size, i, j, i + size, j);
-    } else if (n3 < 0.75) {
-      // ◥ Upper right triangle
-      this.p5.fill(color1);
-      this.p5.triangle(i, j, i + size, j + size, i + size, j);
-      // ◣ Lower left triangle
-      this.p5.fill(color2);
-      this.p5.triangle(i, j, i + size, j + size, i, j + size);
+    // 1 is ◣ and 0 is ◢
+    this.p5.strokeJoin(this.p5.BEVEL);
+    const orientation = this.blockOrientation[bitIndex];
+    const noColor = this.p5.color(0, 0, 0, 0);
+    const offset = 0;
+    const startI = i + offset;
+    const endI = i + size - offset;
+    const startJ = j + offset;
+    const endJ = j + size - offset;
+    if (orientation === 0) {
+      if (n3 < 0.5) {
+        // ◢ Lower right triangle
+        this.p5.fill(randomColor);
+        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
+        // ◤ Upper left triangle
+        this.p5.fill(noColor);
+        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
+      } else {
+        // ◢ Lower right triangle
+        this.p5.fill(noColor);
+        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
+        // ◤ Upper left triangle
+        this.p5.fill(randomColor);
+        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
+      }
     } else {
-      // ◤ Upper left triangle
-      this.p5.fill(color1);
-      this.p5.triangle(i, j + size, i, j, i + size, j);
-      // ◢ Lower right triangle
-      this.p5.fill(color2);
-      this.p5.triangle(i + size, j, i + size, j + size, i, j + size);
+      if (n3 < 0.5) {
+        // ◣ Lower left triangle
+        this.p5.fill(randomColor);
+        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
+        // ◥ Upper right triangle
+        this.p5.fill(noColor);
+        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
+      } else {
+        // ◥ Upper right triangle
+        this.p5.fill(randomColor);
+        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
+        // ◣ Lower left triangle
+        this.p5.fill(noColor);
+        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
+      }
     }
   }
 
-  pickColors(paletteIndex: number, n: number) {
-    let colorIndex = 0;
-    // this.colorsPerPaletteCount
-    let col = this.p5.map(n, 0, 1, 0, 360);
-    let dec = this.p5.fract(col / this.sF);
-    // distribute this range among the palette
-    let segmentSize = 1 / this.colorsPerPaletteCount;
+  generatePaletteWithOpacity(paletteIndex: number) {
+    let strokeColor = this.p5.color(
+      this.colorTable.getNum(paletteIndex, 0),
+      this.colorTable.getNum(paletteIndex, 1),
+      this.colorTable.getNum(paletteIndex, 2)
+    );
+    let otherColor = this.p5.color(
+      this.colorTable.getNum(paletteIndex, 3),
+      this.colorTable.getNum(paletteIndex, 4),
+      this.colorTable.getNum(paletteIndex, 5)
+    );
 
-    // if first color used for stroke that exclude it from the range
-    let endOfFirstRange = this.firstColorForStroke
-      ? 2 * segmentSize
-      : segmentSize;
-    let i = this.firstColorForStroke ? 1 : 0;
+    let colorList = [strokeColor];
+    let opacityAdjustedColorlist = [0.2, 0.4, 0.6, 0.8, 1].map((opacity) => {
+      const newColor = this.p5.color(
+        this.p5.red(otherColor),
+        this.p5.green(otherColor),
+        this.p5.blue(otherColor)
+      );
+      newColor.setAlpha(opacity * 255);
+      return newColor;
+    });
+    return colorList.concat(opacityAdjustedColorlist);
+  }
+
+  generatePalette(paletteIndex: number) {
+    const colorsPerPaletteCount = this.colorTable.getColumnCount() / 3; // always RGB
+    let colorList = [];
+    for (let i = 0; i < colorsPerPaletteCount; i++) {
+      const newColor = this.p5.color(
+        this.colorTable.getNum(paletteIndex, i * 3),
+        this.colorTable.getNum(paletteIndex, i * 3 + 1),
+        this.colorTable.getNum(paletteIndex, i * 3 + 2)
+      );
+      colorList.push(newColor);
+    }
+    return colorList;
+  }
+
+  pickColors(n: number) {
+    // distribute this range among the palette
+    let segmentSize = 1 / this.colorPalette.length;
+    let colorIndex = 0;
     for (
-      let endOfRange = endOfFirstRange;
+      let endOfRange = segmentSize;
       endOfRange <= 1;
       endOfRange += segmentSize
     ) {
-      if (dec <= endOfRange) {
-        colorIndex = i;
+      if (n <= endOfRange) {
         break;
       }
-      i++;
+      colorIndex++;
     }
 
-    // selects random color from the palette for each r, g, b
-    let r, g, b;
-    r = this.colorTable.getNum(paletteIndex, colorIndex * 3);
-    g = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 1);
-    b = this.colorTable.getNum(paletteIndex, colorIndex * 3 + 2);
-    let color = this.p5.color(r, g, b);
-    let alpha = this.pickAlpha();
-    if (alpha === 0) {
-      // hack to make exception for special color
-      r = this.colorTable.getNum(paletteIndex, 0);
-      g = this.colorTable.getNum(paletteIndex, 1);
-      b = this.colorTable.getNum(paletteIndex, 2);
-      color = this.p5.color(r, g, b);
-    } else {
-      color.setAlpha(alpha);
-    }
+    let selectedColor = this.colorPalette[colorIndex];
     if (this.noFill) {
-      color.setAlpha(0); // simplest way to have no fill
+      selectedColor.setAlpha(0); // simplest way to have no fill
     }
-    return color;
-  }
-
-  pickAlpha() {
-    if (!this.toggleOpacity) {
-      return this.alpha;
-    }
-    // simple hack to add 0 for additional color
-    return 255 * this.p5.random([0, 0.2, 0.4, 0.6, 0.8, 1]);
+    return selectedColor;
   }
 
   printColors(index: number) {
     let str = `palette ${index}: `;
     let css_arr = [];
-    for (let i = 0; i < this.colorsPerPaletteCount; i++) {
+    const colorsPerPaletteCount = this.colorTable.getColumnCount() / 3; // always RGB
+    for (let i = 0; i < colorsPerPaletteCount; i++) {
       let r = this.colorTable.getNum(index, 3 * i);
       let g = this.colorTable.getNum(index, 3 * i + 1);
       let b = this.colorTable.getNum(index, 3 * i + 2);
@@ -306,5 +324,52 @@ export class ColoredTrianglesSketch extends GenericSketch {
       css_arr.push(`background: rgb(${r},${g},${b});`);
     }
     console.log(str, ...css_arr);
+  }
+
+  computeBlocksToRemove(): Set<number> {
+    let result = new Set<number>();
+    const blockRemovalMatrix = [
+      [0, 1, 2, 3],
+      [0, 2, 5, 13],
+      [0, 4, 12, 28],
+      [0, 7, 21, 42],
+    ];
+    let countOfBlockToRemove;
+    switch (this.gridSize) {
+      case 3:
+        countOfBlockToRemove = blockRemovalMatrix[0][this.removeBlocks];
+        break;
+      case 6:
+        countOfBlockToRemove = blockRemovalMatrix[1][this.removeBlocks];
+        break;
+      case 9:
+        countOfBlockToRemove = blockRemovalMatrix[2][this.removeBlocks];
+        break;
+      case 12:
+        countOfBlockToRemove = blockRemovalMatrix[3][this.removeBlocks];
+        break;
+      default:
+        countOfBlockToRemove = 0;
+        break;
+    }
+    const rez = 0.1;
+    let noiseGrid: Array<number> = [];
+    for (let i = 0; i < this.gridSize; i++) {
+      let noiseRow: Array<number> = [];
+      for (let j = 0; j < this.gridSize; j++) {
+        noiseRow.push(this.p5.noise(i * rez, j * rez));
+      }
+      noiseGrid = noiseGrid.concat(noiseRow);
+    }
+
+    let i = 0;
+    while (i < countOfBlockToRemove) {
+      const max = Math.max(...noiseGrid);
+      const index = noiseGrid.indexOf(max);
+      noiseGrid[index] = 0;
+      result.add(index);
+      i++;
+    }
+    return result;
   }
 }

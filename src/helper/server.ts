@@ -2,7 +2,9 @@ const { REACT_APP_SERVER_URL } = process.env;
 const SERVER_URL =
   REACT_APP_SERVER_URL || "https://blockalizer-backend.vercel.app";
 
-export const fetchBlocks = async (address: string) => {
+export const fetchBlocks = async (
+  address: string
+): Promise<Map<string, Object>> => {
   const endpoint = "/api/blocks";
   const body = JSON.stringify({ address });
   const response = await fetch(SERVER_URL + endpoint, {
@@ -13,18 +15,23 @@ export const fetchBlocks = async (address: string) => {
     },
     body,
   });
-  console.log(response);
   if (!response.ok) throw new Error();
 
   const content = await response.json();
-  // console.log(content);
-  const blockNumbers = content.data.map((d: any) => d.blockNumber);
-  return blockNumbers;
+  const blocknumbersToInfo: Map<string, Object> = content.data.reduce(function (
+    acc: Map<string, Object>,
+    cur: any
+  ) {
+    acc.set(cur.blockNumber, cur);
+    return acc;
+  },
+  new Map());
+  return blocknumbersToInfo;
 };
 
-export const sendImage = async (image: string) => {
+export const sendImage = async (name: string, image: string) => {
   const endpoint = "/api/mint";
-  const body = JSON.stringify({ image });
+  const body = JSON.stringify({ name, image });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
     headers: {
