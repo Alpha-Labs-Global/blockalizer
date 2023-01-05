@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import placeHolder from "./media/square.png";
-import logo from "./media/logo.png";
 import "./collapsible.scss";
 import Collapsible from "react-collapsible";
 
 import "./App.css";
-import Playground from "./components/Playground";
+import Playground from "./pages/Playground";
 
-import visual from "./media/block-floater.png";
 import { ConnectKitButton } from "connectkit";
-import { useSigner } from "wagmi";
 
 import { ConnectKitProvider } from "connectkit";
 import { WagmiConfig, useAccount } from "wagmi";

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import Sketch from "react-p5";
-import p5Types from "p5";
 import "../App.css";
+import Art from "../components/Art";
 
 import { ConnectKitButton } from "connectkit";
 import { useSigner } from "wagmi";
@@ -11,15 +10,6 @@ import { fetchBlocks, sendImage } from "../helper/server";
 
 import "./Playground.css";
 
-import {
-  assign_sketch,
-  load_colors,
-  all_sketch_styles,
-  BlockInfo,
-} from "../helper/sketch";
-
-import GenericSketch from "../art-styles/generic_sketch";
-import ReactPaginate from "react-paginate";
 import { ethers } from "ethers";
 
 interface ComponentProps {
@@ -28,16 +18,11 @@ interface ComponentProps {
 }
 
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const styles = all_sketch_styles();
-  const [selectedStyle, setStyle] = useState("none");
   const [blockNumber, setBlockNumber] = useState<number>(-1);
   const [blockInfo, setBlockInfo] = useState({});
   const [noFill, setNoFill] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  // In order of how the palette is generated. Ideally it would be
-  // best if the names would come from the data. But I will get to
-  // that later
-  const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
   const [chroma, setChroma] = useState("Alpine");
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blocksInformation, setBlocksInformation] = useState(new Map());
@@ -45,36 +30,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [numberOfBlocks, setNumberOfBlocks] = useState(0);
   const [index, setIndex] = useState(0);
   const [sort, setSort] = useState("Oldest");
-  const [trueCanvasWidth, setTrueCanvasWidth] = React.useState<
-    number | undefined
-  >();
 
   const signedOutApp = () => {
-    setStyle("none");
     setAddress("");
     setBlocks([]);
-  };
-
-  const signedInApp = () => {
-    setStyle("triangles");
   };
 
   /* CONTROL */
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
-
-  const keyGenerator = () => {
-    return (
-      blockNumber +
-      selectedStyle +
-      numOfBoxes.toString() +
-      tetri.toString() +
-      chroma +
-      noFill.toString()
-    );
-  };
-
-  const [uniqueKey, setUniqueKey] = useState(keyGenerator());
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -96,16 +60,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // blockNumber --> blockInfo --> signedInApp
 
   useEffect(() => {
-    regenerate();
-
     if (signer === null) {
       signedOutApp();
     } else {
       lazySetBlocks();
     }
   });
-
-  useEffect(() => {}, [blocks]);
 
   useEffect(() => {
     if (blocksInformation.size > 0) {
@@ -123,170 +83,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   useEffect(() => {
     if (Object.keys(blockInfo).length !== 0) {
-      signedInApp();
+      setReady(true);
     }
   }, [blockInfo]);
 
-  useEffect(() => {
-    setTrueCanvasWidth(document.getElementById("widthIndicator")?.clientWidth);
-  }, []);
-
-  const canvasWidth: any = trueCanvasWidth;
-  const canvasHeight: any = trueCanvasWidth;
-  let sketch: GenericSketch;
-
-  const preload = (p5: p5Types) => {
-    let paletteIndex = colorNames.indexOf(chroma);
-    let table: p5Types.Table = load_colors();
-    let opts = {
-      numOfBoxes: numOfBoxes,
-      opacity: 255, // using fixed opacity
-      strokeWidth: 1.5, // using fixed stroke width
-      paletteIndex: paletteIndex,
-      opacitySwitch: true,
-      noFill: noFill,
-      removeBlocks: tetri,
-    };
-
-    //TESTTESTTEST
-
-    sketch = assign_sketch(
-      p5,
-      canvasWidth,
-      canvasHeight,
-      table,
-      blockNumber.toString(),
-      blockInfo as BlockInfo,
-      selectedStyle,
-      opts
-    );
-  };
-
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    sketch.setup(canvasParentRef);
-  };
-
-  const draw = (p5: p5Types) => {
-    sketch.draw();
-  };
-
-  const regenerate = () => {
-    if (uniqueKey != keyGenerator()) {
-      setUniqueKey(keyGenerator());
-      // p5Instance.redraw();
-      console.log("unique key changed...");
-    }
-  };
-
   const { data: signer, isError, isLoading } = useSigner();
-
-  const save = async (e: React.SyntheticEvent) => {
-    if (sketchRef && sketchRef.current) {
-      // @ts-ignore: Object is possibly 'null'.
-      const canvas: any = sketchRef.current.sketch.canvas;
-      const name: string = blockNumber.toString();
-      const dataURL = canvas.toDataURL();
-      try {
-        const result = await sendImage(name, dataURL);
-        await mintToken(signer as ethers.Signer, result);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-
-  const numOfBoxesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNumOfBoxes(parseInt(e.currentTarget.value));
-  };
-
-  const tetriHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTetri(parseInt(e.currentTarget.value));
-  };
-
-  const chromaHandler = (e: any) => {
-    setChroma(e.target.value);
-  };
-
-  const fillHandler = (e: any) => {
-    const noFill = e.currentTarget.value === "No" ? true : false;
-    setNoFill(noFill);
-  };
 
   const blockHandler = (e: any) => {
     const selectedBlockNumber: number = Number(e.currentTarget.value);
     setBlockNumber(selectedBlockNumber);
   };
-
-  const chromeSelector = colorNames.map((c, i) => (
-    <div key={i}>
-      <label>
-        <input
-          type="radio"
-          value={c}
-          checked={chroma === c}
-          onChange={chromaHandler}
-        />
-        {c}
-      </label>
-    </div>
-  ));
-
-  const gridControl = (
-    <div>
-      Grid Size
-      <input
-        type="range"
-        min="3"
-        max="12"
-        defaultValue="9"
-        step="3"
-        onChange={numOfBoxesHandler}
-      />
-      {numOfBoxes}
-    </div>
-  );
-
-  const fillSelector = (
-    <div>
-      <div>
-        <label>
-          <input
-            type="radio"
-            value={"Yes"}
-            checked={!noFill}
-            onChange={fillHandler}
-          />
-          Yes
-        </label>
-      </div>
-      <div>
-        <label>
-          <input
-            type="radio"
-            value={"No"}
-            checked={noFill}
-            onChange={fillHandler}
-          />
-          No
-        </label>
-      </div>
-    </div>
-  );
-
-  const tetriControl = (
-    <div>
-      Anti-Block
-      <input
-        type="range"
-        min="0"
-        max="3"
-        defaultValue="0"
-        step="1"
-        onChange={tetriHandler}
-      />
-      {tetri}
-    </div>
-  );
 
   //oldest filter
   const oldestBlock = blocks.map((b, i) => (
@@ -329,8 +135,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
       </button>
     ));
-
-  const sketchRef = useRef(null);
 
   return (
     <div
@@ -554,12 +358,14 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             </button>
 
             <div className="w-[80%]" id="widthIndicator">
-              <Sketch
-                ref={sketchRef}
-                key={uniqueKey}
-                setup={setup}
-                draw={draw}
-                preload={preload}
+              <Art
+                blockNumber={blockNumber}
+                ready={ready}
+                numOfBoxes={numOfBoxes}
+                tetri={tetri}
+                chroma={chroma}
+                noFill={noFill}
+                blockInfo={blockInfo}
               />
             </div>
 
@@ -1087,30 +893,3 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 };
 
 export default Playground;
-
-{
-  /*
-OLD GENERATOR CODE 
-<div className="generatorContainer">
-    
-          <div className="actualApp">
-            
-            <div>
-              {gridControl}
-              <div>
-                Chroma
-                {chromeSelector}
-              </div>
-              <div>
-                Fill
-                {fillSelector}
-              </div>
-              {tetriControl}
-            </div>
-            <div>
-              <button onClick={save}>Mint</button>
-            </div>
-          </div>
-          
-                        </div> */
-}
