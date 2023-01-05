@@ -188,9 +188,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           </ConnectKitButton.Custom>
         </div>
       </div>
+      
 
       <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-full sm:w-full">
+
         <div
+        id="showScroll"
           className={`scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
         >
           {sort === "Oldest" && oldestBlock}

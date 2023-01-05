@@ -1,21 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
 
+*::-webkit-scrollbar {
+  width: 0 !important;
+  }
 
-/* Track */
-.blockSearch::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
 
-/* Handle */
-.blockSearch::-webkit-scrollbar-thumb {
-  background: red;
-}
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+  
 
-/* Handle on hover */
-.blockSearch::-webkit-scrollbar-thumb:hover {
-  background: red;
-}
+
+
+
 
 hr {
   display: inline-block;
@@ -122,6 +120,11 @@ body {
 
 @media only screen and (min-width: 700px) and (max-width: 1100px)
 {
+
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+
   .visualizer {
     display: none;
   }
@@ -141,6 +144,11 @@ body {
 
 @media only screen and (min-width: 0px) and (max-width: 700px)
 {
+
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+    
   .visualizer {
     display: none;
   }
