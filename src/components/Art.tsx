@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
+// create context for controls
+// block etc
+
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
 
 import GenericSketch from "../art-styles/generic_sketch";
