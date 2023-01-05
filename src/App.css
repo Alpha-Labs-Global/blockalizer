@@ -9,6 +9,10 @@
   #showScroll::-webkit-scrollbar {
     width: .4rem !important;
     }
+
+*:focus {
+  outline: none;
+}
   
 
 
@@ -148,7 +152,7 @@ body {
   #showScroll::-webkit-scrollbar {
     width: .4rem !important;
     }
-    
+
   .visualizer {
     display: none;
   }
