@@ -204,31 +204,120 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                     <Collapsible trigger="&nbsp;&nbsp;What">
                       <p>
-                        Blockalizer is a platform designed for users to own
-                        pieces of the blockchain that mean something to them.
-                        Maybe you bought your ENS name at block 1234, or minted
-                        your first Cool Cat at block 5678. Own the blocks that
-                        mean something to you.
+                        <span className="block mt-1"></span>Blockalizer is a blockchain visualizer tool that processes and translates transaction block number and block hash data of each block into unique stylized geometric art through a unique algorithm and curated art processor.<br></br><span className="block mt-3"></span>Blockalizer allows you to turn a transaction that means something to you, i.e. the first Cool Cat you minted, or your first transaction, or anything in between, into tokenized art.<br></br><span className="block mt-3"></span>With Blockalizer you can own your stylized piece of the blockchain, turning past transactions into a tokenize memento.<br></br><span className="block mt-3"></span>
                       </p>
                     </Collapsible>
 
                     <Collapsible trigger="&nbsp;&nbsp;Why">
                       <p>
-                        Blockalizer is a platform designed for users to own
-                        pieces of the blockchain that mean something to them.
-                        Maybe you bought your ENS name at block 1234, or minted
-                        your first Cool Cat at block 5678. Own the blocks that
-                        mean something to you.
+                        <span className="block mt-1"></span>The thinking behind Blockalizer is to be able to visualize and tokenize the not so sexy or collectible transaction data, into personalized and unique mementos and art.<br></br><span className="block mt-3"></span>Blockalizer is targeted towards those who enjoy participating and experimenting in Web3 innovations, while also deploying a new NFT collection is made up entirely by blockchain and user input.<br></br><span className="block mt-3"></span>We thought it would be challenging, compelling and fun to create a tool that interprets blockchain data in a way that is both visually appealing, collectible and has unique mechanics.<br></br><span className="block mt-3"></span>
                       </p>
                     </Collapsible>
 
                     <Collapsible trigger="&nbsp;&nbsp;How">
                       <p>
-                        Blockalizer is a platform designed for users to own
-                        pieces of the blockchain that mean something to them.
-                        Maybe you bought your ENS name at block 1234, or minted
-                        your first Cool Cat at block 5678. Own the blocks that
-                        mean something to you.
+                        <span className="block mt-1"></span>Upon connecting your wallet, Blockalizer determines how many total transactions you’ve done, and showcases the blocks you get to chose from to mint.<br></br><span className="block mt-3"></span>Blockalizer processes each transaction hash in a unique way so that no block treatment is the same as another. This allows the user to comb through their transaction history and select and modify the art treatment to their liking.<span className="block mt-3"></span>
+                      </p>
+                    </Collapsible>
+
+                    <Collapsible trigger="&nbsp;&nbsp;Mechanics">
+                      <p>
+                      <span className="block mt-1"></span>There will be two collections tied to Blockalizer, Chroma and Infinitum.<br></br><span className="block mt-3"></span>The Chroma collection consists of 1,000 mintable NFTs each month, for a grand total of 12,000 over the course of the year.<br></br><span className="block mt-3"></span>The Infinitum collection will be an infinite collection that will grow over time, as long as the blockchain is live.<br></br><span className="block mt-3"></span>The Chroma collection consists of colors that will change every month, and the previous month color will be discontinued.<br></br><span className="block mt-3"></span>The Infinitum collection will be in black and white, and is designing to be more accessible and widely available, and will be available shortly after Chroma has successfully launched<br></br><span className="block mt-3"></span>
+                      </p>
+                    </Collapsible>
+
+                    <Collapsible trigger="&nbsp;&nbsp;Collection">
+                      <p>
+                        <span className="block mb-1"></span>
+                        Chroma Collection:
+                        <br></br>
+                        <span className="block mb-3"></span>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">1,000 available each month | 12 months total</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">0.015 mint cost</span>
+                        </div>
+
+                        <br></br>
+                        
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">Limited availability color ways</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">3 max mints per wallet</span>
+                        </div>
+                        
+
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">Holder voting rights and premium access to future projects launched by Alpha Labs</span>
+                        </div>
+
+
+                        <span className="block mb-6"></span>
+                        Infinitum Collection:
+                        <br></br>
+                        <span className="block mb-3"></span>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">An infinite amount available</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">All black / white</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">Additional pattern options</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">Minting lasts forever</span>
+                        </div>
+
+                        <br></br>
+
+                        <div className="flex">
+                          <span className="mr-2">&nbsp;▫️</span> 
+                          <span className="text-buttonText">~0.005 mint cost</span>
+                        </div>
+
+                        <br></br>
+                        <span className="block mt-2"></span>
+
+                        <div className="flex">
+                         
+                          <span className="text-buttonText italic">All funds raised will used towards expanding and building upon future Alpha Labs projects, and further Blockalizer development costs.</span>
+                        </div>
+
+                        
+                        
+
                       </p>
                     </Collapsible>
 
@@ -247,7 +336,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                     <span className="block mb-10"></span>
                     <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-0 lg:pl-7 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:block md:hiden sm:hidden">
-                      <a href="https://twitter.com/blockalizerxyz" target="_blank">Twitter</a>&nbsp;&nbsp;&nbsp;<a>Opensea</a>&nbsp;&nbsp;&nbsp;Docs
+                      <a href="https://twitter.com/blockalizerxyz" target="_blank">Twitter</a>&nbsp;&nbsp;&nbsp;<a>Opensea</a>&nbsp;&nbsp;&nbsp;<a href="https://medium.com/alpha-labs/blockalzier-our-first-project-a2ef7e0b6f03" target="_blank">Overview</a>
                       
                     </h1>
                   </div>
