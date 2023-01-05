@@ -83,6 +83,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (blocksInformation.size > 0) {
       const keys: string[] = Array.from(blocksInformation.keys());
       setBlocks(keys);
+      setBlockNumber(Array.from(blocksInformation.keys())[0])
     }
   }, [blocksInformation]);
 
@@ -146,9 +147,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         <Header onChange={props.onChange}></Header>
       </div>
 
-      {address !== "" && blocks.length == 0 && !serverFailure
-        ? "Loading..."
-        : null}
+      {address !== "" && blocks.length == 0 ? null : null}
       {address !== "" && blocks.length > 0 && blockNumber == -1
         ? "Click Block to get started"
         : null}
@@ -160,7 +159,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]"
             id="specialIndicator"
           >
-            #{blockNumber}
+           {address !== "" && blocks.length == 0 ? <div className="text-neutral-500">Loading...</div>: <div className="text-neutral-500">#{blockNumber}</div>} 
           </h1>
           <span className="block mt-4"></span>
 
