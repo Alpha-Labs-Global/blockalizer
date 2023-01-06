@@ -171,10 +171,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                     <p className="lg:text-lg md:text-sm sm:text-sm text-neutral-500 lg:ml-12 md:ml-8 sm:ml-6">
                       {" "}
                       {/*lg:text-2xl md:text-xl sm:text-md">*/}
-                      Blockchain transaction hash art processor
+                      Turn your transactions into generative art.
                       <br></br>
                       <span className="block mb-4" onClick={() => {}}></span>
-                      Turn your past transactions into a tokenized memento
+                      Mint the blocks that mean something to you.
                     </p>
 
                     <span className="block mb-5"></span>

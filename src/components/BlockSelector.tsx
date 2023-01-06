@@ -30,7 +30,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       value={b}
       className={`{ ${
         blockNumber.toString() === b ? "bg-white" : "bg-button"
-      } w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
+      } w-fit mt-2 mb-2 py-1 mr-auto ml-0 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
         blockNumber.toString() === b
           ? "text-buttonActiveText"
           : "text-buttonText"
@@ -189,8 +189,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
       </div>
       
-
-      <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-full sm:w-full">
+{/*figure out */}
+      <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
 
         <div
         id="showScroll"

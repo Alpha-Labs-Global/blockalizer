@@ -13,6 +13,11 @@
 *:focus {
   outline: none;
 }
+
+html {
+  margin: 0;
+  padding: 0;
+}
   
 
 
@@ -138,7 +143,7 @@ body {
   }
 
   .blockalizerDivLeft {
-    width: 100%;
+    width: 60%;
   }
 
   .blockalizerDivRight {
