@@ -23,7 +23,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {});
 
   return (
-    <div className="pageContainer">
+    <div className="h-full">
       <WagmiConfig client={wagmiClient}>
         <ConnectKitProvider theme="midnight">
           {page === "Home" && (
@@ -184,6 +184,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       className="lg:text-2xl md:text-xl sm:text-lg lg:ml-12 md:ml-8 sm:ml-6 "
                       onClick={(e) => {
                         setPage("Mint");
+                        
                       }}
                       role="button"
                     >

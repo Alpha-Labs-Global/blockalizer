@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
-body {
-  overflow-anchor: none;
-}
 
 *::-webkit-scrollbar {
   width: 0 !important;
@@ -17,10 +14,6 @@ body {
   outline: none;
 }
 
-html {
-  margin: 0;
-  padding: 0;
-}
   
 
 
@@ -31,9 +24,10 @@ hr {
   display: inline-block;
   width: 100%;
 }
-.pageContainer {
+
+.scrollPageContainer {
   background-color: #121212;
-  height: 100vh;
+  height: auto;
   width: 100vw;
   -ms-overflow-style: none; 
   scrollbar-width: none;   
@@ -41,11 +35,21 @@ hr {
   
 }
 
+.noScrollPageContainer {
+  background-color: #121212;
+  height: 100vh;
+  width: 100vw;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;   
+  overflow: scroll;
+}
+
 .contentContainer {
   display: flex;
   flex-direction: row;
   flex-flow: row wrap;
   width: auto;
+  height: 100vh;
   max-width: none;
   margin: 0 auto;
   position: relative;
@@ -118,8 +122,12 @@ hr {
 
 
 body {
-  overflow: hidden; /* for Chrome, Safari, and Opera */
-  height: 100%;
+  background-color: #121212;
+
+}
+
+html, body, #app, #app>div {
+  height: 100%
 }
 
 * {

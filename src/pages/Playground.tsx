@@ -248,6 +248,29 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             </button>
 
             <div className="w-[80%]" id="widthIndicator">
+
+            {address !== "" && blocks.length == 0 ?
+            <div className="m-auto w-full">
+                        <svg
+                          viewBox="0 0 353 351"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="1"
+                            y="1"
+                            width="351"
+                            height="348"
+                            stroke="white"
+                            strokeWidth="2"
+                          />
+                          <path
+                            d="M351 2L3.5 349.5"
+                            stroke="#EBEBEB"
+                            strokeWidth="2"
+                          />
+                        </svg>
+              </div> :
               <Art
                 blockNumber={blockNumber}
                 ready={ready}
@@ -257,7 +280,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 noFill={noFill}
                 blockInfo={blockInfo}
                 refPointer={sketchRef}
-              />
+              />}
             </div>
 
             <button
