@@ -21,14 +21,14 @@ export default class NoneSketch extends GenericSketch {
   draw() {
     this.p5.strokeWeight(3);
     this.p5.stroke(255, 255, 255);
-    this.p5.fill(0, 0, 0);
+    this.p5.fill(0, 0, 0, 0);
     // setting some offsets so to show everything on the canvas
     this.p5.rect(1, 1, this.canvasWidth - 2, this.canvasHeight - 2);
     this.p5.triangle(
-      1,
-      1,
       this.canvasWidth - 2,
       1,
+      1,
+      this.canvasHeight - 2,
       this.canvasWidth - 2,
       this.canvasHeight - 2
     );

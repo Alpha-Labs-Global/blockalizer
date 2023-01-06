@@ -334,6 +334,7 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
           </linearGradient>
         </defs>
       </svg>
+      <span className="block mb-10"></span>
     </div>
   );
 };

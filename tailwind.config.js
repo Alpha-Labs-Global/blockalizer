@@ -9,10 +9,10 @@ module.exports = {
         'sm': '0px',
         // => @media (min-width: 576px) { ... }
   
-        'md': '700px',
+        'md': '750px',
         // => @media (min-width: 960px) { ... }
   
-        'lg': '1100px',
+        'lg': '750px',
         // => @media (min-width: 1440px) { ... }
       },
       colors: {

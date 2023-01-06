@@ -80,9 +80,30 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   });
 
   useEffect(() => {
+
+    var elem = document.getElementById("widthIndicator")
+    if(elem != undefined)
+    {
+      elem.style.height = elem.offsetWidth + "px"
+    }
+   
+  });
+
+  window.addEventListener('resize', (e) => {
+    var elem = document.getElementById("widthIndicator")
+    if(elem != undefined)
+    {
+      elem.style.height = elem.offsetWidth + "px"
+    }
+  })
+
+
+
+  useEffect(() => {
     if (blocksInformation.size > 0) {
       const keys: string[] = Array.from(blocksInformation.keys());
       setBlocks(keys);
+      setBlockNumber(Array.from(blocksInformation.keys())[0])
     }
   }, [blocksInformation]);
 
@@ -122,21 +143,57 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     <div
       className="innerContainer"
       onKeyDown={(e) => {
-        if (e.key == "ArrowRight") {
-          if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
-            setBlockNumber(Number(blocks[0]));
-          } else {
-            setBlockNumber(
-              Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
-            );
+        if(sort === "Oldest")
+        {
+          if (e.key == "ArrowRight") {
+            if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
+              setBlockNumber(Number(blocks[0]));
+            } else {
+              setBlockNumber(
+                Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+              );
+            }
+            /*let scroll_length = 40;
+
+            var test = document.getElementById("showScroll")
+            
+            if((test != undefined) && (blockNumber % 3 === 0))
+            {
+              test.scrollTop += test.clientHeight / blocks.length;
+              console.log(test.scrollTop)
+            }*/
+            
+           
+          } else if (e.key == "ArrowLeft") {
+            if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
+              setBlockNumber(Number(blocks[blocks.length - 1]));
+            } else {
+              setBlockNumber(
+                Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+              );
+            }
           }
-        } else if (e.key == "ArrowLeft") {
-          if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
-            setBlockNumber(Number(blocks[blocks.length - 1]));
-          } else {
-            setBlockNumber(
-              Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
-            );
+        }
+        else if(sort === "Newest")
+        {
+          if (e.key == "ArrowRight") {
+            
+            
+            if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
+              setBlockNumber(Number(blocks[blocks.length - 1]));
+            }else {
+              setBlockNumber(
+                Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+              );
+            }
+          } else if (e.key == "ArrowLeft") {
+            if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
+              setBlockNumber(Number(blocks[0]));
+            }  else {
+              setBlockNumber(
+                Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+              );
+            }
           }
         }
       }}
@@ -146,9 +203,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         <Header onChange={props.onChange}></Header>
       </div>
 
-      {address !== "" && blocks.length == 0 && !serverFailure
-        ? "Loading..."
-        : null}
+      {address !== "" && blocks.length == 0 ? null : null}
       {address !== "" && blocks.length > 0 && blockNumber == -1
         ? "Click Block to get started"
         : null}
@@ -160,7 +215,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]"
             id="specialIndicator"
           >
-            #{blockNumber}
+           {address !== "" && blocks.length == 0 ? <div className="text-neutral-500">Loading...</div>: <div className="text-neutral-500">#{blockNumber}</div>} 
           </h1>
           <span className="block mt-4"></span>
 
@@ -193,6 +248,29 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             </button>
 
             <div className="w-[80%]" id="widthIndicator">
+
+            {address !== "" && blocks.length == 0 ?
+            <div className="m-auto w-full">
+                        <svg
+                          viewBox="0 0 353 351"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="1"
+                            y="1"
+                            width="351"
+                            height="348"
+                            stroke="white"
+                            strokeWidth="2"
+                          />
+                          <path
+                            d="M351 2L3.5 349.5"
+                            stroke="#EBEBEB"
+                            strokeWidth="2"
+                          />
+                        </svg>
+              </div> :
               <Art
                 blockNumber={blockNumber}
                 ready={ready}
@@ -202,7 +280,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 noFill={noFill}
                 blockInfo={blockInfo}
                 refPointer={sketchRef}
-              />
+              />}
             </div>
 
             <button

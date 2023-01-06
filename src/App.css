@@ -1,29 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
 
+*::-webkit-scrollbar {
+  width: 0 !important;
+  }
 
-/* Track */
-.blockSearch::-webkit-scrollbar-track {
-  background: #f1f1f1;
+
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+
+*:focus {
+  outline: none;
 }
 
-/* Handle */
-.blockSearch::-webkit-scrollbar-thumb {
-  background: red;
-}
+  
 
-/* Handle on hover */
-.blockSearch::-webkit-scrollbar-thumb:hover {
-  background: red;
-}
+
+
+
 
 hr {
   display: inline-block;
   width: 100%;
 }
-.pageContainer {
+
+.scrollPageContainer {
   background-color: #121212;
-  height: 100vh;
+  height: auto;
   width: 100vw;
   -ms-overflow-style: none; 
   scrollbar-width: none;   
@@ -31,11 +35,21 @@ hr {
   
 }
 
+.noScrollPageContainer {
+  background-color: #121212;
+  height: 100vh;
+  width: 100vw;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;   
+  overflow: scroll;
+}
+
 .contentContainer {
   display: flex;
   flex-direction: row;
   flex-flow: row wrap;
   width: auto;
+  height: 100vh;
   max-width: none;
   margin: 0 auto;
   position: relative;
@@ -108,8 +122,12 @@ hr {
 
 
 body {
-  overflow: hidden; /* for Chrome, Safari, and Opera */
-  height: 100%;
+  background-color: #121212;
+
+}
+
+html, body, #app, #app>div {
+  height: 100%
 }
 
 * {
@@ -122,6 +140,11 @@ body {
 
 @media only screen and (min-width: 700px) and (max-width: 1100px)
 {
+
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+
   .visualizer {
     display: none;
   }
@@ -131,7 +154,7 @@ body {
   }
 
   .blockalizerDivLeft {
-    width: 100%;
+    width: 60%;
   }
 
   .blockalizerDivRight {
@@ -141,6 +164,11 @@ body {
 
 @media only screen and (min-width: 0px) and (max-width: 700px)
 {
+
+  #showScroll::-webkit-scrollbar {
+    width: .4rem !important;
+    }
+
   .visualizer {
     display: none;
   }
