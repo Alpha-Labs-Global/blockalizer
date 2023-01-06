@@ -9,6 +9,7 @@ interface ComponentProps {
   setTetri(tetri: number): void;
   setNoFill(noFill: boolean): void;
   setChroma(chroma: string): void;
+  mintHandler(): void;
 }
 
 const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -16,6 +17,7 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
   const tetri = props.tetri;
   const noFill = props.noFill;
   const chroma = props.chroma;
+  const mintHandler = props.mintHandler;
 
   const setNumOfBoxes = props.setNumOfBoxes;
   const setTetri = props.setTetri;
@@ -304,13 +306,7 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
           </g>
         </g>
 
-        <g
-          id="mintButton"
-          onClick={() => {
-            alert("where minting takes place!");
-          }}
-          role="button"
-        >
+        <g id="mintButton" onClick={mintHandler} role="button">
           <rect
             y="188.108"
             width="264.459"

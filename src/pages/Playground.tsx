@@ -4,11 +4,13 @@ import "../App.css";
 import Art from "../components/Art";
 import Controls from "../components/Controls";
 import BlockSelector from "../components/BlockSelector";
+import Gallery from "../components/Gallery";
 
-import { ConnectKitButton } from "connectkit";
 import { useSigner } from "wagmi";
 
-import { fetchBlocks } from "../helper/server";
+import { fetchBlocks, sendImage } from "../helper/server";
+import { mintToken, getOwnedPieces } from "../helper/wallet";
+import { ethers } from "ethers";
 
 import "./Playground.css";
 import Header from "../components/Header";
@@ -22,10 +24,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [blockNumber, setBlockNumber] = useState<number>(-1);
   const [blockInfo, setBlockInfo] = useState({});
   const [ready, setReady] = useState(false);
+  const [serverFailure, setServerFailure] = useState(false);
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blocksInformation, setBlocksInformation] = useState(new Map());
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
   const [sort, setSort] = useState("Oldest");
+  const [ownedPieces, setOwnedPieces] = useState<Array<any>>([]);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -34,6 +38,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const lazySetBlocks = async () => {
     if (signer) {
+      // TODO: replace with useMemo
       const newAddress = await signer.getAddress();
       if (newAddress == address) return;
 
@@ -44,7 +49,20 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlocksInformation(result);
       } catch (e) {
         console.error(e);
+        setServerFailure(true);
       }
+    }
+  };
+
+  const lazySetGallery = async () => {
+    if (signer) {
+      // TODO: replace with useMemo
+      const newAddress = await signer.getAddress();
+      if (newAddress == address) return;
+
+      const ownedPieces = await getOwnedPieces(signer);
+      // console.log(ownedPieces);
+      setOwnedPieces(ownedPieces);
     }
   };
 
@@ -57,6 +75,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       setBlocks([]);
     } else {
       lazySetBlocks();
+      lazySetGallery();
     }
   });
 
@@ -81,6 +100,23 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [blockInfo]);
 
   const { data: signer, isError, isLoading } = useSigner();
+
+  const sketchRef = useRef(null);
+
+  const mindHandler = async () => {
+    if (sketchRef && sketchRef.current) {
+      // @ts-ignore: Object is possibly 'null'.
+      const canvas: any = sketchRef.current.sketch.canvas;
+      const name: string = blockNumber.toString();
+      const dataURL = canvas.toDataURL();
+      try {
+        const result = await sendImage(name, dataURL);
+        await mintToken(signer as ethers.Signer, result);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   return (
     <div
@@ -110,10 +146,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         <Header onChange={props.onChange}></Header>
       </div>
 
-      {address !== "" && blocks.length == 0 ? "Loading..." : null}
+      {address !== "" && blocks.length == 0 && !serverFailure
+        ? "Loading..."
+        : null}
       {address !== "" && blocks.length > 0 && blockNumber == -1
         ? "Click Block to get started"
         : null}
+      {serverFailure ? "Server failed" : null}
 
       <div className="lg:w-6/12 pt-4 lg:block md:block sm:block md:w-[100%] sm:w-[100%]">
         <div className="lg:w-[70%] lg:ml-[30%] md:w-[90%] md:m-auto sm:w-[90%] sm:m-auto">
@@ -162,6 +201,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 chroma={chroma}
                 noFill={noFill}
                 blockInfo={blockInfo}
+                refPointer={sketchRef}
               />
             </div>
 
@@ -206,6 +246,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setTetri={setTetri}
               setNoFill={setNoFill}
               setChroma={setChroma}
+              mintHandler={mindHandler}
             ></Controls>
 
             <button
@@ -240,6 +281,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber={blockNumber}
         setBlockNumber={setBlockNumber}
       ></BlockSelector>
+
+      <Gallery ownedPieces={ownedPieces}></Gallery>
     </div>
   );
 };

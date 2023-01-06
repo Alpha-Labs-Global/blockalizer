@@ -1,46 +1,29 @@
 import { createClient } from "wagmi";
 import { getDefaultClient } from "connectkit";
 import { goerli } from "wagmi/chains";
-import { SIWEConfig } from "connectkit/build/components/Standard/SIWE/SIWEContext";
 import { SiweMessage } from "siwe";
-import { ContractInterface, ethers, BigNumber, Contract } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
-import contract from "./contracts/Blockalizer.json";
+import controllerContract from "./contracts/V3/BlockalizerController.json";
+import generationV2Contract from "./contracts/V3/BlockalizerGenerationV2.json";
+import nftV3Contract from "./contracts/V3/BlockalizerV3.json";
+import {
+  BlockalizerController,
+  BlockalizerGenerationV2Contract,
+  BlockalizerV3Contract,
+} from "./contracts/V3/interface";
 
 const { REACT_APP_ALCHEMY_API_KEY, REACT_APP_BLOCKALIZER_CONTRACT_ADDRESS } =
   process.env;
 const ALCHEMY_API_KEY = REACT_APP_ALCHEMY_API_KEY || "alchemy_api_key";
 
-const contractAddress =
+const COLLECTION_ID = BigNumber.from(0);
+
+const controllerContractAddress =
   REACT_APP_BLOCKALIZER_CONTRACT_ADDRESS ||
   "0x0000000000000000000000000000000000000000";
 
 const chains = [goerli];
-
-interface PayableOptions {
-  value: BigNumber;
-}
-
-interface BlockalizerContract extends Contract {
-  name(): string;
-  symbol(): string;
-  balanceOf(address: string): BigNumber;
-  totalSupply(): BigNumber;
-  publicMint(uri: string, options: PayableOptions): void;
-  tokenOfOwnerByIndex(address: string, index: BigNumber): BigNumber;
-  tokenURI(tokenId: BigNumber): string;
-  mintPrice(): BigNumber;
-  maxSupply(): BigNumber;
-  setMintPrice(price: BigNumber): void;
-  setMaxSupply(supply: BigNumber): void;
-  withdraw(amount: BigNumber): void;
-  withdrawAll(): void;
-
-  supportsInterface(interface_id: string): boolean;
-  hasRole(role: string, address: string): boolean;
-  getRoleAdmin(role: string): string;
-  grantRole(role: string, address: string): void;
-}
 
 export const wagmiClient = createClient(
   getDefaultClient({
@@ -63,43 +46,77 @@ export const createSiweMessage = (address: string, statement: string) => {
   return siweMessage.prepareMessage();
 };
 
-export const mintToken = async (signer: ethers.Signer, tokenUri: string) => {
-  const contractABI: ContractInterface = contract;
+export const mintToken = async (
+  signer: ethers.Signer,
+  tokenUri: string
+): Promise<void> => {
   // @ts-ignore
-  const blockalizerContract: BlockalizerContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer
-  );
-  console.log(blockalizerContract);
-  const mintPrice = await blockalizerContract.mintPrice();
+  const blockalizerControllerContract: BlockalizerController =
+    new ethers.Contract(
+      controllerContractAddress,
+      controllerContract.abi,
+      signer
+    );
+
+  const generationContractAddress =
+    await blockalizerControllerContract.getGeneration();
+  // @ts-ignore
+  const blockalizerGenerationContract: BlockalizerGenerationV2Contract =
+    new ethers.Contract(
+      generationContractAddress,
+      generationV2Contract.abi,
+      signer
+    );
+
+  const mintPrice = await blockalizerGenerationContract.mintPrice();
   console.log(mintPrice.toString());
   const options = { value: mintPrice };
-  await blockalizerContract.publicMint(tokenUri, options);
+
+  await blockalizerControllerContract.publicMint(
+    COLLECTION_ID,
+    tokenUri,
+    options
+  );
 };
 
-// Deprecated. The UI for SIWE from ConnectKit is non-intuitive
-export const siweConfig: SIWEConfig = {
-  getNonce: async () => fetch("/api/siwe/nonce").then((res) => res.text()),
-  createMessage: ({ nonce, address, chainId }) =>
-    new SiweMessage({
-      version: "1",
-      domain: window.location.host,
-      uri: window.location.origin,
-      address,
-      chainId,
-      nonce,
-      statement: "Sign in With Ethereum.",
-    }).prepareMessage(),
-  verifyMessage: async ({ message, signature }) =>
-    fetch("/api/siwe/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message, signature }),
-    }).then((res) => res.ok),
-  getSession: async () =>
-    fetch("/api/siwe/session").then((res) => (res.ok ? res.json() : null)),
-  signOut: async () => fetch("/api/siwe/logout").then((res) => res.ok),
+const fetchMetadata = async (uri: string) => {
+  const response = await fetch(uri);
+  if (!response.ok) throw new Error();
+
+  const jsonMetadata = await response.json();
+  return jsonMetadata;
+};
+
+export const getOwnedPieces = async (
+  signer: ethers.Signer
+): Promise<Array<any>[]> => {
+  // @ts-ignore
+  const blockalizerControllerContract: BlockalizerController =
+    new ethers.Contract(
+      controllerContractAddress,
+      controllerContract.abi,
+      signer
+    );
+
+  const collectionAddress = await blockalizerControllerContract.getCollection(
+    COLLECTION_ID
+  );
+  // @ts-ignore
+  const blockalizerCollectionContract: BlockalizerV3Contract =
+    new ethers.Contract(collectionAddress, nftV3Contract.abi, signer);
+
+  const result = [];
+  const userAddress = await signer.getAddress();
+  const balance = await blockalizerCollectionContract.balanceOf(userAddress);
+  for (let i = 0; i < balance.toNumber(); i++) {
+    const tokenId = await blockalizerCollectionContract.tokenOfOwnerByIndex(
+      userAddress,
+      BigNumber.from(i)
+    );
+    const uri = await blockalizerCollectionContract.tokenURI(tokenId);
+    const metadata = await fetchMetadata(uri);
+    const response: any = { tokenId: tokenId.toNumber(), metadata };
+    result.push(response);
+  }
+  return result;
 };
