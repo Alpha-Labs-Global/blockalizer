@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
-
-// create context for controls
-// block etc
 
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
 
@@ -17,10 +14,10 @@ interface ComponentProps {
   chroma: string;
   noFill: boolean;
   blockInfo: any;
+  refPointer: React.MutableRefObject<null>;
 }
 
 export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const sketchRef = useRef(null);
   const [style, setStyle] = useState("none");
 
   const blockNumber = props.blockNumber;
@@ -30,6 +27,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const chroma = props.chroma;
   const noFill = props.noFill;
   const blockInfo = props.blockInfo;
+  const refPointer = props.refPointer;
 
   useEffect(() => {
     regenerate();
@@ -58,22 +56,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   // best if the names would come from the data. But I will get to
   // that later
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
-
-  //   TEMPORARILY REMOVING. Minting functionality
-  //   const save = async (e: React.SyntheticEvent) => {
-  //     if (sketchRef && sketchRef.current) {
-  //       // @ts-ignore: Object is possibly 'null'.
-  //       const canvas: any = sketchRef.current.sketch.canvas;
-  //       const name: string = blockNumber.toString();
-  //       const dataURL = canvas.toDataURL();
-  //       try {
-  //         const result = await sendImage(name, dataURL);
-  //         await mintToken(signer as ethers.Signer, result);
-  //       } catch (e) {
-  //         console.error(e);
-  //       }
-  //     }
-  //   };
 
   const canvasWidth: number = 400;
   const canvasHeight: number = 400;
@@ -122,7 +104,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   return (
     <Sketch
-      ref={sketchRef}
+      ref={refPointer}
       key={uniqueKey}
       setup={setup}
       draw={draw}
