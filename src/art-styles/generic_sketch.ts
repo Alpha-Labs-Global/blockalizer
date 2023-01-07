@@ -24,6 +24,10 @@ export default class GenericSketch {
     this.p5.noiseSeed(this.seedValue);
   }
 
+  reseed() {
+    this.p5.randomSeed(this.seedValue);
+  }
+
   setup(canvasParentRef: Element) {
     this.p5
       .createCanvas(this.canvasWidth, this.canvasHeight)
