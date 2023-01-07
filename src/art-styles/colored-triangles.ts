@@ -94,7 +94,8 @@ export class ColoredTrianglesSketch extends GenericSketch {
       this.colorPalette = this.generatePalette(this.paletteIndex);
     }
 
-    this.blocksToRemove = this.computeBlocksToRemove();
+    this.blocksToRemove = this.computeBlocksToRemove2();
+    this.reseed();
 
     console.log(`stroke width: ${this.strokeWidth}px`);
   }
@@ -330,9 +331,9 @@ export class ColoredTrianglesSketch extends GenericSketch {
     let result = new Set<number>();
     const blockRemovalMatrix = [
       [0, 1, 2, 3],
-      [0, 2, 5, 13],
-      [0, 4, 12, 28],
-      [0, 7, 21, 42],
+      [0, 3, 6, 9],
+      [0, 7, 14, 21],
+      [0, 12, 24, 36],
     ];
     let countOfBlockToRemove;
     switch (this.gridSize) {
@@ -369,6 +370,49 @@ export class ColoredTrianglesSketch extends GenericSketch {
       noiseGrid[index] = 0;
       result.add(index);
       i++;
+    }
+    return result;
+  }
+
+  computeBlocksToRemove2() {
+    let result = new Set<number>();
+    const blowupAreaBasedOnSize: Map<number, number> = new Map([
+      [3, 1],
+      [6, 3],
+      [9, 7],
+      [12, 12],
+    ]);
+    const totalBlocks = this.gridSize * this.gridSize;
+    const blowupArea = blowupAreaBasedOnSize.get(this.gridSize) || 0;
+    const directions = [
+      -1,
+      1,
+      this.gridSize,
+      -this.gridSize,
+      this.gridSize + 1,
+      -this.gridSize - 1,
+      -this.gridSize + 1,
+      this.gridSize - 1,
+    ];
+    for (let j = 0; j < this.removeBlocks; j++) {
+      let randomBlock = Math.floor(this.p5.random() * totalBlocks);
+      let i = 0;
+      while (i < blowupArea) {
+        if (!result.has(randomBlock)) {
+          result.add(randomBlock);
+          i++;
+        }
+
+        let randomDirection =
+          directions[Math.floor(this.p5.random() * directions.length)];
+
+        randomBlock += randomDirection;
+        if (randomBlock < 0) {
+          randomBlock = totalBlocks - randomBlock;
+        } else if (randomBlock > totalBlocks) {
+          randomBlock = randomBlock - totalBlocks;
+        }
+      }
     }
     return result;
   }
