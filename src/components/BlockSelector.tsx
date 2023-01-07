@@ -32,7 +32,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       value={b}
       className={`{ ${
         blockNumber.toString() === b ? "bg-white" : "bg-button"
-      } w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md ${
+      } w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm ${
         blockNumber.toString() === b
           ? "text-buttonActiveText"
           : "text-buttonText"
@@ -197,7 +197,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
         <div
           id="showScroll"
-          className={`max-w-[600px] lg:min-w-[400px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
+          className={`  max-w-[600px] lg:min-w-[400px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
         >
           {sort === "Oldest" && oldestBlock}
 
