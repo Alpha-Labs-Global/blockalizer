@@ -7,8 +7,8 @@ interface ComponentProps {
 
 const Header: React.FC<ComponentProps> = (props: ComponentProps) => {
   return (
-    <div className="lg:w-full md:w-full sm:w-full break-words bg-green lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-0">
-      <div className="lg:m-auto md:m-auto sm:ml-[10%] sm:mr-[10%] sm:mt-[0%] sm:mb-[0%] lg:12/12 md:w-6/12 sm:w-10/12">
+    <div className="lg:w-full md:w-full sm:w-full break-words bg-green lg:mt-16 md:mt-20 sm:mt-14 lg:pt-10 md:pt-10 sm:pt-0 relative lg-w-[800px]">
+      <div className="xxl:ml-[45%] xl:ml-[30%] lg:ml-[25%] md:ml-[30%] sm:ml-[10%] sm:mr-[10%] sm:mt-[0%] sm:mb-[0%] lg:w-[50%] md:w-[100%] sm:w-10/12 lg:max-w-[500px] absolute bottom-0">
         <div className="lg:hidden md:inline-block sm:inline-block">
           <ConnectKitButton.Custom>
             {({
@@ -78,7 +78,7 @@ const Header: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
 
         <div
-          className="w-[65%] lg:ml-5 md:ml-2 sm:ml-2"
+          className="w-[65%] lg:ml-5 md:ml-2 sm:ml-2 lg:min-w-[200px]"
           onClick={(e) => {
             props.onChange("Home");
           }}

@@ -12,8 +12,10 @@ module.exports = {
         'md': '750px',
         // => @media (min-width: 960px) { ... }
   
-        'lg': '750px',
+        'lg': '968px',
         // => @media (min-width: 1440px) { ... }
+        'xl': '1800px',
+        'xxl': '2350px'
       },
       colors: {
         transparent: 'transparent',

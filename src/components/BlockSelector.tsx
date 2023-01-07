@@ -32,7 +32,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       value={b}
       className={`{ ${
         blockNumber.toString() === b ? "bg-white" : "bg-button"
-      } w-fit mt-2 mb-2 py-1 mr-auto ml-0 lg:px-6 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
+      } w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md ${
         blockNumber.toString() === b
           ? "text-buttonActiveText"
           : "text-buttonText"
@@ -99,7 +99,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-[100%] ">
+                    <div className="lg:w-[60%] sm:w-[100%] lg:min-w-[500px] lg:max-w-[600px]">
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent lg:inline-block md:hidden sm:hidden">
                         <svg
                           className="w-3.5 inline-block align-baseline"
@@ -162,7 +162,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                       <div className="mt-5"></div>
 
-                      <h1 className="lg:w-[60%] sm:w-[98%]">
+                      <h1 className="lg:w-[85%] sm:w-[98%]">
                         Sort By:
                         <select
                           id="dropdown"
@@ -197,7 +197,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
         <div
           id="showScroll"
-          className={`max-w-[600px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
+          className={`max-w-[600px] lg:min-w-[400px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
         >
           {sort === "Oldest" && oldestBlock}
 
