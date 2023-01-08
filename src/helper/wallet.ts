@@ -69,7 +69,6 @@ export const mintToken = async (
     );
 
   const mintPrice = await blockalizerGenerationContract.mintPrice();
-  console.log(mintPrice.toString());
   const options = { value: mintPrice };
 
   await blockalizerControllerContract.publicMint(
@@ -101,6 +100,7 @@ export const getOwnedPieces = async (
   const collectionAddress = await blockalizerControllerContract.getCollection(
     COLLECTION_ID
   );
+  console.log(collectionAddress);
   // @ts-ignore
   const blockalizerCollectionContract: BlockalizerV3Contract =
     new ethers.Contract(collectionAddress, nftV3Contract.abi, signer);
@@ -108,6 +108,7 @@ export const getOwnedPieces = async (
   const result = [];
   const userAddress = await signer.getAddress();
   const balance = await blockalizerCollectionContract.balanceOf(userAddress);
+  console.log("balance", balance);
   for (let i = 0; i < balance.toNumber(); i++) {
     const tokenId = await blockalizerCollectionContract.tokenOfOwnerByIndex(
       userAddress,
