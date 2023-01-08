@@ -5,6 +5,7 @@ interface ComponentProps {
   sort: string;
   setSort(sort: string): void;
   blocks: string[];
+  blocksInformation: Map<string, any>;
   blockNumber: number;
   setBlockNumber(blockNumber: number): void;
 }
@@ -15,6 +16,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blocks = props.blocks;
   const blockNumber = props.blockNumber;
   const setBlockNumber = props.setBlockNumber;
+  const blocksInformation = props.blocksInformation;
 
   const blockHandler = (e: any) => {
     const selectedBlockNumber: number = Number(e.currentTarget.value);
@@ -34,7 +36,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber.toString() === b
           ? "text-buttonActiveText"
           : "text-buttonText"
-      }`}
+      } ${blocksInformation.get(b).status == "reserved" ? "bg-slate-600" : ""}`}
     >
       #{b}
       {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
@@ -56,6 +58,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           blockNumber.toString() === b
             ? "text-buttonActiveText"
             : "text-buttonText"
+        } ${
+          blocksInformation.get(b).status == "reserved" ? "bg-slate-600" : ""
         }`}
       >
         #{b}
@@ -188,10 +192,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           </ConnectKitButton.Custom>
         </div>
       </div>
-      
-{/*figure out */}
-      <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
 
+      {/*figure out */}
+      <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
         <div
           id="showScroll"
           className={`max-w-[600px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
