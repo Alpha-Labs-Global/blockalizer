@@ -57,28 +57,11 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   // that later
   const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
 
-  //   TEMPORARILY REMOVING. Minting functionality
-  //   const save = async (e: React.SyntheticEvent) => {
-  //     if (sketchRef && sketchRef.current) {
-  //       // @ts-ignore: Object is possibly 'null'.
-  //       const canvas: any = sketchRef.current.sketch.canvas;
-  //       const name: string = blockNumber.toString();
-  //       const dataURL = canvas.toDataURL();
-  //       try {
-  //         const result = await sendImage(name, dataURL);
-  //         await mintToken(signer as ethers.Signer, result);
-  //       } catch (e) {
-  //         console.error(e);
-  //       }
-  //     }
-  //   };
-
-  const canvasWidth: any = document.getElementById("widthIndicator")?.offsetWidth;
-  const canvasHeight: any = document.getElementById("widthIndicator")?.offsetWidth;
+  const canvasWidth: any =
+    document.getElementById("widthIndicator")?.offsetWidth;
+  const canvasHeight: any =
+    document.getElementById("widthIndicator")?.offsetWidth;
   let sketch: GenericSketch;
-
-  
-
 
   const preload = (p5: p5Types) => {
     let paletteIndex = colorNames.indexOf(chroma);
@@ -101,7 +84,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       blockNumber.toString(),
       blockInfo as BlockInfo,
       style,
-      opts,
+      opts
     );
   };
 
@@ -124,19 +107,17 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const resizeCanvas = (p5: p5Types) => {
     //console.log(document.getElementById("defaultCanvas0")?.style.width = 0)
 
-    var can = document.getElementById("defaultCanvas0")
-    if(can != null)
-    {
-      can.style.width = document.getElementById("widthIndicator")?.offsetWidth + "px"
-      can.style.height = document.getElementById("widthIndicator")?.offsetWidth + "px"
-      
+    var can = document.getElementById("defaultCanvas0");
+    if (can != null) {
+      can.style.width =
+        document.getElementById("widthIndicator")?.offsetWidth + "px";
+      can.style.height =
+        document.getElementById("widthIndicator")?.offsetWidth + "px";
     }
 
-    console.log(can?.clientWidth)
+    console.log(can?.clientWidth);
     //p5.resizeCanvas(document.getElementById("widthIndicator")?.offsetWidth as number, document.getElementById("widthIndicator")?.offsetWidth as number, false);
-  }
-
-
+  };
 
   return (
     <Sketch
@@ -146,8 +127,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       draw={draw}
       preload={preload}
       windowResized={resizeCanvas}
-      
-      
     />
   );
 };

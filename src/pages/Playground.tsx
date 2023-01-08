@@ -60,9 +60,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       const newAddress = await signer.getAddress();
       if (newAddress == address) return;
 
-      const ownedPieces = await getOwnedPieces(signer);
-      // console.log(ownedPieces);
-      setOwnedPieces(ownedPieces);
+      try {
+        const ownedPieces = await getOwnedPieces(signer);
+        setOwnedPieces(ownedPieces);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -80,30 +83,24 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   });
 
   useEffect(() => {
-
-    var elem = document.getElementById("widthIndicator")
-    if(elem != undefined)
-    {
-      elem.style.height = elem.offsetWidth + "px"
+    var elem = document.getElementById("widthIndicator");
+    if (elem != undefined) {
+      elem.style.height = elem.offsetWidth + "px";
     }
-   
   });
 
-  window.addEventListener('resize', (e) => {
-    var elem = document.getElementById("widthIndicator")
-    if(elem != undefined)
-    {
-      elem.style.height = elem.offsetWidth + "px"
+  window.addEventListener("resize", (e) => {
+    var elem = document.getElementById("widthIndicator");
+    if (elem != undefined) {
+      elem.style.height = elem.offsetWidth + "px";
     }
-  })
-
-
+  });
 
   useEffect(() => {
     if (blocksInformation.size > 0) {
       const keys: string[] = Array.from(blocksInformation.keys());
       setBlocks(keys);
-      setBlockNumber(Array.from(blocksInformation.keys())[0])
+      setBlockNumber(Array.from(blocksInformation.keys())[0]);
     }
   }, [blocksInformation]);
 
@@ -128,10 +125,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: any = sketchRef.current.sketch.canvas;
-      const name: string = blockNumber.toString();
       const dataURL = canvas.toDataURL();
       try {
-        const result = await sendImage(name, dataURL);
+        const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);
       } catch (e) {
         console.error(e);
@@ -143,8 +139,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     <div
       className="innerContainer"
       onKeyDown={(e) => {
-        if(sort === "Oldest")
-        {
+        if (sort === "Oldest") {
           if (e.key == "ArrowRight") {
             if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
               setBlockNumber(Number(blocks[0]));
@@ -162,8 +157,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               test.scrollTop += test.clientHeight / blocks.length;
               console.log(test.scrollTop)
             }*/
-            
-           
           } else if (e.key == "ArrowLeft") {
             if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
               setBlockNumber(Number(blocks[blocks.length - 1]));
@@ -173,15 +166,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               );
             }
           }
-        }
-        else if(sort === "Newest")
-        {
+        } else if (sort === "Newest") {
           if (e.key == "ArrowRight") {
-            
-            
             if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
               setBlockNumber(Number(blocks[blocks.length - 1]));
-            }else {
+            } else {
               setBlockNumber(
                 Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
               );
@@ -189,7 +178,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           } else if (e.key == "ArrowLeft") {
             if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
               setBlockNumber(Number(blocks[0]));
-            }  else {
+            } else {
               setBlockNumber(
                 Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
               );
@@ -215,7 +204,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]"
             id="specialIndicator"
           >
-           {address !== "" && blocks.length == 0 ? <div className="text-neutral-500">Loading...</div>: <div className="text-neutral-500">#{blockNumber}</div>} 
+            {address !== "" && blocks.length == 0 ? (
+              <div className="text-neutral-500">Loading...</div>
+            ) : (
+              <div className="text-neutral-500">#{blockNumber}</div>
+            )}
           </h1>
           <span className="block mt-4"></span>
 
@@ -248,39 +241,40 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             </button>
 
             <div className="w-[80%]" id="widthIndicator">
-
-            {address !== "" && blocks.length == 0 ?
-            <div className="m-auto w-full">
-                        <svg
-                          viewBox="0 0 353 351"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <rect
-                            x="1"
-                            y="1"
-                            width="351"
-                            height="348"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                          <path
-                            d="M351 2L3.5 349.5"
-                            stroke="#EBEBEB"
-                            strokeWidth="2"
-                          />
-                        </svg>
-              </div> :
-              <Art
-                blockNumber={blockNumber}
-                ready={ready}
-                numOfBoxes={numOfBoxes}
-                tetri={tetri}
-                chroma={chroma}
-                noFill={noFill}
-                blockInfo={blockInfo}
-                refPointer={sketchRef}
-              />}
+              {address !== "" && blocks.length == 0 ? (
+                <div className="m-auto w-full">
+                  <svg
+                    viewBox="0 0 353 351"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="351"
+                      height="348"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M351 2L3.5 349.5"
+                      stroke="#EBEBEB"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </div>
+              ) : (
+                <Art
+                  blockNumber={blockNumber}
+                  ready={ready}
+                  numOfBoxes={numOfBoxes}
+                  tetri={tetri}
+                  chroma={chroma}
+                  noFill={noFill}
+                  blockInfo={blockInfo}
+                  refPointer={sketchRef}
+                />
+              )}
             </div>
 
             <button
