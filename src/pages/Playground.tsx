@@ -351,6 +351,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setSort={setSort}
         blocks={blocks}
         blockNumber={blockNumber}
+        blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
       ></BlockSelector>
 
