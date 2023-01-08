@@ -86,6 +86,36 @@ const fetchMetadata = async (uri: string) => {
   return jsonMetadata;
 };
 
+export const listenToEvents = async (
+  signer: ethers.Signer,
+  callback: (from: string, to: string, amount: BigNumber, event: any) => void
+) => {
+  // @ts-ignore
+  const blockalizerControllerContract: BlockalizerController =
+    new ethers.Contract(
+      controllerContractAddress,
+      controllerContract.abi,
+      signer
+    );
+
+  const collectionAddress = await blockalizerControllerContract.getCollection(
+    COLLECTION_ID
+  );
+  const blockalizerCollectionContract = new ethers.Contract(
+    collectionAddress,
+    nftV3Contract.abi,
+    signer
+  );
+
+  const userAddress = await signer.getAddress();
+  const filterTo = blockalizerCollectionContract.filters.Transfer(
+    null,
+    userAddress
+  );
+
+  blockalizerCollectionContract.on(filterTo, callback);
+};
+
 export const getOwnedPieces = async (
   signer: ethers.Signer
 ): Promise<Array<any>[]> => {
@@ -100,7 +130,6 @@ export const getOwnedPieces = async (
   const collectionAddress = await blockalizerControllerContract.getCollection(
     COLLECTION_ID
   );
-  console.log(collectionAddress);
   // @ts-ignore
   const blockalizerCollectionContract: BlockalizerV3Contract =
     new ethers.Contract(collectionAddress, nftV3Contract.abi, signer);
@@ -108,7 +137,6 @@ export const getOwnedPieces = async (
   const result = [];
   const userAddress = await signer.getAddress();
   const balance = await blockalizerCollectionContract.balanceOf(userAddress);
-  console.log("balance", balance);
   for (let i = 0; i < balance.toNumber(); i++) {
     const tokenId = await blockalizerCollectionContract.tokenOfOwnerByIndex(
       userAddress,
