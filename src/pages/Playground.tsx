@@ -6,11 +6,11 @@ import Controls from "../components/Controls";
 import BlockSelector from "../components/BlockSelector";
 import Gallery from "../components/Gallery";
 
-import { useSigner } from "wagmi";
+import { Address, useSigner } from "wagmi";
 
 import { fetchBlocks, sendImage } from "../helper/server";
-import { mintToken, getOwnedPieces } from "../helper/wallet";
-import { ethers } from "ethers";
+import { mintToken, getOwnedPieces, listenToEvents } from "../helper/wallet";
+import { ethers, BigNumber } from "ethers";
 
 import "./Playground.css";
 import Header from "../components/Header";
@@ -30,6 +30,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
   const [sort, setSort] = useState("Oldest");
   const [ownedPieces, setOwnedPieces] = useState<Array<any>>([]);
+  const [mintSuccess, setMintSuccess] = useState<boolean>(false);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -62,7 +63,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
+        console.log(ownedPieces);
         setOwnedPieces(ownedPieces);
+        listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
+          // TODO: validate
+          setMintSuccess(true);
+        });
       } catch (e) {
         console.log(e);
       }
@@ -95,6 +101,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       elem.style.height = elem.offsetWidth + "px";
     }
   });
+
+  useEffect(() => {
+    if (mintSuccess) {
+      alert("minting was successful!");
+      setMintSuccess(false);
+    }
+  }, [mintSuccess]);
 
   useEffect(() => {
     if (blocksInformation.size > 0) {
