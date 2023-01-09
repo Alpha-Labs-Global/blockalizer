@@ -104,7 +104,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   useEffect(() => {
     if (mintSuccess) {
-      alert("minting was successful!");
+      //alert("minting was successful!");
       setMintSuccess(false);
     }
   }, [mintSuccess]);
