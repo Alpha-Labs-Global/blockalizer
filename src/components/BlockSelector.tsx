@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ConnectKitButton } from "connectkit";
+import { create } from "domain";
 
 interface ComponentProps {
   sort: string;
@@ -18,6 +19,71 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const setBlockNumber = props.setBlockNumber;
   const blocksInformation = props.blocksInformation;
 
+  function deleteArtificialAdditions() {
+    var elements = document.getElementsByClassName("artificialAddition")
+    while(elements.length > 0) {
+      if(elements[0].parentNode !== null)
+      {
+        elements[0].parentNode.removeChild(elements[0]);
+      }
+    }
+  }
+
+  function createArtificialAdditions() {
+    var buttonContainer = document.getElementById("showScroll")
+
+    if(buttonContainer)
+    {
+      if(buttonContainer.children.length > 0)
+      {
+        var yPositionOfFirstRow = (buttonContainer.children[0].getBoundingClientRect().y)
+        var foundDiff = false;
+        var count = 0;
+
+        while(foundDiff === false)
+        {
+          for(var i = 0; i < buttonContainer.children.length; i++)
+          {
+            if(buttonContainer.children[i].getBoundingClientRect().y !== yPositionOfFirstRow)
+            {
+              foundDiff = true;
+              break;
+            }
+            count++;
+          }
+        }
+        console.log(buttonContainer.children[count - 1].clientWidth)
+        console.log("there are " + count + " blocks per row")
+        console.log(blocks.length % count)
+
+        if(blocks.length % count !== 0)
+        {
+          var amountToAdd = count - (blocks.length % count)
+          console.log("adding " + amountToAdd + " elements")
+          for(var i = 0; i < amountToAdd; i++)
+          {
+            var clone = buttonContainer.children[0].cloneNode(true) as HTMLElement;
+            clone.classList.add("artificialAddition")
+            buttonContainer.appendChild(clone)
+          }
+        }     
+    }
+  }
+  }
+
+  window.addEventListener('resize', (e) => {
+    deleteArtificialAdditions();
+    createArtificialAdditions();
+  })
+
+
+  useEffect(() => {
+    createArtificialAdditions();
+    
+
+    
+    }, [blocks.length != 0]);
+
   const blockHandler = (e: any) => {
     const selectedBlockNumber: number = Number(e.currentTarget.value);
     setBlockNumber(selectedBlockNumber);
@@ -25,6 +91,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   //oldest filter
   const oldestBlock = blocks.map((b, i) => (
+    <div className="m-auto">
     <button
       key={i}
       id={b}
@@ -41,6 +108,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       #{b}
       {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
     </button>
+    </div>
   ));
 
   //newest filter
@@ -48,13 +116,15 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     .slice(0)
     .reverse()
     .map((b, i) => (
+      <div className="m-auto">
       <button
+        key={i}
         id={b}
         onClick={blockHandler}
         value={b}
         className={`{ ${
           blockNumber.toString() === b ? "bg-white" : "bg-button"
-        } w-[30%] mt-2 mb-2 mr-auto  py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ${
+        } w-[99%] mt-2 mb-2 py-1 px-2 shadow-md no-underline rounded-full text-md sm:text-sm ${
           blockNumber.toString() === b
             ? "text-buttonActiveText"
             : "text-buttonText"
@@ -65,12 +135,18 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         #{b}
         {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
       </button>
+    </div>
     ));
 
   return (
     <div className="lg:w-[50%] md:w-[90%] sm:w-[90%]  pt-4 lg:pl-[3%] md:pl-[0%] sm:pl-[0%] lg:m-0 md:m-auto sm:m-auto bg-special lg:block md:block sm:block">
       <div className="lg:w-[100%] md:w-full sm:w-full">
-        <div className="w-full float-left">
+        
+      </div>
+      
+{/*figure out */}
+      <div className="lg:float-left md:float-none sm:float-none lg:w-[60%] md:w-[80%] sm:w-full max-w-[600px] lg:min-w-[400px] m-auto">
+      <div className="w-full float-left">
           <ConnectKitButton.Custom>
             {({
               isConnected,
@@ -162,7 +238,15 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                       <div className="mt-5"></div>
 
-                      <h1 className="lg:w-[85%] sm:w-[98%]">
+                      
+                    </div>
+                  )}
+                </div>
+              );
+            }}
+          </ConnectKitButton.Custom>
+        </div>
+      <h1 className="lg:w-[100%] sm:w-[98%]">
                         Sort By:
                         <select
                           id="dropdown"
@@ -174,7 +258,10 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                               : "flex-wrap-reverse"
                           }`}
                           onChange={(e) => {
+                            deleteArtificialAdditions();
                             setSort(e.target.value);
+                            
+                            
                           }}
                         >
                           <option value="Oldest">Oldest</option>
@@ -184,20 +271,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                           {blocks.length} Total TX
                         </span>
                       </h1>
-                    </div>
-                  )}
-                </div>
-              );
-            }}
-          </ConnectKitButton.Custom>
-        </div>
-      </div>
-
-      {/*figure out */}
-      <div className="lg:float-left md:float-left sm:float-left lg:w-[60%] md:w-[80%] sm:w-full">
         <div
           id="showScroll"
-          className={`  max-w-[600px] lg:min-w-[400px] scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-80 md:h-40 sm:h-60 overflow-scroll justify-start`}
+          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
         >
           {sort === "Oldest" && oldestBlock}
 

@@ -116,6 +116,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
 
     console.log(can?.clientWidth);
+=======
+>>>>>>> 71f5a9f (start implementing gallery)
     //p5.resizeCanvas(document.getElementById("widthIndicator")?.offsetWidth as number, document.getElementById("widthIndicator")?.offsetWidth as number, false);
   };
 
