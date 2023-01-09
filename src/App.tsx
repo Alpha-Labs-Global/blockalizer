@@ -827,7 +827,6 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                           }}
                         </ConnectKitButton.Custom>
                       </div>
-
                       <div className="w-[8%] float-right">
                         <svg
                           className="inline-block w-9 align-top"

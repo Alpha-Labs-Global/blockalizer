@@ -115,7 +115,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
         document.getElementById("widthIndicator")?.offsetWidth + "px";
     }
 
-    console.log(can?.clientWidth);
     //p5.resizeCanvas(document.getElementById("widthIndicator")?.offsetWidth as number, document.getElementById("widthIndicator")?.offsetWidth as number, false);
   };
 

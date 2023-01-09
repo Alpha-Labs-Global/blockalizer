@@ -6,14 +6,17 @@ module.exports = {
   theme: {
     extend: {
       screens: {
+        
         'sm': '0px',
         // => @media (min-width: 576px) { ... }
   
         'md': '750px',
         // => @media (min-width: 960px) { ... }
   
-        'lg': '750px',
+        'lg': '968px',
         // => @media (min-width: 1440px) { ... }
+        'xl': '1800px',
+        'xxl': '2350px'
       },
       colors: {
         transparent: 'transparent',
@@ -25,7 +28,9 @@ module.exports = {
         },
         button: '#464646',
         buttonText: '#BDBDBD',
-        buttonActiveText: '#121212'
+        buttonActiveText: '#121212',
+        teal: "#ADFFD8",
+        green: "#228B22"
     },
 
 
