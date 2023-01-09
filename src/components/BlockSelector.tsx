@@ -9,6 +9,7 @@ interface ComponentProps {
   blocksInformation: Map<string, any>;
   blockNumber: number;
   setBlockNumber(blockNumber: number): void;
+  setAlreadyMinted(alreadyMinted: boolean): void;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -18,6 +19,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockNumber = props.blockNumber;
   const setBlockNumber = props.setBlockNumber;
   const blocksInformation = props.blocksInformation;
+  const setAlreadyMinted = props.setAlreadyMinted;
 
   function deleteArtificialAdditions() {
     var elements = document.getElementsByClassName("artificialAddition")
@@ -30,6 +32,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }
 
   function createArtificialAdditions() {
+    
     var buttonContainer = document.getElementById("showScroll")
 
     if(buttonContainer)
@@ -72,13 +75,13 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }
 
   window.addEventListener('resize', (e) => {
-    deleteArtificialAdditions();
-    createArtificialAdditions();
+    //deleteArtificialAdditions();
+    //createArtificialAdditions();
   })
 
 
   useEffect(() => {
-    createArtificialAdditions();
+    //createArtificialAdditions();
     
 
     
@@ -86,7 +89,16 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const blockHandler = (e: any) => {
     const selectedBlockNumber: number = Number(e.currentTarget.value);
+    const blockInformation = blocksInformation.get(selectedBlockNumber.toString())
+
     setBlockNumber(selectedBlockNumber);
+
+    if(blockInformation['status'] === "reserved") {
+      setAlreadyMinted(true)
+    }
+    else {
+      setAlreadyMinted(false)
+    }
   };
 
   //oldest filter
@@ -97,7 +109,6 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       id={b}
       onClick={blockHandler}
       value={b}
-      disabled={blocksInformation.get(b).status == "reserved"}
       className={`{ ${
         ((blockNumber.toString() === b)) ? `bg-white` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
       } 

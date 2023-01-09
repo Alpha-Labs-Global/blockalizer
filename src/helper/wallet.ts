@@ -130,6 +130,7 @@ export const getOwnedPieces = async (
   const collectionAddress = await blockalizerControllerContract.getCollection(
     COLLECTION_ID
   );
+
   // @ts-ignore
   const blockalizerCollectionContract: BlockalizerV3Contract =
     new ethers.Contract(collectionAddress, nftV3Contract.abi, signer);

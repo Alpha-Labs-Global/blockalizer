@@ -31,6 +31,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [sort, setSort] = useState("Oldest");
   const [ownedPieces, setOwnedPieces] = useState<Array<any>>([]);
   const [mintSuccess, setMintSuccess] = useState<boolean>(false);
+  const [alreadyMinted, setAlreadyMinted] = useState<boolean>(false);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -333,6 +334,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setNoFill={setNoFill}
               setChroma={setChroma}
               mintHandler={mindHandler}
+              alreadyMinted={alreadyMinted}
             ></Controls>
 
             <button
@@ -367,6 +369,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber={blockNumber}
         blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
+        setAlreadyMinted={setAlreadyMinted}
       ></BlockSelector>
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
