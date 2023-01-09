@@ -5,7 +5,6 @@ import Collapsible from "react-collapsible";
 
 import "./App.css";
 import Playground from "./pages/Playground";
-import Visualizer from "./components/Visualizer";
 
 import { ConnectKitButton } from "connectkit";
 
@@ -14,14 +13,34 @@ import { WagmiConfig, useAccount } from "wagmi";
 
 import { wagmiClient } from "./helper/wallet";
 
+import { latestBlock } from "./helper/server";
+import dayjs from "dayjs";
+const relativeTime = require("dayjs/plugin/relativeTime");
+
 interface ComponentProps {}
 
 const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   //Home, Search, Mint pages
   const [page, setPage] = useState("Home");
+  const [blockNumber, setBlockNumber] = useState(12345);
+  const [timestamp, setTimestamp] = useState("2023-01-09T00:05:41.661Z");
+  const [imgUrl, setImgUrl] = useState(placeHolder);
+
   const { address, connector, isConnected } = useAccount();
 
-  useEffect(() => {});
+  dayjs().format();
+  dayjs.extend(relativeTime);
+
+  const loadLatestBlock = async () => {
+    const result = await latestBlock();
+    setBlockNumber(result.blockNumber);
+    setTimestamp(result.createdAt);
+    setImgUrl(result.url);
+  };
+
+  useEffect(() => {
+    loadLatestBlock();
+  });
 
   return (
     <div className="h-full">
@@ -382,11 +401,11 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       </h1>
                       <span className="block mb-3"></span>
                       <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                        #12345 | 3 hours ago
+                        #{blockNumber} | {(dayjs(timestamp) as any).fromNow()}
                       </h1>
 
                       <span className="block mb-2"></span>
-                      <img src={placeHolder} className="m-auto w-full"></img>
+                      <img src={imgUrl} className="m-auto w-full"></img>
                     </div>
 
                     <span className="block mb-10"></span>
@@ -420,7 +439,19 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                 </div>
               </div>
 
-              <Visualizer></Visualizer>
+              <div className="visualizer">
+                <div className="m-auto w-6/12">
+                  <h1 className="lg:text-xl md:text-lg sm:text-md">
+                    Latest Minted Block
+                  </h1>
+                  <span className="block mb-3"></span>
+                  <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                    #{blockNumber} | {(dayjs(timestamp) as any).fromNow()}
+                  </h1>
+                  <span className="block mb-2"></span>
+                  <img src={imgUrl} className="w-full"></img>
+                </div>
+              </div>
             </div>
           )}
 
