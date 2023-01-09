@@ -49,3 +49,18 @@ export const sendImage = async (
   const content = await response.json();
   return content.data;
 };
+
+export const latestBlock = async () => {
+  const endpoint = "/api/latest";
+  const response = await fetch(SERVER_URL + endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) throw new Error();
+
+  const content = await response.json();
+  return content.data;
+};
