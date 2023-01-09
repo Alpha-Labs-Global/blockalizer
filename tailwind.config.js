@@ -29,7 +29,8 @@ module.exports = {
         button: '#464646',
         buttonText: '#BDBDBD',
         buttonActiveText: '#121212',
-        teal: "#ADFFD8"
+        teal: "#ADFFD8",
+        green: "#228B22"
     },
 
 

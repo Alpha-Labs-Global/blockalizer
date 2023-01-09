@@ -99,8 +99,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       value={b}
       disabled={blocksInformation.get(b).status == "reserved"}
       className={`{ ${
-        blockNumber.toString() === b ? "bg-white text-buttonActiveText" : "bg-button text-buttonText"
-      } w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm  ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : ""}`}
+        ((blockNumber.toString() === b)) ? `bg-white` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
+      } 
+      ${
+        ((blockNumber.toString() === b)) ? "text-buttonActiveText" : "text-buttonText"
+      }
+      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm  ${blocksInformation.get(b).status == "reserved" ? "border-2 border-button bg-transparent" : ""}`}
     >
       #{b}
       {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
