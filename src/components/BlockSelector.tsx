@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ConnectKitButton } from "connectkit";
-import { create } from "domain";
 
 interface ComponentProps {
   sort: string;
@@ -8,6 +7,8 @@ interface ComponentProps {
   blocks: string[];
   blocksInformation: Map<string, any>;
   blockNumber: number;
+  informationText: string;
+  errorText: string;
   setBlockNumber(blockNumber: number): void;
 }
 
@@ -18,75 +19,74 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockNumber = props.blockNumber;
   const setBlockNumber = props.setBlockNumber;
   const blocksInformation = props.blocksInformation;
+  const informationText = props.informationText;
+  const errorText = props.errorText;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
   function deleteArtificialAdditions() {
-    var elements = document.getElementsByClassName("artificialAddition")
-    while(elements.length > 0) {
-      if(elements[0].parentNode !== null)
-      {
+    var elements = document.getElementsByClassName("artificialAddition");
+    while (elements.length > 0) {
+      if (elements[0].parentNode !== null) {
         elements[0].parentNode.removeChild(elements[0]);
       }
     }
   }
 
-  function createArtificialAdditions() {
-    var buttonContainer = document.getElementById("showScroll")
+  const blockTaken = (b: string) => {
+    return (
+      blocksInformation.get(b).status == "reserved" ||
+      blocksInformation.get(b).status == "acquired"
+    );
+  };
 
-    if(buttonContainer)
-    {
-      if(buttonContainer.children.length > 0)
-      {
-        var yPositionOfFirstRow = (buttonContainer.children[0].getBoundingClientRect().y)
+  function createArtificialAdditions() {
+    var buttonContainer = document.getElementById("showScroll");
+
+    if (buttonContainer) {
+      if (buttonContainer.children.length > 0) {
+        var yPositionOfFirstRow =
+          buttonContainer.children[0].getBoundingClientRect().y;
         var foundDiff = false;
         var count = 0;
 
-        while(foundDiff === false)
-        {
-          for(var i = 0; i < buttonContainer.children.length; i++)
-          {
-            if(buttonContainer.children[i].getBoundingClientRect().y !== yPositionOfFirstRow)
-            {
+        while (foundDiff === false) {
+          for (var i = 0; i < buttonContainer.children.length; i++) {
+            if (
+              buttonContainer.children[i].getBoundingClientRect().y !==
+              yPositionOfFirstRow
+            ) {
               foundDiff = true;
               break;
             }
             count++;
           }
         }
-        console.log(buttonContainer.children[count - 1].clientWidth)
-        console.log("there are " + count + " blocks per row")
-        console.log(blocks.length % count)
 
-        if(blocks.length % count !== 0)
-        {
-          var amountToAdd = count - (blocks.length % count)
-          console.log("adding " + amountToAdd + " elements")
-          for(var i = 0; i < amountToAdd; i++)
-          {
-            var clone = buttonContainer.children[0].cloneNode(true) as HTMLElement;
-            clone.classList.add("artificialAddition")
-            buttonContainer.appendChild(clone)
+        if (blocks.length % count !== 0) {
+          var amountToAdd = count - (blocks.length % count);
+          for (var i = 0; i < amountToAdd; i++) {
+            var clone = buttonContainer.children[0].cloneNode(
+              true
+            ) as HTMLElement;
+            clone.classList.add("artificialAddition");
+            buttonContainer.appendChild(clone);
           }
-        }     
+        }
+      }
     }
   }
-  }
 
-  window.addEventListener('resize', (e) => {
+  window.addEventListener("resize", (e) => {
     deleteArtificialAdditions();
     createArtificialAdditions();
-  })
-
+  });
 
   useEffect(() => {
     createArtificialAdditions();
 
-   //document.getElementById("showScroll")?.focus()
-    
-
-    
-    }, [orderedBlocks.length != 0]);
+    //document.getElementById("showScroll")?.focus()
+  }, [orderedBlocks.length != 0]);
 
   useEffect(() => {
     if (sort == "Oldest") {
@@ -105,72 +105,36 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     setBlockNumber(selectedBlockNumber);
   };
 
-  const chunkUpArray = (arr: Array<any>) => {
-    const chunkSize = 4;
-    let result = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-      const chunk = arr.slice(i, i + chunkSize);
-      result.push(chunk);
-    }
-    return result;
-  };
-
-  //leaving commented in in case needed later on
-  const orderedBlocksDisplay = chunkUpArray(orderedBlocks).map(
-    (chunk: Array<any>) => {
-      const lineOfItems = chunk.map((b) => (
-        <div key={b}>
-          <button
-            id={b}
-            onClick={blockHandler}
-            value={b}
-            className={`{ ${
-              blockNumber.toString() === b
-                ? `bg-white`
-                : ` ${
-                    blocksInformation.get(b).status == "reserved"
-                      ? "bg-transparent"
-                      : "bg-button"
-                  } `
-            } 
-    ${
-      blockNumber.toString() === b ? "text-buttonActiveText" : "text-buttonText"
-    }
-    w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm   ${
-      blocksInformation.get(b).status == "reserved"
-        ? "border-2 border-button bg-transparent"
-        : ""
-    }`}
-          >
-            #{b}
-          </button>
-        </div>
-      ));
-      return <div className="flex">{lineOfItems}</div>;
-    }
-  );
-
   const orderedBlocksDisplay2 = orderedBlocks.map((b, i) => (
     <div className="m-auto">
-    <button
-      key={i}
-      id={b}
-      onClick={blockHandler}
-      value={b}
-      className={`{ ${
-        ((blockNumber.toString() === b)) ? `${blocksInformation.get(b).status == "reserved" ? " bg-white bg-opacity-50" : "bg-white border-white"}` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
-      } 
+      <button
+        key={i}
+        id={b}
+        onClick={blockHandler}
+        value={b}
+        className={`{ ${
+          blockNumber.toString() === b
+            ? `${
+                blockTaken(b)
+                  ? " bg-white bg-opacity-50"
+                  : "bg-white border-white"
+              }`
+            : ` ${blockTaken(b) ? "bg-transparent" : "bg-button"} `
+        } 
       ${
-        ((blockNumber.toString() === b)) ? "text-buttonActiveText" : "text-buttonText"
+        blockNumber.toString() === b
+          ? "text-buttonActiveText"
+          : "text-buttonText"
       }
-      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm border-2 border-button  ${blocksInformation.get(b).status == "reserved" ? " bg-transparent" : ""}`}
-    >
-      #{b}
-      {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
-    </button>
+      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm border-2 border-button  ${
+        blockTaken(b) ? " bg-transparent" : ""
+      }`}
+      >
+        #{b}
+        {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
+      </button>
     </div>
   ));
-  
 
   return (
     <div className="lg:w-[50%] md:w-[90%] sm:w-[90%]  pt-4 lg:pl-[3%] md:pl-[0%] sm:pl-[0%] lg:m-0 md:m-auto sm:m-auto bg-special lg:block md:block sm:block">
@@ -302,6 +266,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay2}
         </div>
         <br></br>
+        <div>{informationText}</div>
+        <div className="mb-5 text-red-400">{errorText}</div>
       </div>
     </div>
   );

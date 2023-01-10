@@ -8,7 +8,12 @@ import Gallery from "../components/Gallery";
 
 import { Address, useSigner } from "wagmi";
 
-import { fetchBlocks, sendImage } from "../helper/server";
+import {
+  fetchBlocks,
+  sendImage,
+  mintingSuccess,
+  mintingFailure,
+} from "../helper/server";
 import { mintToken, getOwnedPieces, listenToEvents } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -22,16 +27,18 @@ interface ComponentProps {
 
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [blockNumber, setBlockNumber] = useState<number>(-1);
+  const [acquiredBlockNumber, setAcquiredBlockNumber] = useState<number>(-1);
   const [blockInfo, setBlockInfo] = useState({});
-  const [ready, setReady] = useState(false);
-  const [serverFailure, setServerFailure] = useState(false);
+  const [loadArt, setLoadArt] = useState(false);
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blocksInformation, setBlocksInformation] = useState(new Map());
   const [address, setAddress] = useState(""); // cache address so it is not refreshed everytime
   const [sort, setSort] = useState("Oldest");
   const [ownedPieces, setOwnedPieces] = useState<Array<any>>([]);
-  const [mintSuccess, setMintSuccess] = useState<boolean>(false);
+  const [listeningMint, setListeningMint] = useState<boolean>(false);
   const [alreadyMinted, setAlreadyMinted] = useState<boolean>(false);
+  const [informationText, setInformationText] = useState<string>("");
+  const [errorText, setErrorText] = useState<string>("");
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -49,9 +56,27 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       try {
         const result = await fetchBlocks(newAddress);
         setBlocksInformation(result);
-      } catch (e) {
+        if (result.size > 0) {
+          const keys: string[] = Array.from(result.keys());
+          setBlocks(keys);
+          setBlockNumber(Number(keys[0]));
+        }
+      } catch (e: any) {
         console.error(e);
-        setServerFailure(true);
+      }
+    }
+  };
+
+  const resetView = async () => {
+    if (signer) {
+      try {
+        const address = await signer.getAddress();
+        const result = await fetchBlocks(address);
+        const ownedPieces = await getOwnedPieces(signer);
+        setOwnedPieces(ownedPieces);
+        setBlocksInformation(result);
+      } catch (e: any) {
+        console.error(e);
       }
     }
   };
@@ -64,18 +89,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
-        console.log(ownedPieces);
         setOwnedPieces(ownedPieces);
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
-          setMintSuccess(true);
+          setListeningMint(true);
         });
-      } catch (e) {
+      } catch (e: any) {
         console.log(e);
       }
     }
   };
 
+  // order of state execution
   // blockInformation --> blocks
   // blockNumber --> blockInfo --> signedInApp
 
@@ -103,45 +128,47 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   });
 
-  useEffect(() => {
-    if (mintSuccess) {
-      //alert("minting was successful!");
-      setMintSuccess(false);
-    }
-  }, [mintSuccess]);
+  const lazyUpdateMint = async () => {
+    await mintingSuccess(acquiredBlockNumber);
+    await resetView();
+    setListeningMint(false);
+  };
 
   useEffect(() => {
-    if (blocksInformation.size > 0) {
-      const keys: string[] = Array.from(blocksInformation.keys());
-      setBlocks(keys);
-      setBlockNumber(Array.from(blocksInformation.keys())[0]);
+    if (listeningMint) {
+      setInformationText("Minting completed! Enjoy your block!");
+      lazyUpdateMint();
     }
-  }, [blocksInformation]);
+  }, [listeningMint]);
 
   useEffect(() => {
     if (blockNumber > 0) {
       const info = blocksInformation.get(blockNumber.toString());
       setBlockInfo(info);
+      setLoadArt(true);
+
+      if (
+        (info as any).status === "reserved" ||
+        (info as any).status === "acquired"
+      ) {
+        setAlreadyMinted(true);
+        setInformationText(
+          "Select a different block! This one has already been minted!"
+        );
+      } else {
+        setAlreadyMinted(false);
+        setInformationText("Looks good! Ready to mint?");
+      }
     }
   }, [blockNumber]);
 
-  useEffect(() => {
-    if (Object.keys(blockInfo).length !== 0) {
-      setReady(true);
-    }
-    if ((blockInfo as any).status === "reserved") {
-      setAlreadyMinted(true);
-    } else {
-      setAlreadyMinted(false);
-    }
-  }, [blockInfo]);
+  useEffect(() => {}, [blockInfo]);
 
   const { data: signer, isError, isLoading } = useSigner();
 
   const sketchRef = useRef(null);
 
-  const mindHandler = async () => {
-
+  const mintHandler = async () => {
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
      
@@ -158,9 +185,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
      try {
         const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);
-        alert(result);
-      } catch (e) {
+        setInformationText("Minting has started! Please wait...");
+      } catch (e: any) {
+        mintingFailure(blockNumber);
         console.error(e);
+      } finally {
+        setAcquiredBlockNumber(blockNumber);
       }
     }
   };
@@ -178,26 +208,21 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
           );
-        } 
+        }
       }
     } else if (sort === "Newest") {
-
-
       if (key == "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== 0) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
           );
-        }    
-        
+        }
       } else if (key == "ArrowLeft") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
           );
         }
-          
-        
       }
     }
   };
@@ -216,7 +241,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       {address !== "" && blocks.length > 0 && blockNumber == -1
         ? "Click Block to get started"
         : null}
-      {serverFailure ? "Server failed" : null}
 
       <div className="lg:w-6/12 pt-4 lg:block md:block sm:block md:w-[100%] sm:w-[100%]">
         <div className="lg:w-[70%] lg:ml-[30%] md:w-[60%] md:m-auto sm:w-[90%] sm:m-auto lg:max-w-[600px] lg:min-w-[350px] md:max-w-[600px] md:min-w-[400px] lg:float-right">
@@ -286,7 +310,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               ) : (
                 <Art
                   blockNumber={blockNumber}
-                  ready={ready}
+                  ready={loadArt}
                   numOfBoxes={numOfBoxes}
                   tetri={tetri}
                   chroma={chroma}
@@ -338,7 +362,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setTetri={setTetri}
               setNoFill={setNoFill}
               setChroma={setChroma}
-              mintHandler={mindHandler}
+              mintHandler={mintHandler}
               alreadyMinted={alreadyMinted}
             ></Controls>
 
@@ -374,9 +398,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber={blockNumber}
         blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
+        informationText={informationText}
+        errorText={errorText}
       ></BlockSelector>
-
-
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
     </div>
