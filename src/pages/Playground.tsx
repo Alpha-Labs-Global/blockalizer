@@ -136,14 +136,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const sketchRef = useRef(null);
 
   const mindHandler = async () => {
+
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: any = sketchRef.current.sketch.canvas;
       const dataURL = canvas.toDataURL();
       try {
         const result = await sendImage(blockNumber, dataURL, address);
-        await mintToken(signer as ethers.Signer, result);
-        alert(result)
+        const returnVal = await mintToken(signer as ethers.Signer, result)
+
+        console.log(returnVal)
+ 
+
       } catch (e) {
         console.error(e);
       }
@@ -163,15 +167,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
               );
             }
-            /*let scroll_length = 40;
-
-            var test = document.getElementById("showScroll")
-            
-            if((test != undefined) && (blockNumber % 3 === 0))
-            {
-              test.scrollTop += test.clientHeight / blocks.length;
-              console.log(test.scrollTop)
-            }*/
           } else if (e.key == "ArrowLeft") {
             if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
               setBlockNumber(Number(blocks[blocks.length - 1]));
@@ -371,6 +366,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlockNumber={setBlockNumber}
         setAlreadyMinted={setAlreadyMinted}
       ></BlockSelector>
+
+
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
     </div>
