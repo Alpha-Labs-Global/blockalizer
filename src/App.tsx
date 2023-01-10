@@ -28,37 +28,38 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [imgUrl, setImgUrl] = useState(placeHolder);
 
   const { address, connector, isConnected } = useAccount();
-  const [recentlyMintedBlocks, setRecentlyMintedBlocks] = useState([])
-  const [recentBlock, setRecentBlock] = useState({blockNumber: null, createdAt: null, url: ""})
-  const [index, setIndex] = (useState(0))
+  const [recentlyMintedBlocks, setRecentlyMintedBlocks] = useState([]);
+  const [recentBlock, setRecentBlock] = useState({
+    blockNumber: null,
+    createdAt: null,
+    url: "",
+  });
+  const [index, setIndex] = useState(0);
 
   dayjs().format();
   dayjs.extend(relativeTime);
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      if (index + 1 !== recentlyMintedBlocks.length) {
+        setIndex(index + 1);
+      } else {
+        setIndex(0);
+      }
 
-      
-        if(index + 1 !== recentlyMintedBlocks.length) {setIndex(index+1)}
-        else{setIndex(0)}
-
-        console.log(index)
-        console.log(recentlyMintedBlocks[index])
-        setRecentBlock(recentlyMintedBlocks[index])
-        //setRecentlyMintedBlock(recentlyMintedBlocks[4])
-      
-      
-    }, 5000)
-    return () => clearTimeout(timer)
-   }, [index, recentlyMintedBlocks])
+      setRecentBlock(recentlyMintedBlocks[index]);
+      //setRecentlyMintedBlock(recentlyMintedBlocks[4])
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [index, recentlyMintedBlocks]);
 
   const loadLatestBlock = async () => {
     const result = await latestBlock();
 
-    console.log(result)
-    setRecentlyMintedBlocks(result)
-    setRecentBlock(result[0])
-    
+    console.log(result);
+    setRecentlyMintedBlocks(result);
+    setRecentBlock(result[0]);
+
     setBlockNumber(result.blockNumber);
     setTimestamp(result.createdAt);
     setImgUrl(result.url);
@@ -427,12 +428,12 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                         Recently Minted
                       </h1>
                       <span className="block mb-1"></span>
-                  <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                  #{recentBlock.blockNumber}| {(dayjs(timestamp) as any).fromNow()}
-                  
-                  
-                  <span className="block mb-2"></span>
-                  <img src={recentBlock.url} className="w-[100%]"></img></h1>
+                      <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                        #{recentBlock.blockNumber}|{" "}
+                        {(dayjs(timestamp) as any).fromNow()}
+                        <span className="block mb-2"></span>
+                        <img src={recentBlock.url} className="w-[100%]"></img>
+                      </h1>
                     </div>
 
                     <span className="block mb-10"></span>
@@ -472,41 +473,40 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                     Recently Minted
                   </h1>
                   <span className="block mb-1"></span>
-                  {recentlyMintedBlocks.length > 0 ? <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                  #{recentBlock.blockNumber}| {(dayjs(timestamp) as any).fromNow()}
-                  
-                  
-                  <span className="block mb-2"></span>
-                  <img src={recentBlock.url} className="w-[100%]"></img>
-                  
-                  
-                  
-                  </h1> : <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                  Loading...
-                  
-                  
-                  <span className="block mb-2"></span>
-                  <div className="w-[100%]">
-                  <svg
-                    viewBox="0 0 353 351"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect
-                      x="1"
-                      y="1"
-                      width="351"
-                      height="348"
-                      stroke="white"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M351 2L3.5 349.5"
-                      stroke="#EBEBEB"
-                      strokeWidth="2"
-                    />
-                  </svg></div>
-                    </h1>}
+                  {recentlyMintedBlocks.length > 0 ? (
+                    <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                      #{recentBlock.blockNumber}|{" "}
+                      {(dayjs(timestamp) as any).fromNow()}
+                      <span className="block mb-2"></span>
+                      <img src={recentBlock.url} className="w-[100%]"></img>
+                    </h1>
+                  ) : (
+                    <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                      Loading...
+                      <span className="block mb-2"></span>
+                      <div className="w-[100%]">
+                        <svg
+                          viewBox="0 0 353 351"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="1"
+                            y="1"
+                            width="351"
+                            height="348"
+                            stroke="white"
+                            strokeWidth="2"
+                          />
+                          <path
+                            d="M351 2L3.5 349.5"
+                            stroke="#EBEBEB"
+                            strokeWidth="2"
+                          />
+                        </svg>
+                      </div>
+                    </h1>
+                  )}
                 </div>
               </div>
             </div>

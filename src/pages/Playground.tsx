@@ -171,18 +171,17 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const mintHandler = async () => {
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
-     
+
       const canvas: any = sketchRef.current.sketch.canvas;
-     // canvas.cloneNode(true)
-     
-      let canvas2 = canvas.cloneNode(true)
+      // canvas.cloneNode(true)
 
-      const dataURL = canvas.toDataURL(); 
-      console.log(dataURL)
-      console.log("sending new enw")
+      let canvas2 = canvas.cloneNode(true);
 
-      
-     try {
+      const dataURL = canvas.toDataURL();
+      // console.log(dataURL);
+      // console.log("sending new enw");
+
+      try {
         const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);
         setInformationText("Minting has started! Please wait...");
@@ -317,6 +316,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                   noFill={noFill}
                   blockInfo={blockInfo}
                   refPointer={sketchRef}
+                  alreadyMinted={alreadyMinted}
                 />
               )}
             </div>
