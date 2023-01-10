@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
-
 *::-webkit-scrollbar {
   width: 0 !important;
+  display: none;
   }
 
 
   #showScroll::-webkit-scrollbar {
     width: .4rem !important;
+    display: block;
     }
 
 *:focus {

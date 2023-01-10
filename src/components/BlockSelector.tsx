@@ -10,6 +10,7 @@ interface ComponentProps {
   informationText: string;
   errorText: string;
   setBlockNumber(blockNumber: number): void;
+  totalMinted: number,
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -21,6 +22,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blocksInformation = props.blocksInformation;
   const informationText = props.informationText;
   const errorText = props.errorText;
+  const totalMinted = props.totalMinted;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
@@ -202,7 +204,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                         <div className="mt-3"></div>
                       </h1>
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
-                        <span>0 Minted&nbsp;</span>
+                        <span><span className="text-teal">{totalMinted}</span>/1000 Minted&nbsp;</span>
 
                         <svg
                           className="inline-block w-7 align-top"
@@ -268,18 +270,22 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         <br></br>
         <div>{informationText}
         <br></br>
-          <div id="tweet-button">
-          <a id="tweet"
-            target="_blank"
-            href="https://twitter.com/intent/tweet?text=Hello%20world"
-            onClick={e => {
-              e.preventDefault()
-              
+        <span className="block mb-3"></span>
+          
+         {informationText === "Minting completed. Enjoy your block!" && <div id="tweet-button">
+            <a id="tweet"
+              target="_blank"
+              role="button"
+           
+              className="underline"
+              onClick={e => {
+                e.preventDefault()
+                
 
-              window.open(`https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`, '_blank');
-
-            }}>tweet</a>
-          </div>
+                window.open(`https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`, '_blank');
+                
+              }}>Share to Twitter</a>
+          </div>}
         </div>
         <div className="mb-5 text-red-400">{errorText}</div>
       </div>
