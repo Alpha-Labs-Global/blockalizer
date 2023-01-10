@@ -266,7 +266,21 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay2}
         </div>
         <br></br>
-        <div>{informationText}</div>
+        <div>{informationText}
+        <br></br>
+          <div id="tweet-button">
+          <a id="tweet"
+            target="_blank"
+            href="https://twitter.com/intent/tweet?text=Hello%20world"
+            onClick={e => {
+              e.preventDefault()
+              
+
+              window.open(`https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`, '_blank');
+
+            }}>tweet</a>
+          </div>
+        </div>
         <div className="mb-5 text-red-400">{errorText}</div>
       </div>
     </div>
