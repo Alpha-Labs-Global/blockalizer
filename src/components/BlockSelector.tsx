@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ConnectKitButton } from "connectkit";
 import { create } from "domain";
 
@@ -9,7 +9,6 @@ interface ComponentProps {
   blocksInformation: Map<string, any>;
   blockNumber: number;
   setBlockNumber(blockNumber: number): void;
-  setAlreadyMinted(alreadyMinted: boolean): void;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -19,146 +18,76 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockNumber = props.blockNumber;
   const setBlockNumber = props.setBlockNumber;
   const blocksInformation = props.blocksInformation;
-  const setAlreadyMinted = props.setAlreadyMinted;
 
-  function deleteArtificialAdditions() {
-    var elements = document.getElementsByClassName("artificialAddition")
-    while(elements.length > 0) {
-      if(elements[0].parentNode !== null)
-      {
-        elements[0].parentNode.removeChild(elements[0]);
-      }
-    }
-  }
-
-  function createArtificialAdditions() {
-    
-    var buttonContainer = document.getElementById("showScroll")
-
-    if(buttonContainer)
-    {
-      if(buttonContainer.children.length > 0)
-      {
-        var yPositionOfFirstRow = (buttonContainer.children[0].getBoundingClientRect().y)
-        var foundDiff = false;
-        var count = 0;
-
-        while(foundDiff === false)
-        {
-          for(var i = 0; i < buttonContainer.children.length; i++)
-          {
-            if(buttonContainer.children[i].getBoundingClientRect().y !== yPositionOfFirstRow)
-            {
-              foundDiff = true;
-              break;
-            }
-            count++;
-          }
-        }
-        console.log(buttonContainer.children[count - 1].clientWidth)
-        console.log("there are " + count + " blocks per row")
-        console.log(blocks.length % count)
-
-        if(blocks.length % count !== 0)
-        {
-          var amountToAdd = count - (blocks.length % count)
-          console.log("adding " + amountToAdd + " elements")
-          for(var i = 0; i < amountToAdd; i++)
-          {
-            var clone = buttonContainer.children[0].cloneNode(true) as HTMLElement;
-            clone.classList.add("artificialAddition")
-            buttonContainer.appendChild(clone)
-          }
-        }     
-    }
-  }
-  }
-
-  window.addEventListener('resize', (e) => {
-    //deleteArtificialAdditions();
-    //createArtificialAdditions();
-  })
-
+  const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
   useEffect(() => {
-    //createArtificialAdditions();
-    
-
-    
-    }, [blocks.length != 0]);
+    if (sort == "Oldest") {
+      setOrderedBlocks(blocks);
+      setBlockNumber(Number(blocks[0]));
+    } else {
+      const reversed = orderedBlocks.reverse();
+      setOrderedBlocks(reversed);
+      setBlockNumber(Number(reversed[0]));
+    }
+  }, [sort, blocks]);
 
   const blockHandler = (e: any) => {
     const selectedBlockNumber: number = Number(e.currentTarget.value);
-    const blockInformation = blocksInformation.get(selectedBlockNumber.toString())
-
     setBlockNumber(selectedBlockNumber);
-
-    if(blockInformation['status'] === "reserved") {
-      setAlreadyMinted(true)
-    }
-    else {
-      setAlreadyMinted(false)
-    }
   };
 
-  //oldest filter
-  const oldestBlock = blocks.map((b, i) => (
-    <div className="m-auto">
-    <button
-      key={i}
-      id={b}
-      onClick={blockHandler}
-      value={b}
-      className={`{ ${
-        ((blockNumber.toString() === b)) ? `bg-white` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
-      } 
-      ${
-        ((blockNumber.toString() === b)) ? "text-buttonActiveText" : "text-buttonText"
-      }
-      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm  ${blocksInformation.get(b).status == "reserved" ? "border-2 border-button bg-transparent" : ""}`}
-    >
-      #{b}
-      {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
-    </button>
-    </div>
-  ));
+  const chunkUpArray = (arr: Array<any>) => {
+    const chunkSize = 4;
+    let result = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      const chunk = arr.slice(i, i + chunkSize);
+      result.push(chunk);
+    }
+    return result;
+  };
 
-  //newest filter
-  const newestBlocks = blocks
-    .slice(0)
-    .reverse()
-    .map((b, i) => (
-      <div className="m-auto">
-      <button
-        key={i}
-        id={b}
-        onClick={blockHandler}
-        value={b}
-        className={`{ ${
-          blockNumber.toString() === b ? "bg-white" : "bg-button"
-        } w-[99%] mt-2 mb-2 py-1 px-2 shadow-md no-underline rounded-full text-md sm:text-sm ${
-          blockNumber.toString() === b
-            ? "text-buttonActiveText"
-            : "text-buttonText"
-        } ${
-          blocksInformation.get(b).status == "reserved" ? "bg-slate-600" : ""
-        }`}
-      >
-        #{b}
-        {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
-      </button>
-    </div>
-    ));
+  const orderedBlocksDisplay = chunkUpArray(orderedBlocks).map(
+    (chunk: Array<any>) => {
+      const lineOfItems = chunk.map((b) => (
+        <div key={b}>
+          <button
+            id={b}
+            onClick={blockHandler}
+            value={b}
+            className={`{ ${
+              blockNumber.toString() === b
+                ? `bg-white`
+                : ` ${
+                    blocksInformation.get(b).status == "reserved"
+                      ? "bg-transparent"
+                      : "bg-button"
+                  } `
+            } 
+    ${
+      blockNumber.toString() === b ? "text-buttonActiveText" : "text-buttonText"
+    }
+    w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm  ${
+      blocksInformation.get(b).status == "reserved"
+        ? "border-2 border-button bg-transparent"
+        : ""
+    }`}
+          >
+            #{b}
+          </button>
+        </div>
+      ));
+      return <div className="flex">{lineOfItems}</div>;
+    }
+  );
 
   return (
     <div className="lg:w-[50%] md:w-[90%] sm:w-[90%]  pt-4 lg:pl-[3%] md:pl-[0%] sm:pl-[0%] lg:m-0 md:m-auto sm:m-auto bg-special lg:block md:block sm:block">
-      <div className="lg:w-[100%] md:w-full sm:w-full">
-        
-      </div>
-      
-{/*figure out */}
+      <div className="lg:w-[100%] md:w-full sm:w-full"></div>
+
+      {/*figure out */}
       <div className="lg:float-left md:float-none sm:float-none lg:w-[60%] md:w-[80%] sm:w-full max-w-[600px] lg:min-w-[400px] m-auto">
-      <div className="w-full float-left">
+        <div className="w-full float-left">
           <ConnectKitButton.Custom>
             {({
               isConnected,
@@ -249,8 +178,6 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                       </h1>
 
                       <div className="mt-5"></div>
-
-                      
                     </div>
                   )}
                 </div>
@@ -258,38 +185,29 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
             }}
           </ConnectKitButton.Custom>
         </div>
-      <h1 className="lg:w-[100%] sm:w-[98%]">
-                        Sort By:
-                        <select
-                          id="dropdown"
-                          name="dropdown"
-                          placeholder="Oldest"
-                          className={`bg-transparent opacity-50 ${
-                            sort === "Oldest"
-                              ? "flex-wrap"
-                              : "flex-wrap-reverse"
-                          }`}
-                          onChange={(e) => {
-                            deleteArtificialAdditions();
-                            setSort(e.target.value);
-                            
-                            
-                          }}
-                        >
-                          <option value="Oldest">Oldest</option>
-                          <option value="Newest">Newest</option>
-                        </select>
-                        <span className="float-right">
-                          {blocks.length} Total TX
-                        </span>
-                      </h1>
+        <h1 className="lg:w-[100%] sm:w-[98%]">
+          Sort By:
+          <select
+            id="dropdown"
+            name="dropdown"
+            placeholder="Oldest"
+            className={`bg-transparent opacity-50 ${
+              sort === "Oldest" ? "flex-wrap" : "flex-wrap-reverse"
+            }`}
+            onChange={(e) => {
+              setSort(e.target.value);
+            }}
+          >
+            <option value="Oldest">Oldest</option>
+            <option value="Newest">Newest</option>
+          </select>
+          <span className="float-right">{blocks.length} Total TX</span>
+        </h1>
         <div
           id="showScroll"
-          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
+          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 w-500`}
         >
-          {sort === "Oldest" && oldestBlock}
-
-          {sort === "Newest" && newestBlocks}
+          {orderedBlocksDisplay}
         </div>
         <br></br>
       </div>
