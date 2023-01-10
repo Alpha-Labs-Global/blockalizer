@@ -15,6 +15,7 @@ import { wagmiClient } from "./helper/wallet";
 
 import { latestBlock } from "./helper/server";
 import dayjs from "dayjs";
+import { resourceLimits } from "worker_threads";
 const relativeTime = require("dayjs/plugin/relativeTime");
 
 interface ComponentProps {}
@@ -27,20 +28,46 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [imgUrl, setImgUrl] = useState(placeHolder);
 
   const { address, connector, isConnected } = useAccount();
+  const [recentlyMintedBlocks, setRecentlyMintedBlocks] = useState([])
+  const [recentBlock, setRecentBlock] = useState({blockNumber: null, createdAt: null, url: ""})
+  const [index, setIndex] = (useState(0))
 
   dayjs().format();
   dayjs.extend(relativeTime);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+
+
+        if(index + 1 !== recentlyMintedBlocks.length) {setIndex(index+1)}
+        else{setIndex(0)}
+
+        console.log(index)
+        console.log(recentlyMintedBlocks[index])
+        setRecentBlock(recentlyMintedBlocks[index])
+        //setRecentlyMintedBlock(recentlyMintedBlocks[4])
+      
+      
+    }, 5000)
+    return () => clearTimeout(timer)
+   }, [index, recentlyMintedBlocks])
+
   const loadLatestBlock = async () => {
     const result = await latestBlock();
+
+    console.log(result)
+    setRecentlyMintedBlocks(result)
+    setRecentBlock(result[0])
+    
     setBlockNumber(result.blockNumber);
     setTimestamp(result.createdAt);
     setImgUrl(result.url);
   };
 
   useEffect(() => {
+    //loadLatestBlock();
     loadLatestBlock();
-  });
+  }, []);
 
   return (
     <div className="h-full">
@@ -397,15 +424,15 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                     <div className="m-auto w-12/12 mt-6 lg:hidden md:inline-block sm:inline-block md:ml-9 sm:ml-9">
                       <h1 className="lg:text-md md:text-md sm:text-md">
-                        Latest Minted Block
+                        Recently Minted
                       </h1>
-                      <span className="block mb-3"></span>
-                      <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                        #{blockNumber} | {(dayjs(timestamp) as any).fromNow()}
-                      </h1>
-
-                      <span className="block mb-2"></span>
-                      <img src={imgUrl} className="m-auto w-full"></img>
+                      <span className="block mb-1"></span>
+                  <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                  #{recentBlock.blockNumber}| {(dayjs(timestamp) as any).fromNow()}
+                  
+                  
+                  <span className="block mb-2"></span>
+                  <img src={recentBlock.url} className="w-full"></img></h1>
                     </div>
 
                     <span className="block mb-10"></span>
@@ -440,16 +467,21 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               </div>
 
               <div className="visualizer">
-                <div className="m-auto w-6/12">
+                <div className="m-auto w-[60%]">
                   <h1 className="lg:text-xl md:text-lg sm:text-md">
-                    Latest Minted Block
+                    Recently Minted
                   </h1>
-                  <span className="block mb-3"></span>
+                  <span className="block mb-1"></span>
                   <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
-                    #{blockNumber} | {(dayjs(timestamp) as any).fromNow()}
-                  </h1>
+                  #{recentBlock.blockNumber}| {(dayjs(timestamp) as any).fromNow()}
+                  
+                  
                   <span className="block mb-2"></span>
-                  <img src={imgUrl} className="w-full"></img>
+                  <img src={recentBlock.url} className="w-full"></img>
+                  
+                  
+                  
+                  </h1>
                 </div>
               </div>
             </div>

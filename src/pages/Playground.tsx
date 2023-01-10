@@ -144,9 +144,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
+     
       const canvas: any = sketchRef.current.sketch.canvas;
-      const dataURL = canvas.toDataURL();
-      try {
+     // canvas.cloneNode(true)
+     
+      let canvas2 = canvas.cloneNode(true)
+
+      const dataURL = canvas.toDataURL(); 
+      console.log(dataURL)
+      console.log("sending new enw")
+
+      
+     try {
         const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);
         alert(result);
