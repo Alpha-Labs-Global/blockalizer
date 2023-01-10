@@ -157,42 +157,38 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const iterateThroughBlocks = (key: string) => {
-    console.log(key, sort);
     if (sort === "Oldest") {
       if (key == "ArrowRight") {
-        if (blocks.indexOf(blockNumber.toString()) === blocks.length - 1) {
-          setBlockNumber(Number(blocks[blocks.length - 1]));
-        } else {
+        if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
           );
         }
       } else if (key == "ArrowLeft") {
-        if (blocks.indexOf(blockNumber.toString()) === 0) {
-          setBlockNumber(Number(blocks[0]));
-        } else {
+        if (blocks.indexOf(blockNumber.toString()) !== 0) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
           );
-        }
+        } 
       }
     } else if (sort === "Newest") {
+
+
       if (key == "ArrowRight") {
-        if (blocks.indexOf(blockNumber.toString()) + 1 === blocks.length) {
-          setBlockNumber(Number(blocks[blocks.length - 1]));
-        } else {
+        if (blocks.indexOf(blockNumber.toString()) !== 0) {
+          setBlockNumber(
+            Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+          );
+        }    
+        
+      } else if (key == "ArrowLeft") {
+        if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
           );
         }
-      } else if (key == "ArrowLeft") {
-        if (blocks.indexOf(blockNumber.toString()) === 0) {
-          setBlockNumber(Number(blocks[0]));
-        } else {
-          setBlockNumber(
-            Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
-          );
-        }
+          
+        
       }
     }
   };

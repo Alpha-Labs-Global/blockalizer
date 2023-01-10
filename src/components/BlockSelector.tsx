@@ -21,13 +21,78 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
+  function deleteArtificialAdditions() {
+    var elements = document.getElementsByClassName("artificialAddition")
+    while(elements.length > 0) {
+      if(elements[0].parentNode !== null)
+      {
+        elements[0].parentNode.removeChild(elements[0]);
+      }
+    }
+  }
+
+  function createArtificialAdditions() {
+    var buttonContainer = document.getElementById("showScroll")
+
+    if(buttonContainer)
+    {
+      if(buttonContainer.children.length > 0)
+      {
+        var yPositionOfFirstRow = (buttonContainer.children[0].getBoundingClientRect().y)
+        var foundDiff = false;
+        var count = 0;
+
+        while(foundDiff === false)
+        {
+          for(var i = 0; i < buttonContainer.children.length; i++)
+          {
+            if(buttonContainer.children[i].getBoundingClientRect().y !== yPositionOfFirstRow)
+            {
+              foundDiff = true;
+              break;
+            }
+            count++;
+          }
+        }
+        console.log(buttonContainer.children[count - 1].clientWidth)
+        console.log("there are " + count + " blocks per row")
+        console.log(blocks.length % count)
+
+        if(blocks.length % count !== 0)
+        {
+          var amountToAdd = count - (blocks.length % count)
+          console.log("adding " + amountToAdd + " elements")
+          for(var i = 0; i < amountToAdd; i++)
+          {
+            var clone = buttonContainer.children[0].cloneNode(true) as HTMLElement;
+            clone.classList.add("artificialAddition")
+            buttonContainer.appendChild(clone)
+          }
+        }     
+    }
+  }
+  }
+
+  window.addEventListener('resize', (e) => {
+    deleteArtificialAdditions();
+    createArtificialAdditions();
+  })
+
+
+  useEffect(() => {
+    createArtificialAdditions();
+
+    
+    }, [orderedBlocks.length != 0]);
+
   useEffect(() => {
     if (sort == "Oldest") {
-      setOrderedBlocks(blocks);
+      //ask about this
+      setOrderedBlocks([...blocks]);
       setBlockNumber(Number(blocks[0]));
     } else {
       const reversed = orderedBlocks.reverse();
-      setOrderedBlocks(reversed);
+      setOrderedBlocks([...reversed]);
       setBlockNumber(Number(reversed[0]));
     }
   }, [sort, blocks]);
@@ -90,7 +155,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       onClick={blockHandler}
       value={b}
       className={`{ ${
-        ((blockNumber.toString() === b)) ? `bg-white` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
+        ((blockNumber.toString() === b)) ? `${blocksInformation.get(b).status == "reserved" ? " bg-white bg-opacity-50" : "bg-white border-white"}` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
       } 
       ${
         ((blockNumber.toString() === b)) ? "text-buttonActiveText" : "text-buttonText"
@@ -219,6 +284,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
             }`}
             onChange={(e) => {
               setSort(e.target.value);
+              //no need to create or delete artificial additions, all buttons are the same size and therefore their reverse order mirrors the current order STRUCTURE
             }}
           >
             <option value="Oldest">Oldest</option>
@@ -228,7 +294,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         </h1>
         <div
           id="showScroll"
-          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
+          className={`max-h-[300px] border-teal pt-1 pl-2 pr-2 pb-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
         >
           {orderedBlocksDisplay2}
         </div>
