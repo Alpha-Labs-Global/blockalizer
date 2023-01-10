@@ -14,7 +14,7 @@ import {
   mintingSuccess,
   mintingFailure,
 } from "../helper/server";
-import { mintToken, getOwnedPieces, listenToEvents } from "../helper/wallet";
+import { mintToken, getOwnedPieces, listenToEvents, getTotalMinted } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
 import "./Playground.css";
@@ -44,6 +44,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [tetri, setTetri] = useState(0);
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
+  const [totalMinted, setTotalMinted] = useState(0)
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -75,6 +76,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const ownedPieces = await getOwnedPieces(signer);
         setOwnedPieces(ownedPieces);
         setBlocksInformation(result);
+
+        const tokenCount = await getTotalMinted(signer);
+        setTotalMinted(tokenCount.toNumber())
+        //call here
       } catch (e: any) {
         console.error(e);
       }
@@ -90,6 +95,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       try {
         const ownedPieces = await getOwnedPieces(signer);
         setOwnedPieces(ownedPieces);
+        const tokenCount = await getTotalMinted(signer);
+        setTotalMinted(tokenCount.toNumber())
+
+
+
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
           setListeningMint(true);
@@ -136,7 +146,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   useEffect(() => {
     if (listeningMint) {
-      setInformationText("Minting completed! Enjoy your block!");
+      setInformationText("Minting completed. Enjoy your block!");
       lazyUpdateMint();
     }
   }, [listeningMint]);
@@ -153,7 +163,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       ) {
         setAlreadyMinted(true);
         setInformationText(
-          "Select a different block! This one has already been minted!"
+          "Select a different block. This one has already been minted."
         );
       } else {
         setAlreadyMinted(false);
@@ -400,6 +410,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlockNumber={setBlockNumber}
         informationText={informationText}
         errorText={errorText}
+        totalMinted={totalMinted}
       ></BlockSelector>
 
       <Gallery ownedPieces={ownedPieces}></Gallery>

@@ -27,6 +27,7 @@ export interface BlockalizerGenerationV2Contract {
   expiryTime(): BigNumber;
   startTime(): BigNumber;
   owner(): string;
+  getTokenCount(): BigNumber;
   incrementTokenCount(address: string): void;
 }
 
