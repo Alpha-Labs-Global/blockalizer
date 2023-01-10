@@ -96,3 +96,23 @@ export const mintingFailure = async (blockNumber: number) => {
 
   return;
 };
+
+export const getBlockInfo = async (blockNumber: number) => {
+  const endpoint = "/api/block/" + blockNumber;
+  const response = await fetch(SERVER_URL + endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) throw new Error();
+
+  const content = await response.json();
+  const metadataUrl = content.data.url;
+
+  const response2 = await fetch(metadataUrl);
+  if (!response2.ok) throw new Error();
+
+  return response2;
+};

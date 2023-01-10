@@ -3,6 +3,7 @@ import Sketch from "react-p5";
 import p5Types from "p5";
 
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
+import { getBlockInfo } from "../helper/server";
 
 import GenericSketch from "../art-styles/generic_sketch";
 
@@ -15,10 +16,12 @@ interface ComponentProps {
   noFill: boolean;
   blockInfo: any;
   refPointer: React.MutableRefObject<null>;
+  alreadyMinted: boolean;
 }
 
 export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [style, setStyle] = useState("none");
+  const [imgUrl, setImgUrl] = useState("");
 
   const blockNumber = props.blockNumber;
   const ready = props.ready;
@@ -28,6 +31,18 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const noFill = props.noFill;
   const blockInfo = props.blockInfo;
   const refPointer = props.refPointer;
+  const alreadyMinted = props.alreadyMinted;
+
+  const lazyGetInfo = async () => {
+    console.log("calling info");
+    const info = await getBlockInfo(blockNumber);
+    const url = info.url;
+    setImgUrl(url);
+  };
+
+  useEffect(() => {
+    lazyGetInfo();
+  }, [alreadyMinted, blockNumber]);
 
   useEffect(() => {
     regenerate();
@@ -119,14 +134,20 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <Sketch
-      ref={refPointer}
-      key={uniqueKey}
-      setup={setup}
-      draw={draw}
-      preload={preload}
-      windowResized={resizeCanvas}
-    />
+    <div>
+      {alreadyMinted ? (
+        <img src={imgUrl}></img>
+      ) : (
+        <Sketch
+          ref={refPointer}
+          key={uniqueKey}
+          setup={setup}
+          draw={draw}
+          preload={preload}
+          windowResized={resizeCanvas}
+        />
+      )}
+    </div>
   );
 };
 
