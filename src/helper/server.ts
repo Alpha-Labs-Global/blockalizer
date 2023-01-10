@@ -64,3 +64,35 @@ export const latestBlock = async () => {
   const content = await response.json();
   return content.data;
 };
+
+export const mintingSuccess = async (blockNumber: number) => {
+  const endpoint = "/api/mint-success";
+  const body = JSON.stringify({ blockNumber });
+  const response = await fetch(SERVER_URL + endpoint, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+  if (!response.ok) throw new Error();
+
+  return;
+};
+
+export const mintingFailure = async (blockNumber: number) => {
+  const endpoint = "/api/mint-failure";
+  const body = JSON.stringify({ blockNumber });
+  const response = await fetch(SERVER_URL + endpoint, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+  if (!response.ok) throw new Error();
+
+  return;
+};

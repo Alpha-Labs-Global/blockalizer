@@ -76,8 +76,6 @@ export const mintToken = async (
     tokenUri,
     options
   );
-
-
 };
 
 const fetchMetadata = async (uri: string) => {
