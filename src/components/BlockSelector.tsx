@@ -47,6 +47,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     return result;
   };
 
+  //leaving commented in in case needed later on
   const orderedBlocksDisplay = chunkUpArray(orderedBlocks).map(
     (chunk: Array<any>) => {
       const lineOfItems = chunk.map((b) => (
@@ -67,7 +68,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     ${
       blockNumber.toString() === b ? "text-buttonActiveText" : "text-buttonText"
     }
-    w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm  ${
+    w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm   ${
       blocksInformation.get(b).status == "reserved"
         ? "border-2 border-button bg-transparent"
         : ""
@@ -80,6 +81,28 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       return <div className="flex">{lineOfItems}</div>;
     }
   );
+
+  const orderedBlocksDisplay2 = orderedBlocks.map((b, i) => (
+    <div className="m-auto">
+    <button
+      key={i}
+      id={b}
+      onClick={blockHandler}
+      value={b}
+      className={`{ ${
+        ((blockNumber.toString() === b)) ? `bg-white` : ` ${blocksInformation.get(b).status == "reserved" ? "bg-transparent" : "bg-button"} `
+      } 
+      ${
+        ((blockNumber.toString() === b)) ? "text-buttonActiveText" : "text-buttonText"
+      }
+      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm border-2 border-button  ${blocksInformation.get(b).status == "reserved" ? " bg-transparent" : ""}`}
+    >
+      #{b}
+      {/*`{ ${(selectedSeed === b ? 'bg-white' : 'bg-button')} w-[33%] mt-2 mb-2 py-1 lg:px-4 md:px-3 sm:px-2 shadow-md no-underline rounded-full text-sm ml-1 mr-1 ${selectedSeed === b ? 'text-buttonActiveText' : 'text-buttonText'}` */}
+    </button>
+    </div>
+  ));
+  
 
   return (
     <div className="lg:w-[50%] md:w-[90%] sm:w-[90%]  pt-4 lg:pl-[3%] md:pl-[0%] sm:pl-[0%] lg:m-0 md:m-auto sm:m-auto bg-special lg:block md:block sm:block">
@@ -205,9 +228,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         </h1>
         <div
           id="showScroll"
-          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 w-500`}
+          className={`max-h-[300px] border-teal pt-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
         >
-          {orderedBlocksDisplay}
+          {orderedBlocksDisplay2}
         </div>
         <br></br>
       </div>
