@@ -141,6 +141,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const sketchRef = useRef(null);
 
   const mindHandler = async () => {
+
     if (sketchRef && sketchRef.current) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: any = sketchRef.current.sketch.canvas;
@@ -369,6 +370,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
       ></BlockSelector>
+
+
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
     </div>

@@ -71,11 +71,13 @@ export const mintToken = async (
   const mintPrice = await blockalizerGenerationContract.mintPrice();
   const options = { value: mintPrice };
 
-  await blockalizerControllerContract.publicMint(
+  return await blockalizerControllerContract.publicMint(
     COLLECTION_ID,
     tokenUri,
     options
   );
+
+
 };
 
 const fetchMetadata = async (uri: string) => {
