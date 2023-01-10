@@ -82,6 +82,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     createArtificialAdditions();
 
+   //document.getElementById("showScroll")?.focus()
+    
+
     
     }, [orderedBlocks.length != 0]);
 
