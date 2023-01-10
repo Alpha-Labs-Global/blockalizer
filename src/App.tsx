@@ -38,7 +38,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
 
-
+      
         if(index + 1 !== recentlyMintedBlocks.length) {setIndex(index+1)}
         else{setIndex(0)}
 
@@ -432,7 +432,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                   
                   
                   <span className="block mb-2"></span>
-                  <img src={recentBlock.url} className="w-full"></img></h1>
+                  <img src={recentBlock.url} className="w-[100%]"></img></h1>
                     </div>
 
                     <span className="block mb-10"></span>
@@ -472,16 +472,41 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                     Recently Minted
                   </h1>
                   <span className="block mb-1"></span>
-                  <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                  {recentlyMintedBlocks.length > 0 ? <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
                   #{recentBlock.blockNumber}| {(dayjs(timestamp) as any).fromNow()}
                   
                   
                   <span className="block mb-2"></span>
-                  <img src={recentBlock.url} className="w-full"></img>
+                  <img src={recentBlock.url} className="w-[100%]"></img>
                   
                   
                   
-                  </h1>
+                  </h1> : <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
+                  Loading...
+                  
+                  
+                  <span className="block mb-2"></span>
+                  <div className="w-[100%]">
+                  <svg
+                    viewBox="0 0 353 351"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="351"
+                      height="348"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M351 2L3.5 349.5"
+                      stroke="#EBEBEB"
+                      strokeWidth="2"
+                    />
+                  </svg></div>
+                    </h1>}
                 </div>
               </div>
             </div>
