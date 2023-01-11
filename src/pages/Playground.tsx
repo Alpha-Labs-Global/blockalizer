@@ -9,7 +9,7 @@ import Gallery from "../components/Gallery";
 import { Address, useSigner } from "wagmi";
 
 // @ts-ignore
-import Hermite_class from "hermite-resize";
+import sharp from "sharp";
 
 import {
   fetchBlocks,
@@ -102,6 +102,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
+        console.log(ownedPieces);
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
@@ -187,25 +188,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       // @ts-ignore: Object is possibly 'null'.
 
       const canvas: any = sketchRef.current.sketch.canvas;
-
-      const resizeCanvas = document.createElement("canvas");
-      resizeCanvas.height = canvas.height;
-      resizeCanvas.width = canvas.width;
-
-      const resizeCtx = resizeCanvas.getContext("2d");
-      // Put original canvas contents to the resizing canvas
-      resizeCtx?.drawImage(canvas, 0, 0);
-      const HERMITE = new Hermite_class();
-
-      HERMITE.resample(resizeCanvas, 1200, 1200);
-
-      // Use the resized image to do what you want
-      // const dataURL = resizeCanvas.toDataURL("image/png");
-
+      console.log(canvas);
       const dataURL = canvas.toDataURL();
-      // console.log(dataURL);
-      // console.log("sending new enw");
-
       try {
         const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);

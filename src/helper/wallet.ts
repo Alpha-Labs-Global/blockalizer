@@ -127,9 +127,6 @@ export const getOwnedPieces = async (
       signer
     );
 
-
-    
-
   const collectionAddress = await blockalizerControllerContract.getCollection(
     COLLECTION_ID
   );
@@ -147,16 +144,20 @@ export const getOwnedPieces = async (
       BigNumber.from(i)
     );
     const uri = await blockalizerCollectionContract.tokenURI(tokenId);
-    const metadata = await fetchMetadata(uri);
-    const response: any = { tokenId: tokenId.toNumber(), metadata };
-    result.push(response);
+    try {
+      const metadata = await fetchMetadata(uri);
+      const response: any = { tokenId: tokenId.toNumber(), metadata };
+      result.push(response);
+    } catch (e) {
+      console.error(e);
+      continue;
+    }
   }
   return result;
 };
 
-
 export const getTotalMinted = async (
-  signer: ethers.Signer,
+  signer: ethers.Signer
 ): Promise<BigNumber> => {
   // @ts-ignore
   const blockalizerControllerContract: BlockalizerController =
@@ -178,5 +179,5 @@ export const getTotalMinted = async (
 
   const totalMinted = await blockalizerGenerationContract.getTokenCount();
 
-  return totalMinted
+  return totalMinted;
 };

@@ -99,7 +99,6 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       setOrderedBlocks([...reversed]);
       setBlockNumber(Number(reversed[0]));
     }
-    console.log(orderedBlocks);
   }, [sort, blocks]);
 
   const blockHandler = (e: any) => {

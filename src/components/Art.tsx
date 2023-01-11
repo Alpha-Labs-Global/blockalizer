@@ -34,13 +34,14 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const alreadyMinted = props.alreadyMinted;
 
   const lazyGetInfo = async () => {
-    console.log("calling info");
-    try {
-      const info = await getBlockInfo(blockNumber);
-      const url = info.url;
-      setImgUrl(url);
-    } catch (e) {
-      console.log(e);
+    if (alreadyMinted) {
+      try {
+        const info = await getBlockInfo(blockNumber);
+        const url = info.url;
+        setImgUrl(url);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -119,7 +120,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (uniqueKey != keyGenerator()) {
       setUniqueKey(keyGenerator());
       // p5Instance.redraw();
-      console.log("unique key changed...");
+      console.log("Regenerating Art...");
     }
   };
 
