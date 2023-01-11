@@ -16,6 +16,7 @@ import { wagmiClient } from "./helper/wallet";
 import { latestBlock } from "./helper/server";
 import dayjs from "dayjs";
 import { resourceLimits } from "worker_threads";
+import placeholder from './media/updatingMint.png';
 const relativeTime = require("dayjs/plugin/relativeTime");
 
 interface ComponentProps {}
@@ -479,7 +480,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       #{recentBlock.blockNumber}|{" "}
                       {(dayjs(recentBlock.createdAt) as any).fromNow()}
                       <span className="block mb-2"></span>
-                      <img src={recentBlock.url} className="w-[100%]"></img>
+                      <img src={recentBlock.url} className="w-[100%]"  onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // prevents looping
+          currentTarget.src=placeholder;
+  }}></img>
                     </h1>
                   ) : (
                     <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
@@ -517,8 +521,8 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
             <div className="contentContainer">
               {!isConnected && (
                 <div className="blockalizerDivLeft">
-                  <div className="lg:w-full md:w-full sm:w-full break-words lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-0">
-                    <div className="lg:m-auto md:m-auto sm:ml-[10%] sm:mr-[10%] sm:mt-[0%] sm:mb-[0%] lg:12/12 md:w-6/12 sm:w-9/12">
+                  <div className="lg:w-full md:w-full sm:w-full break-words lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-0 relative">
+                    <div className="xxl:ml-[45%] xl:ml-[30%] lg:ml-[25%] md:ml-[30%] sm:ml-[10%] sm:mr-[10%] sm:mt-10 sm:mb-[0%] lg:w-[50%] md:w-[100%] sm:w-10/12 lg:max-w-[500px] absolute bottom-0">
                       <div className="lg:hidden md:block sm:block">
                         <div className="md:w-[100%] sm:w-[100%]">
                           <ConnectKitButton.Custom>
