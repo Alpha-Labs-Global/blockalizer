@@ -947,7 +947,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                     </div>
                   </div>
 
-                  <div className="md:w-[40%] sm:w-[80%] m-auto lg:hidden md:block sm:block md:mt-2">
+                  <div className="md:w-[40%] sm:w-[80%] ml-auto mr-auto mt-0 lg:hidden md:block sm:block md:mt-2">
                     <span className="block mt-4"></span>
                     <div className="w-full">
                       <svg
