@@ -268,6 +268,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay2}
         </div>
         <br></br>
+          <span className="italic text-sm text-buttonText">Genesis 1 of 12</span>
+        <span className="block mb-3"></span>
         <div>{informationText}
         <br></br>
         <span className="block mb-3"></span>

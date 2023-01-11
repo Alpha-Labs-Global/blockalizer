@@ -271,7 +271,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               className="w-[10%] flex"
               onClick={(e) => {
                 if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
-                  setBlockNumber(Number(blocks[blocks.length - 1]));
+                  //setBlockNumber(Number(blocks[blocks.length - 1]));
+                
                 } else {
                   setBlockNumber(
                     Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
@@ -338,7 +339,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                   blocks.indexOf(blockNumber.toString()) + 1 ===
                   blocks.length
                 ) {
-                  setBlockNumber(Number(blocks[0]));
+                  //setBlockNumber(Number(blocks[0]));
                 } else {
                   setBlockNumber(
                     Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
