@@ -521,7 +521,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
             <div className="contentContainer">
               {!isConnected && (
                 <div className="blockalizerDivLeft">
-                  <div className="lg:w-full md:w-full sm:w-full break-words lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-0 relative">
+                  <div className="lg:w-full md:w-full sm:w-full break-words lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-10 relative">
                     <div className="xxl:ml-[45%] xl:ml-[30%] lg:ml-[25%] md:ml-[30%] sm:ml-[10%] sm:mr-[10%] sm:mt-10 sm:mb-[0%] lg:w-[50%] md:w-[100%] sm:w-10/12 lg:max-w-[500px] absolute bottom-0">
                       <div className="lg:hidden md:block sm:block">
                         <div className="md:w-[100%] sm:w-[100%] mt-4">
@@ -536,6 +536,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                             }) => {
                               return (
                                 <div>
+                                  <span className="block mb-5 bg-green"></span>
                                   {!isConnected ? (
                                     <div className="md:w-[45%] sm:w-[50%]">
                                       <svg
