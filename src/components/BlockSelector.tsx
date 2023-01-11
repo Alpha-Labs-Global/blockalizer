@@ -144,7 +144,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           ? "text-buttonActiveText"
           : "text-buttonText"
       }
-      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-xs border-2 border-button  ${
+      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-xs midSm:text-md border-2 border-button  ${
         blockTaken(b) ? " bg-transparent" : ""
       }`}
       >
