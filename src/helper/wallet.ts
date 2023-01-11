@@ -1,6 +1,6 @@
 import { createClient } from "wagmi";
 import { getDefaultClient } from "connectkit";
-import { goerli } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 import { SiweMessage } from "siwe";
 import { BigNumber, ethers } from "ethers";
 
@@ -23,7 +23,7 @@ const controllerContractAddress =
   REACT_APP_BLOCKALIZER_CONTRACT_ADDRESS ||
   "0x0000000000000000000000000000000000000000";
 
-const chains = [goerli];
+const chains = [mainnet];
 
 export const wagmiClient = createClient(
   getDefaultClient({
@@ -40,7 +40,7 @@ export const createSiweMessage = (address: string, statement: string) => {
     statement,
     uri: window.location.origin,
     version: "1",
-    chainId: goerli.id,
+    chainId: mainnet.id,
   });
   console.log(siweMessage);
   return siweMessage.prepareMessage();
