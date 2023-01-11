@@ -12,6 +12,8 @@ interface ComponentProps {
   errorText: string;
   setBlockNumber(blockNumber: number): void;
   totalMinted: number;
+  launchDate: Date;
+  onAllowlist: boolean
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -24,12 +26,11 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const informationText = props.informationText;
   const errorText = props.errorText;
   const totalMinted = props.totalMinted;
-
+  const currentDate = new Date(Date.now());
+  const launchDate = props.launchDate;
+  const onAllowlist = props.onAllowlist
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
-
-  const [launchDate, setLaunchDate] = useState(new Date('12 Jan 2023 12:00:00 EST'))
-  const [currentDate, setCurrentDate] = useState(new Date(Date.now()))
 
   type renderObj = {
     hours: string;
@@ -38,8 +39,6 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const Completionist = () => <span></span>;
-
-
 
   function deleteArtificialAdditions() {
     var elements = document.getElementsByClassName("artificialAddition");
@@ -100,10 +99,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   });
 
   useEffect(() => {
-     //createArtificialAdditions();
+    //createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
-
-  
   }, [orderedBlocks.length != 0]);
 
   useEffect(() => {
@@ -220,10 +217,17 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                         <div className="mt-3"></div>
                       </h1>
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
-                        {launchDate > currentDate && <span>Allowlist open for <Countdown
-                          date={launchDate}
-                        /></span>}
-                      <br></br>
+                        {launchDate > currentDate && (
+                          <span>
+                            Allowlist open for <Countdown date={launchDate} />
+                            <br></br>
+                            <span className="text-sm">
+                            {onAllowlist ? "Cool! Looks like you're on the allowlist. You can mint 2" : "Ooh, looks like you're not on the allowlist. Come back for public mint!"}
+                           </span>
+                           <span className="block mb-.2"/>
+                          </span>
+                        )}
+                        <br></br>
                         <span>
                           <span className="text-teal">{totalMinted}</span>/1000
                           Minted&nbsp;
@@ -291,21 +295,22 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay}
         </div>
         <br></br>
-          <span className="italic text-sm text-buttonText">Genesis 1 of 12</span>
+        <span className="italic text-sm text-buttonText">Genesis 1 of 12</span>
         <span className="block mb-3"></span>
-        <div>{informationText}
-        <br></br>
-        <span className="block mb-3"></span>
-          
-         {informationText === "Minting completed. Enjoy your block!" && <div id="tweet-button">
-            <a id="tweet"
-              target="_blank"
-              role="button"
-           
-              className="underline"
-              onClick={e => {
-                e.preventDefault()
-                
+        <div>
+          {informationText}
+          <br></br>
+          <span className="block mb-3"></span>
+
+          {informationText === "Minting completed. Enjoy your block!" && (
+            <div id="tweet-button">
+              <a
+                id="tweet"
+                target="_blank"
+                role="button"
+                className="underline"
+                onClick={(e) => {
+                  e.preventDefault();
 
                   window.open(
                     `https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`,
@@ -316,7 +321,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                 Share to Twitter
               </a>
             </div>
-          }
+          )}
         </div>
         <div className="mb-5 text-red-400">{errorText}</div>
       </div>

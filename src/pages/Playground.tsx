@@ -23,6 +23,8 @@ import {
   listenToEvents,
   getTotalMinted,
   getStartDate,
+  getGeneration,
+  isAllowed,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -49,13 +51,14 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [informationText, setInformationText] = useState<string>("");
   const [errorText, setErrorText] = useState<string>("");
   const [generation, setGeneration] = useState<number>();
+  const [onAllowlist, setOnAllowlist] = useState<boolean>(false);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
   const [totalMinted, setTotalMinted] = useState(0);
-  const [startDate, setStartDate] = useState(0)
+  const [startDate, setStartDate] = useState<Date>(new Date());
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -64,7 +67,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       if (newAddress == address) return;
 
       setAddress(newAddress);
-      console.log("Fetching blocks...");
+      console.log("Fetching blocks..");
       try {
         const result = await fetchBlocks(newAddress);
         setBlocksInformation(result);
@@ -91,12 +94,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
 
-        
-
         const start = await getStartDate(signer);
-        setStartDate(start.toNumber())
+        setStartDate(new Date(start));
 
-     
         //call here
       } catch (e: any) {
         console.error(e);
@@ -116,11 +116,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
-        const generation = await getStartDate(signer);
-        setGeneration(generation.toNumber());
+        const generation = await getGeneration(signer);
+        setGeneration(generation);
 
         const start = await getStartDate(signer);
-        setStartDate(start.toNumber())
+        setStartDate(new Date(start));
+
+        const onAllow = await isAllowed(signer);
+
+        setOnAllowlist(onAllow);
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -205,6 +209,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       const canvas: any = sketchRef.current.sketch.canvas;
       console.log(canvas);
       const dataURL = canvas.toDataURL();
+      if (!onAllowlist && startDate > new Date(Date.now())) return;
+
       try {
         const result = await sendImage(
           blockNumber,
@@ -294,7 +300,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               onClick={(e) => {
                 if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
                   //setBlockNumber(Number(blocks[blocks.length - 1]));
-                
                 } else {
                   setBlockNumber(
                     Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
@@ -435,6 +440,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         informationText={informationText}
         errorText={errorText}
         totalMinted={totalMinted}
+        launchDate={startDate}
+        onAllowlist={onAllowlist}
       ></BlockSelector>
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
