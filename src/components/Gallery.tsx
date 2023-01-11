@@ -1,4 +1,5 @@
 import React from "react";
+import placeholder from "../media/updatingMint.png"
 
 interface ComponentProps {
   ownedPieces: Array<any>;
@@ -10,7 +11,11 @@ const Gallery: React.FC<ComponentProps> = (props: ComponentProps) => {
       <div key={i} className="lg:w-[33%] md:w-[50%] mb-6">
         #{piece.metadata.name} by <span className="text-teal">you</span>
         <span className="block mb-2"></span>
-        <img src={piece.metadata.image} className="w-[80%]"/>
+        <img src={piece.metadata.image} onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // prevents looping
+          currentTarget.src=placeholder;
+  }}
+  className="w-[80%]"/>
       </div>
     );
   });
