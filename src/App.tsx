@@ -446,7 +446,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       >
                         Twitter
                       </a>
-                      &nbsp;&nbsp;&nbsp;<a>Opensea</a>&nbsp;&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;<a href="https://opensea.io/collection/blockalizer-chroma" target="_blank">Opensea</a>&nbsp;&nbsp;&nbsp;
                       <a
                         href="https://medium.com/alpha-labs/blockalzier-our-first-project-a2ef7e0b6f03"
                         target="_blank"
