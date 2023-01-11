@@ -47,26 +47,24 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         setIndex(0);
       }
 
-      setRecentBlock(recentlyMintedBlocks[index]);
+      if (recentlyMintedBlocks.length > 0)
+        setRecentBlock(recentlyMintedBlocks[index]);
       //setRecentlyMintedBlock(recentlyMintedBlocks[4])
     }, 5000);
     return () => clearTimeout(timer);
   }, [index, recentlyMintedBlocks]);
 
   const loadLatestBlock = async () => {
-    const result = await latestBlock();
-
-    console.log(result);
-    setRecentlyMintedBlocks(result);
-    setRecentBlock(result[0]);
-
-    setBlockNumber(result.blockNumber);
-    setTimestamp(result.createdAt);
-    setImgUrl(result.url);
+    try {
+      const result = await latestBlock();
+      setRecentlyMintedBlocks(result);
+      setRecentBlock(result[0]);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
-    //loadLatestBlock();
     loadLatestBlock();
   }, []);
 
@@ -425,12 +423,12 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
 
                     <div className="m-auto w-12/12 mt-6 lg:hidden md:inline-block sm:inline-block md:ml-9 sm:ml-9">
                       <h1 className="lg:text-md md:text-md sm:text-md">
-                        Recently Minted
+                        Recently minted
                       </h1>
                       <span className="block mb-1"></span>
                       <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
                         #{recentBlock.blockNumber}|{" "}
-                        {(dayjs(timestamp) as any).fromNow()}
+                        {(dayjs(recentBlock.createdAt) as any).fromNow()}
                         <span className="block mb-2"></span>
                         <img src={recentBlock.url} className="w-[100%]"></img>
                       </h1>
@@ -470,13 +468,13 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
               <div className="visualizer">
                 <div className="m-auto w-[60%]">
                   <h1 className="lg:text-xl md:text-lg sm:text-md">
-                    Recently Minted
+                    Recently minted
                   </h1>
                   <span className="block mb-1"></span>
                   {recentlyMintedBlocks.length > 0 ? (
                     <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
                       #{recentBlock.blockNumber}|{" "}
-                      {(dayjs(timestamp) as any).fromNow()}
+                      {(dayjs(recentBlock.createdAt) as any).fromNow()}
                       <span className="block mb-2"></span>
                       <img src={recentBlock.url} className="w-[100%]"></img>
                     </h1>

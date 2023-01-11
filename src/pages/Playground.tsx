@@ -8,13 +8,21 @@ import Gallery from "../components/Gallery";
 
 import { Address, useSigner } from "wagmi";
 
+// @ts-ignore
+import sharp from "sharp";
+
 import {
   fetchBlocks,
   sendImage,
   mintingSuccess,
   mintingFailure,
 } from "../helper/server";
-import { mintToken, getOwnedPieces, listenToEvents, getTotalMinted } from "../helper/wallet";
+import {
+  mintToken,
+  getOwnedPieces,
+  listenToEvents,
+  getTotalMinted,
+} from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
 import "./Playground.css";
@@ -44,7 +52,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [tetri, setTetri] = useState(0);
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
-  const [totalMinted, setTotalMinted] = useState(0)
+  const [totalMinted, setTotalMinted] = useState(0);
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -78,7 +86,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlocksInformation(result);
 
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber())
+        setTotalMinted(tokenCount.toNumber());
         //call here
       } catch (e: any) {
         console.error(e);
@@ -94,11 +102,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
+        console.log(ownedPieces);
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber())
-
-
+        setTotalMinted(tokenCount.toNumber());
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -172,8 +179,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   }, [blockNumber]);
 
-  useEffect(() => {}, [blockInfo]);
-
   const { data: signer, isError, isLoading } = useSigner();
 
   const sketchRef = useRef(null);
@@ -183,14 +188,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       // @ts-ignore: Object is possibly 'null'.
 
       const canvas: any = sketchRef.current.sketch.canvas;
-      // canvas.cloneNode(true)
-
-      let canvas2 = canvas.cloneNode(true);
-
+      console.log(canvas);
       const dataURL = canvas.toDataURL();
-      // console.log(dataURL);
-      // console.log("sending new enw");
-
       try {
         const result = await sendImage(blockNumber, dataURL, address);
         await mintToken(signer as ethers.Signer, result);

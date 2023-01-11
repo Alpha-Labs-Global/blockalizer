@@ -197,7 +197,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
 
   drawOuterEdge() {
     this.p5.fill(0, 0, 0, 0);
-    this.p5.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.p5.rect(1, 1, this.canvasWidth - 2, this.canvasHeight - 2);
   }
 
   drawDoublePalettePatterns(
