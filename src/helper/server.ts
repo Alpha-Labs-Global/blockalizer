@@ -32,10 +32,24 @@ export const fetchBlocks = async (
 export const sendImage = async (
   blockNumber: number,
   image: string,
-  address: string
+  address: string,
+  grid_size: number,
+  anti_block: number,
+  noFill: boolean,
+  color: string,
+  generation: number
 ) => {
   const endpoint = "/api/mint";
-  const body = JSON.stringify({ blockNumber, image, address });
+  const body = JSON.stringify({
+    blockNumber,
+    image,
+    address,
+    grid_size,
+    anti_block,
+    fill: !noFill,
+    color,
+    generation,
+  });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
     headers: {

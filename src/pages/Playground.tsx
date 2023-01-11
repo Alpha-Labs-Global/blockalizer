@@ -22,6 +22,7 @@ import {
   getOwnedPieces,
   listenToEvents,
   getTotalMinted,
+  getGeneration,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -47,6 +48,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [alreadyMinted, setAlreadyMinted] = useState<boolean>(false);
   const [informationText, setInformationText] = useState<string>("");
   const [errorText, setErrorText] = useState<string>("");
+  const [generation, setGeneration] = useState<number>();
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -106,6 +108,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
+        const generation = await getGeneration(signer);
+        setGeneration(generation.toNumber());
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -191,7 +195,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       console.log(canvas);
       const dataURL = canvas.toDataURL();
       try {
-        const result = await sendImage(blockNumber, dataURL, address);
+        const result = await sendImage(
+          blockNumber,
+          dataURL,
+          address,
+          numOfBoxes,
+          tetri,
+          noFill,
+          chroma,
+          generation || 1
+        );
         await mintToken(signer as ethers.Signer, result);
         setInformationText("Minting has started! Please wait...");
       } catch (e: any) {

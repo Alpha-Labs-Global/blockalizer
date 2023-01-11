@@ -181,3 +181,19 @@ export const getTotalMinted = async (
 
   return totalMinted;
 };
+
+export const getGeneration = async (
+  signer: ethers.Signer
+): Promise<BigNumber> => {
+  // @ts-ignore
+  const blockalizerControllerContract: BlockalizerController =
+    new ethers.Contract(
+      controllerContractAddress,
+      controllerContract.abi,
+      signer
+    );
+
+  const count = await blockalizerControllerContract.getGenerationCount();
+
+  return count;
+};
