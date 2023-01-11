@@ -10,7 +10,7 @@ interface ComponentProps {
   informationText: string;
   errorText: string;
   setBlockNumber(blockNumber: number): void;
-  totalMinted: number,
+  totalMinted: number;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -80,13 +80,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }
 
   window.addEventListener("resize", (e) => {
-    deleteArtificialAdditions();
-    createArtificialAdditions();
+    // deleteArtificialAdditions();
+    // createArtificialAdditions();
   });
 
   useEffect(() => {
-    createArtificialAdditions();
-
+    // createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
   }, [orderedBlocks.length != 0]);
 
@@ -100,6 +99,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       setOrderedBlocks([...reversed]);
       setBlockNumber(Number(reversed[0]));
     }
+    console.log(orderedBlocks);
   }, [sort, blocks]);
 
   const blockHandler = (e: any) => {
@@ -107,7 +107,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     setBlockNumber(selectedBlockNumber);
   };
 
-  const orderedBlocksDisplay2 = orderedBlocks.map((b, i) => (
+  const orderedBlocksDisplay = orderedBlocks.map((b, i) => (
     <div className="m-auto">
       <button
         key={i}
@@ -204,7 +204,10 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                         <div className="mt-3"></div>
                       </h1>
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
-                        <span><span className="text-teal">{totalMinted}</span>/1000 Minted&nbsp;</span>
+                        <span>
+                          <span className="text-teal">{totalMinted}</span>/1000
+                          Minted&nbsp;
+                        </span>
 
                         <svg
                           className="inline-block w-7 align-top"
@@ -265,27 +268,34 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           id="showScroll"
           className={`max-h-[300px] border-teal pt-1 pl-2 pr-2 pb-1 border-opacity-80 rounded-xl border-2 scrollbar-thin scrollbar-w-2 srcollbar-rounded-[12px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-buttonText scrollbar-track-button flex flex-row content-start flex-wrap w-[100%] mt-2 lg:h-auto md:h-auto sm:h-auto overflow-scroll pr-1 pl-1 justify-start`}
         >
-          {orderedBlocksDisplay2}
+          {orderedBlocksDisplay}
         </div>
         <br></br>
-        <div>{informationText}
-        <br></br>
-        <span className="block mb-3"></span>
-          
-         {informationText === "Minting completed. Enjoy your block!" && <div id="tweet-button">
-            <a id="tweet"
-              target="_blank"
-              role="button"
-           
-              className="underline"
-              onClick={e => {
-                e.preventDefault()
-                
+        <div>
+          {informationText}
+          <br></br>
+          <span className="block mb-3"></span>
 
-                window.open(`https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`, '_blank');
-                
-              }}>Share to Twitter</a>
-          </div>}
+          {informationText === "Minting completed. Enjoy your block!" && (
+            <div id="tweet-button">
+              <a
+                id="tweet"
+                target="_blank"
+                role="button"
+                className="underline"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  window.open(
+                    `https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`,
+                    "_blank"
+                  );
+                }}
+              >
+                Share to Twitter
+              </a>
+            </div>
+          )}
         </div>
         <div className="mb-5 text-red-400">{errorText}</div>
       </div>

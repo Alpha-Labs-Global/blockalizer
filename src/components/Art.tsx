@@ -35,9 +35,13 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const lazyGetInfo = async () => {
     console.log("calling info");
-    const info = await getBlockInfo(blockNumber);
-    const url = info.url;
-    setImgUrl(url);
+    try {
+      const info = await getBlockInfo(blockNumber);
+      const url = info.url;
+      setImgUrl(url);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {

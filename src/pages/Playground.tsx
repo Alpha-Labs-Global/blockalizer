@@ -178,8 +178,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   }, [blockNumber]);
 
-  useEffect(() => {}, [blockInfo]);
-
   const { data: signer, isError, isLoading } = useSigner();
 
   const sketchRef = useRef(null);
@@ -199,16 +197,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       resizeCtx?.drawImage(canvas, 0, 0);
       const HERMITE = new Hermite_class();
 
-      HERMITE.resampleHermite(
-        resizeCanvas,
-        resizeCanvas.width,
-        resizeCanvas.height,
-        1200,
-        1200
-      );
+      HERMITE.resample(resizeCanvas, 1200, 1200);
 
       // Use the resized image to do what you want
-      var image = resizeCanvas.toDataURL("image/png");
+      // const dataURL = resizeCanvas.toDataURL("image/png");
 
       const dataURL = canvas.toDataURL();
       // console.log(dataURL);
