@@ -80,12 +80,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }
 
   window.addEventListener("resize", (e) => {
-    // deleteArtificialAdditions();
-    // createArtificialAdditions();
+    deleteArtificialAdditions();
+    createArtificialAdditions();
   });
 
   useEffect(() => {
-    // createArtificialAdditions();
+     createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
   }, [orderedBlocks.length != 0]);
 
@@ -270,20 +270,21 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay}
         </div>
         <br></br>
-        <div>
-          {informationText}
-          <br></br>
-          <span className="block mb-3"></span>
-
-          {informationText === "Minting completed. Enjoy your block!" && (
-            <div id="tweet-button">
-              <a
-                id="tweet"
-                target="_blank"
-                role="button"
-                className="underline"
-                onClick={(e) => {
-                  e.preventDefault();
+          <span className="italic text-sm text-buttonText">Genesis 1 of 12</span>
+        <span className="block mb-3"></span>
+        <div>{informationText}
+        <br></br>
+        <span className="block mb-3"></span>
+          
+         {informationText === "Minting completed. Enjoy your block!" && <div id="tweet-button">
+            <a id="tweet"
+              target="_blank"
+              role="button"
+           
+              className="underline"
+              onClick={e => {
+                e.preventDefault()
+                
 
                   window.open(
                     `https://twitter.com/intent/tweet?text=I+just+turned+blockchain+TX+%23${blockNumber}+into+a+generative+collectible+NFT+with+%40blockalizerxyz%2C+check+it+out%21%0Ablockalizer.xyz`,
@@ -294,7 +295,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                 Share to Twitter
               </a>
             </div>
-          )}
+          }
         </div>
         <div className="mb-5 text-red-400">{errorText}</div>
       </div>

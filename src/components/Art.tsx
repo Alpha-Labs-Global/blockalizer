@@ -75,7 +75,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
   // that later
-  const colorNames = ["Alpine", "Lavendar", "Tidal", "Crimson"];
+  const colorNames = ["Alpine", "Tidal", "Autumn"];
 
   const canvasWidth: any =
     document.getElementById("widthIndicator")?.offsetWidth;
