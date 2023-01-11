@@ -524,7 +524,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                   <div className="lg:w-full md:w-full sm:w-full break-words lg:mt-16 md:mt-20 sm:mt-14 lg:pt-0 md:pt-10 sm:pt-0 relative">
                     <div className="xxl:ml-[45%] xl:ml-[30%] lg:ml-[25%] md:ml-[30%] sm:ml-[10%] sm:mr-[10%] sm:mt-10 sm:mb-[0%] lg:w-[50%] md:w-[100%] sm:w-10/12 lg:max-w-[500px] absolute bottom-0">
                       <div className="lg:hidden md:block sm:block">
-                        <div className="md:w-[100%] sm:w-[100%]">
+                        <div className="md:w-[100%] sm:w-[100%] mt-4">
                           <ConnectKitButton.Custom>
                             {({
                               isConnecting,
@@ -646,9 +646,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                           />
                           <rect width="2" height="50" fill="#ADFFD8" />
                         </svg>
+                        <span className="block mb-2"></span>
                       </div>
 
-                      <span className="block"></span>
+           
                     </div>
                   </div>
                 </div>
