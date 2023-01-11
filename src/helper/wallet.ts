@@ -206,13 +206,12 @@ export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
       signer
     );
 
-    const userAddress = await signer.getAddress();
-      console.log(userAddress)
+  const userAddress = await signer.getAddress();
+  console.log(userAddress);
   const bool = await blockalizerControllerContract.isInWhitelist(userAddress);
-console.log(bool)
-  return bool
+  console.log(bool);
+  return bool;
 };
-
 
 export const getStartDate = async (signer: ethers.Signer): Promise<number> => {
   // @ts-ignore
