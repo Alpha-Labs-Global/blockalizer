@@ -209,7 +209,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       const canvas: any = sketchRef.current.sketch.canvas;
       console.log(canvas);
       const dataURL = canvas.toDataURL();
-      if (!onAllowlist && new Date(Date.now()) > startDate) return;
+      if (!onAllowlist && startDate > new Date(Date.now())) return;
 
       try {
         const result = await sendImage(
