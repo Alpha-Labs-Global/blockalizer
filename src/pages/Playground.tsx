@@ -65,7 +65,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       if (newAddress == address) return;
 
       setAddress(newAddress);
-      console.log("Fetching blocks...");
+      console.log("Fetching blocks..");
       try {
         const result = await fetchBlocks(newAddress);
         setBlocksInformation(result);
