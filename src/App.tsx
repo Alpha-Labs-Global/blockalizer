@@ -573,7 +573,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                           </ConnectKitButton.Custom>
                         </div>
 
-                        <span className="block mb-4"></span>
+                        <span className="block mb-1"></span>
                       </div>
 
                       <div

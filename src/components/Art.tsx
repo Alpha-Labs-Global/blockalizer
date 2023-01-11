@@ -4,6 +4,7 @@ import p5Types from "p5";
 
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
 import { getBlockInfo } from "../helper/server";
+import placeholder from '../media/updatingMint.png';
 
 import GenericSketch from "../art-styles/generic_sketch";
 
@@ -141,7 +142,9 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   return (
     <div>
       {alreadyMinted ? (
-        <img src={imgUrl}></img>
+        <img src={imgUrl} className="w-[100%]"  onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // prevents looping
+          currentTarget.src=placeholder;}}></img>
       ) : (
         <Sketch
           ref={refPointer}
