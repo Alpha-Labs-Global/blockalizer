@@ -8,13 +8,21 @@ import Gallery from "../components/Gallery";
 
 import { Address, useSigner } from "wagmi";
 
+// @ts-ignore
+import Hermite_class from "hermite-resize";
+
 import {
   fetchBlocks,
   sendImage,
   mintingSuccess,
   mintingFailure,
 } from "../helper/server";
-import { mintToken, getOwnedPieces, listenToEvents, getTotalMinted } from "../helper/wallet";
+import {
+  mintToken,
+  getOwnedPieces,
+  listenToEvents,
+  getTotalMinted,
+} from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
 import "./Playground.css";
@@ -44,7 +52,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [tetri, setTetri] = useState(0);
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
-  const [totalMinted, setTotalMinted] = useState(0)
+  const [totalMinted, setTotalMinted] = useState(0);
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -78,7 +86,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlocksInformation(result);
 
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber())
+        setTotalMinted(tokenCount.toNumber());
         //call here
       } catch (e: any) {
         console.error(e);
@@ -96,9 +104,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const ownedPieces = await getOwnedPieces(signer);
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber())
-
-
+        setTotalMinted(tokenCount.toNumber());
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -183,9 +189,26 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       // @ts-ignore: Object is possibly 'null'.
 
       const canvas: any = sketchRef.current.sketch.canvas;
-      // canvas.cloneNode(true)
 
-      let canvas2 = canvas.cloneNode(true);
+      const resizeCanvas = document.createElement("canvas");
+      resizeCanvas.height = canvas.height;
+      resizeCanvas.width = canvas.width;
+
+      const resizeCtx = resizeCanvas.getContext("2d");
+      // Put original canvas contents to the resizing canvas
+      resizeCtx?.drawImage(canvas, 0, 0);
+      const HERMITE = new Hermite_class();
+
+      HERMITE.resampleHermite(
+        resizeCanvas,
+        resizeCanvas.width,
+        resizeCanvas.height,
+        1200,
+        1200
+      );
+
+      // Use the resized image to do what you want
+      var image = resizeCanvas.toDataURL("image/png");
 
       const dataURL = canvas.toDataURL();
       // console.log(dataURL);
