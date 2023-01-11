@@ -197,6 +197,23 @@ export const getGeneration = async (signer: ethers.Signer): Promise<number> => {
   return generationCount.toNumber();
 };
 
+export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
+  // @ts-ignore
+  const blockalizerControllerContract: BlockalizerController =
+    new ethers.Contract(
+      controllerContractAddress,
+      controllerContract.abi,
+      signer
+    );
+
+    const userAddress = await signer.getAddress();
+      console.log(userAddress)
+  const bool = await blockalizerControllerContract.isInWhitelist(userAddress);
+console.log(bool)
+  return bool
+};
+
+
 export const getStartDate = async (signer: ethers.Signer): Promise<number> => {
   // @ts-ignore
   const blockalizerControllerContract: BlockalizerController =

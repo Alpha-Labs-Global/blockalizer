@@ -51,6 +51,7 @@ export interface BlockalizerController {
   updateTokenURI(tokenId: BigNumber, uri: string): void;
   withdraw(amount: BigNumber): void;
   withdrawAll(): void;
+  isInWhitelist(address: string) : boolean;
 
   hasRole(role: string, address: string): boolean;
   getRoleAdmin(role: string): string;

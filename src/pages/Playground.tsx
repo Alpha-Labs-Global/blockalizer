@@ -24,6 +24,8 @@ import {
   getTotalMinted,
   getStartDate,
   getGeneration,
+  isAllowed
+
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -50,6 +52,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [informationText, setInformationText] = useState<string>("");
   const [errorText, setErrorText] = useState<string>("");
   const [generation, setGeneration] = useState<number>();
+  const [onAllowlist, setOnAllowlist] = useState<boolean>(false)
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -95,6 +98,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const start = await getStartDate(signer);
         setStartDate(new Date(start));
 
+
         //call here
       } catch (e: any) {
         console.error(e);
@@ -116,9 +120,15 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setTotalMinted(tokenCount.toNumber());
         const generation = await getGeneration(signer);
         setGeneration(generation);
+        
 
         const start = await getStartDate(signer);
         setStartDate(new Date(start));
+
+        
+        const onAllow = await isAllowed(signer);
+    
+        setOnAllowlist(onAllow)
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -433,6 +443,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         errorText={errorText}
         totalMinted={totalMinted}
         launchDate={startDate}
+        onAllowlist={onAllowlist}
       ></BlockSelector>
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
