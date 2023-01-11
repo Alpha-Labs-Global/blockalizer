@@ -909,6 +909,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                           viewBox="0 0 90 90"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
+                          onClick={() => {window.open("https://opensea.io/collection/blockalizer-chroma", '_blank');}}
                         >
                           <g clip-path="url(#clip0_547_104)">
                             <rect
