@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ConnectKitButton } from "connectkit";
+import Countdown from "react-countdown";
 
 interface ComponentProps {
   sort: string;
@@ -24,7 +25,21 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const errorText = props.errorText;
   const totalMinted = props.totalMinted;
 
+
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
+
+  const [launchDate, setLaunchDate] = useState(new Date('12 Jan 2023 12:00:00 EST'))
+  const [currentDate, setCurrentDate] = useState(new Date(Date.now()))
+
+  type renderObj = {
+    hours: string;
+    author: string;
+    price: number;
+  };
+
+  const Completionist = () => <span></span>;
+
+
 
   function deleteArtificialAdditions() {
     var elements = document.getElementsByClassName("artificialAddition");
@@ -87,6 +102,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
      //createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
+
+  
   }, [orderedBlocks.length != 0]);
 
   useEffect(() => {
@@ -127,7 +144,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           ? "text-buttonActiveText"
           : "text-buttonText"
       }
-      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-sm border-2 border-button  ${
+      w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-xs border-2 border-button  ${
         blockTaken(b) ? " bg-transparent" : ""
       }`}
       >
@@ -203,6 +220,10 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                         <div className="mt-3"></div>
                       </h1>
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
+                        {launchDate > currentDate && <span>Allowlist open for <Countdown
+                          date={launchDate}
+                        /></span>}
+                      <br></br>
                         <span>
                           <span className="text-teal">{totalMinted}</span>/1000
                           Minted&nbsp;

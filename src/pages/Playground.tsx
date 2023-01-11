@@ -22,7 +22,7 @@ import {
   getOwnedPieces,
   listenToEvents,
   getTotalMinted,
-  getGeneration,
+  getStartDate,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -55,6 +55,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
   const [totalMinted, setTotalMinted] = useState(0);
+  const [startDate, setStartDate] = useState(0)
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -89,6 +90,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
+
+        
+
+        const start = await getStartDate(signer);
+        setStartDate(start.toNumber())
+
+     
         //call here
       } catch (e: any) {
         console.error(e);
@@ -108,8 +116,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
-        const generation = await getGeneration(signer);
+        const generation = await getStartDate(signer);
         setGeneration(generation.toNumber());
+
+        const start = await getStartDate(signer);
+        setStartDate(start.toNumber())
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
