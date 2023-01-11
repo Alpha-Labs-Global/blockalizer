@@ -23,6 +23,7 @@ import {
   listenToEvents,
   getTotalMinted,
   getStartDate,
+  getGeneration,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -55,7 +56,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [noFill, setNoFill] = useState(false);
   const [chroma, setChroma] = useState("Alpine");
   const [totalMinted, setTotalMinted] = useState(0);
-  const [startDate, setStartDate] = useState(0)
+  const [startDate, setStartDate] = useState<Date>(new Date());
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -91,12 +92,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
 
-        
-
         const start = await getStartDate(signer);
-        setStartDate(start.toNumber())
+        setStartDate(new Date(start));
 
-     
         //call here
       } catch (e: any) {
         console.error(e);
@@ -116,11 +114,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
-        const generation = await getStartDate(signer);
-        setGeneration(generation.toNumber());
+        const generation = await getGeneration(signer);
+        setGeneration(generation);
 
         const start = await getStartDate(signer);
-        setStartDate(start.toNumber())
+        setStartDate(new Date(start));
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -294,7 +292,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               onClick={(e) => {
                 if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
                   //setBlockNumber(Number(blocks[blocks.length - 1]));
-                
                 } else {
                   setBlockNumber(
                     Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
@@ -435,6 +432,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         informationText={informationText}
         errorText={errorText}
         totalMinted={totalMinted}
+        launchDate={startDate}
       ></BlockSelector>
 
       <Gallery ownedPieces={ownedPieces}></Gallery>
