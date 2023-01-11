@@ -80,12 +80,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }
 
   window.addEventListener("resize", (e) => {
-    deleteArtificialAdditions();
-    createArtificialAdditions();
+    //deleteArtificialAdditions();
+    //createArtificialAdditions();
   });
 
   useEffect(() => {
-     createArtificialAdditions();
+     //createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
   }, [orderedBlocks.length != 0]);
 
