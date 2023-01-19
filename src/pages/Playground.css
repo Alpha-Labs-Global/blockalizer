@@ -27,8 +27,6 @@ input {
   color: black;
 }
 
-
-
 hr {
   margin: 10px;
 }
@@ -37,8 +35,6 @@ hr {
   width: 200px;
   color: black;
 }
-
-
 
 canvas {
   width: 100% !important;

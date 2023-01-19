@@ -49,7 +49,7 @@ export function assign_sketch(
     parseInt(blockNumber)
   );
   switch (selectedStyle) {
-    case "triangles":
+    case "grid":
       let coloredTriangleOptions: ColoredTriangleOptions = {
         numOfBoxes: opts.numOfBoxes || 9,
         opacity: opts.opacity || 255,
@@ -117,7 +117,7 @@ export function load_colors(): p5Types.Table {
 
 export function all_sketch_styles(): Array<string> {
   return [
-    "triangles",
+    "grid",
     "noise",
     "none",
 
