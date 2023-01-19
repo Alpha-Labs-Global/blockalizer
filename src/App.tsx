@@ -16,7 +16,7 @@ import { wagmiClient } from "./helper/wallet";
 import { latestBlock } from "./helper/server";
 import dayjs from "dayjs";
 import { resourceLimits } from "worker_threads";
-import placeholder from './media/updatingMint.png';
+import placeholder from "./media/updatingMint.png";
 const relativeTime = require("dayjs/plugin/relativeTime");
 
 interface ComponentProps {}
@@ -33,7 +33,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [recentBlock, setRecentBlock] = useState({
     blockNumber: null,
     createdAt: null,
-    url: "",
+    imageUrl: "",
   });
   const [index, setIndex] = useState(0);
 
@@ -52,7 +52,7 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
         setRecentBlock(recentlyMintedBlocks[index]);
       }
       //setRecentlyMintedBlock(recentlyMintedBlocks[4])
-    }, 5000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, [index, recentlyMintedBlocks]);
 
@@ -434,7 +434,10 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                         #{recentBlock.blockNumber}|{" "}
                         {(dayjs(recentBlock.createdAt) as any).fromNow()}
                         <span className="block mb-2"></span>
-                        <img src={recentBlock.url} className="w-[100%]"></img>
+                        <img
+                          src={recentBlock.imageUrl}
+                          className="w-[100%]"
+                        ></img>
                       </h1>
                     </div>
 
@@ -446,7 +449,14 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       >
                         Twitter
                       </a>
-                      &nbsp;&nbsp;&nbsp;<a href="https://opensea.io/collection/blockalizer-chroma" target="_blank">Opensea</a>&nbsp;&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;
+                      <a
+                        href="https://opensea.io/collection/blockalizer-chroma"
+                        target="_blank"
+                      >
+                        Opensea
+                      </a>
+                      &nbsp;&nbsp;&nbsp;
                       <a
                         href="https://medium.com/alpha-labs/blockalzier-our-first-project-a2ef7e0b6f03"
                         target="_blank"
@@ -480,10 +490,14 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       #{recentBlock.blockNumber}|{" "}
                       {(dayjs(recentBlock.createdAt) as any).fromNow()}
                       <span className="block mb-2"></span>
-                      <img src={recentBlock.url} className="w-[100%]"  onError={({ currentTarget }) => {
-          currentTarget.onerror = null; // prevents looping
-          currentTarget.src=placeholder;
-  }}></img>
+                      <img
+                        src={recentBlock.imageUrl}
+                        className="w-[100%]"
+                        onError={({ currentTarget }) => {
+                          currentTarget.onerror = null; // prevents looping
+                          currentTarget.src = placeholder;
+                        }}
+                      ></img>
                     </h1>
                   ) : (
                     <h1 className="lg:text-sm md:text-sm sm:text-sm text-neutral-500">
@@ -649,8 +663,6 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                         </svg>
                         <span className="block mb-2"></span>
                       </div>
-
-           
                     </div>
                   </div>
                 </div>
@@ -909,7 +921,12 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                           viewBox="0 0 90 90"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
-                          onClick={() => {window.open("https://opensea.io/collection/blockalizer-chroma", '_blank');}}
+                          onClick={() => {
+                            window.open(
+                              "https://opensea.io/collection/blockalizer-chroma",
+                              "_blank"
+                            );
+                          }}
                         >
                           <g clip-path="url(#clip0_547_104)">
                             <rect
