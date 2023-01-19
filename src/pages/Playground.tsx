@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../App.css";
+import "./MainScreen.css";
 
 import Art from "../components/Art";
 import Controls from "../components/Controls";
