@@ -99,6 +99,7 @@ export function assign_sketch(
       let cubeOpts: any = {
         gap: opts.gap || 0,
         cubeSize: opts.cubeSize || 3,
+        paletteIndex: opts.paletteIndex || 0,
       };
 
       sketch = new CubeSketch(
