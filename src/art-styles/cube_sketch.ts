@@ -8,6 +8,7 @@ export default class CubeSketch extends GenericSketch {
   colorMatrix: Array<Array<Array<p5Types.Color>>>;
   gap: number;
   noOfCubes: number;
+  paletteIndex: number;
 
   constructor(
     p5Instance: p5Types,
@@ -25,6 +26,7 @@ export default class CubeSketch extends GenericSketch {
     this.cubeSpeedX = 0.01;
     this.cubeSpeedY = 0.01;
     this.noOfCubes = opts.cubeSize;
+    this.paletteIndex = opts.paletteIndex;
   }
 
   setup(canvasParentRef: Element) {
@@ -33,16 +35,23 @@ export default class CubeSketch extends GenericSketch {
       .parent(canvasParentRef);
     this.p5.camera(200, -200, -300, 0, 0, 0, 0, 1, 0);
 
-    const c1 = this.p5.color(34, 252, 147);
-    const c2 = this.p5.color(173, 255, 216);
+    const r1 = this.colorTable.getNum(this.paletteIndex, 0);
+    const g1 = this.colorTable.getNum(this.paletteIndex, 1);
+    const b1 = this.colorTable.getNum(this.paletteIndex, 2);
+    const r2 = this.colorTable.getNum(this.paletteIndex, 3);
+    const g2 = this.colorTable.getNum(this.paletteIndex, 4);
+    const b2 = this.colorTable.getNum(this.paletteIndex, 5);
+
+    const c1 = this.p5.color(r1, g1, b1);
+    const c2 = this.p5.color(r2, g2, b2);
     c2.setAlpha(255);
-    const c3 = this.p5.color(173, 255, 216);
+    const c3 = this.p5.color(r2, g2, b2);
     c3.setAlpha(204);
-    const c4 = this.p5.color(173, 255, 216);
+    const c4 = this.p5.color(r2, g2, b2);
     c4.setAlpha(153);
-    const c5 = this.p5.color(173, 255, 216);
+    const c5 = this.p5.color(r2, g2, b2);
     c5.setAlpha(102);
-    const c6 = this.p5.color(173, 255, 216);
+    const c6 = this.p5.color(r2, g2, b2);
     c6.setAlpha(51);
     const colorPalette = [c1, c2, c3, c4, c5, c6];
 

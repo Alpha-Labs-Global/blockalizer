@@ -185,6 +185,20 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
             onChange={(e) => setCubeSize(Number(e.target.value))}
           ></input>
         </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Color</p>
+          <select
+            className="bg-transparent opacity-50"
+            onChange={(e) => setColor(e.target.value)}
+            value={color}
+          >
+            {colorNames.map((s, i) => (
+              <option key={i} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     ) : null;
 
