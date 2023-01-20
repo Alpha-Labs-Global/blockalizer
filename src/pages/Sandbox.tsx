@@ -19,7 +19,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const canvasWidth = 400;
   const canvasHeight = 400;
 
-  const [style, setStyle] = useState("grid");
+  const [style, setStyle] = useState("3d-cube");
 
   const blockNumber = 11973589;
   const blockInfo: BlockInfo = {
@@ -36,18 +36,22 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [color, setColor] = useState("Alpine");
   const [fill, setFill] = useState(true);
 
+  const [gap, setGap] = useState(0);
+  const [cubeSize, setCubeSize] = useState(3);
+
   useEffect(() => {
     regenerate();
-  }, [style, gridSize, antiBlock, fill, color]);
+  }, [style, gridSize, antiBlock, fill, color, gap, cubeSize]);
 
   const keyGenerator = () => {
     return (
-      blockNumber +
+      style +
       gridSize.toString() +
       antiBlock.toString() +
       color +
       fill.toString() +
-      style
+      gap.toString() +
+      cubeSize.toString()
     );
   };
 
@@ -72,6 +76,8 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacitySwitch: true,
       noFill: !fill,
       removeBlocks: antiBlock,
+      gap: gap,
+      cubeSize: cubeSize,
     };
 
     sketch = assign_sketch(
@@ -96,7 +102,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const gridControls =
     style === "grid" ? (
-      <div>
+      <div className="mt-5">
         <div className="flex flex-row">
           <p className="basis-1/2">Grid Size</p>
           <input
@@ -152,6 +158,36 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       </div>
     ) : null;
 
+  const cubeControls =
+    style === "3d-cube" ? (
+      <div className="mt-5">
+        <div className="flex flex-row">
+          <p className="basis-1/2">Gap</p>
+          <input
+            className="basis-1/2"
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            value={gap}
+            onChange={(e) => setGap(Number(e.target.value))}
+          ></input>
+        </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Cube size</p>
+          <input
+            className="basis-1/2"
+            type="range"
+            min="3"
+            max="5"
+            step="1"
+            value={cubeSize}
+            onChange={(e) => setCubeSize(Number(e.target.value))}
+          ></input>
+        </div>
+      </div>
+    ) : null;
+
   return (
     <div className="m-10" style={{ width: "400px" }}>
       <h1 className="text-4xl">sandbox</h1>
@@ -166,8 +202,10 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
           </option>
         ))}
       </select>
+      <h1 className="mt-5">Block #{blockNumber}</h1>
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
-      <div className="mt-5">{gridControls}</div>
+      <div>{gridControls}</div>
+      <div>{cubeControls}</div>
     </div>
   );
 };

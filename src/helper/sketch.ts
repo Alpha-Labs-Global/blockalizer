@@ -11,6 +11,7 @@ import {
 import GenericSketch from "../art-styles/generic_sketch";
 import NoiseSketch from "../art-styles/noise_sketch";
 import NoneSketch from "../art-styles/none_sketch";
+import CubeSketch from "../art-styles/cube_sketch";
 
 export interface BlockInfo {
   blockHash: string;
@@ -29,6 +30,8 @@ interface SketchOptions {
   opacitySwitch?: boolean;
   noFill?: boolean;
   removeBlocks?: number;
+  gap?: number;
+  cubeSize?: number;
 }
 
 export function assign_sketch(
@@ -92,6 +95,21 @@ export function assign_sketch(
         parseInt(blockNumber)
       );
       break;
+    case "3d-cube":
+      let cubeOpts: any = {
+        gap: opts.gap || 0,
+        cubeSize: opts.cubeSize || 3,
+      };
+
+      sketch = new CubeSketch(
+        p5,
+        canvasWidth,
+        canvasWidth,
+        table,
+        parseInt(blockNumber),
+        cubeOpts
+      );
+      break;
   }
   return sketch;
 }
@@ -120,6 +138,7 @@ export function all_sketch_styles(): Array<string> {
     "grid",
     "noise",
     "none",
+    "3d-cube",
 
     // deprecated styles
 
