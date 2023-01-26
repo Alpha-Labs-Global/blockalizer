@@ -42,6 +42,7 @@ export class AliveGridSketch extends GenericSketch {
   firstLine: boolean;
   sequencer: number;
   fillDone: boolean;
+  triangleFillColors: Array<p5Types.Color>;
 
   constructor(
     p5Instance: p5Types,
@@ -92,6 +93,7 @@ export class AliveGridSketch extends GenericSketch {
     this.fillLines = [];
     this.fillIterator = 0;
     this.fillDone = true;
+    this.triangleFillColors = [];
 
     // step 1: draw outer square
     // step 2: draw inner squares
@@ -125,6 +127,7 @@ export class AliveGridSketch extends GenericSketch {
     );
     // this.p5.background(this.backgroundColor);
 
+    this.p5.frameRate(120); // highest possible framerate
     this.p5.loadImage(
       paper_links[0],
       (img) => {
@@ -133,7 +136,6 @@ export class AliveGridSketch extends GenericSketch {
         this.p5.tint(50);
         this.p5.background(img);
         this.scaffolding();
-        // this.drawShapes();
       },
       (e) => {
         console.log(e);
@@ -180,6 +182,7 @@ export class AliveGridSketch extends GenericSketch {
 
   drawFill() {
     const fillLines = this.fillLines[this.triangleIterator];
+    const fillColor = this.triangleFillColors[this.triangleIterator].toString();
     if (this.fillIterator < fillLines.length) {
       const lines = fillLines[this.fillIterator];
 
@@ -187,7 +190,7 @@ export class AliveGridSketch extends GenericSketch {
         this.p5.push();
         this.p5.strokeWeight(3);
         this.p5.noFill();
-        this.p5.stroke(0, 50, 180, 175);
+        this.p5.stroke(fillColor);
         this.p5.beginShape();
       }
 
@@ -233,40 +236,6 @@ export class AliveGridSketch extends GenericSketch {
     }
   }
 
-  drawShapes() {
-    // this.drawJaggedLine(20, 20, 20, 380);
-    // this.drawJaggedLine(20, 20, 350, 20);
-    // this.drawJaggedLine(20, 20, 380, 380);
-    // this.drawJaggedSquare(20, 20, 300);
-    // this.drawCrookedCircle(100, 10, 200, 200);
-    // draw broken square
-    // this.drawPerfectSquare();
-    // const numOfSquares = 5;
-    // const sizeOfSquare = this.canvasWidth / numOfSquares;
-    // for (let i = 0; i < numOfSquares - 1; i++) {
-    //   this.drawBrokenSquare(sizeOfSquare * i + 40, 10, sizeOfSquare);
-    // }
-
-    const opts = { fill: false };
-    this.drawJaggedSquare(20, 20, 50, opts);
-
-    // the x coordinates of the border points of the hachure
-    var xCoords = [20, 70, 20];
-    // the y coordinates of the border points of the hachure
-    var yCoords = [20, 70, 70];
-    // the gap between two hachure lines
-    var gap = 5;
-    // the angle of the hachure in degrees
-    var angle = 45;
-    // set the thikness of our hachure lines
-
-    // fill the rect with a hachure
-    this.fillLines.push(
-      this.scribble.scribbleFilling(xCoords, yCoords, gap, angle)!
-    );
-    console.log(this.fillLines);
-  }
-
   scaffolding() {
     this.drawOuterEdge();
     let bitIndex = 0;
@@ -280,21 +249,28 @@ export class AliveGridSketch extends GenericSketch {
         i < this.canvasWidth - this.margins;
         i += this.sizeOfBox
       ) {
-        this.drawShape(i, j, bitIndex);
+        this.generateTriangles(i, j, bitIndex);
         bitIndex += 1;
       }
     }
   }
 
-  drawShape(i: number, j: number, bitIndex: number) {
+  generateTriangles(i: number, j: number, bitIndex: number) {
     let noiseColor = this.p5.random();
     let color = this.pickColors(noiseColor);
 
     const rez2 = 0.01;
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
+    this.p5.push();
+    this.p5.noFill();
+    this.p5.stroke(255);
+    this.p5.strokeWeight(0.1);
+    this.p5.square(i, j, this.sizeOfBox);
+    this.p5.pop();
     if (this.shouldDrawBlock(bitIndex)) {
-      this.drawDoublePalettePatterns(n3, i, j, color, this.sizeOfBox, bitIndex);
+      this.triangleFillColors.push(color);
+      this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
     }
   }
 
@@ -305,7 +281,8 @@ export class AliveGridSketch extends GenericSketch {
   drawOuterEdge() {
     this.p5.push();
     this.p5.noFill();
-    // this.p5.strokeWeight(1.5);
+    this.p5.stroke(255);
+    this.p5.strokeWeight(0.5);
     this.p5.rect(
       1 + this.margins,
       1 + this.margins,
@@ -315,11 +292,10 @@ export class AliveGridSketch extends GenericSketch {
     this.p5.pop();
   }
 
-  drawDoublePalettePatterns(
+  generateTriangleOutline(
     n3: number,
     i: number,
     j: number,
-    randomColor: p5Types.Color,
     size: number,
     bitIndex: number
   ) {
@@ -331,9 +307,6 @@ export class AliveGridSketch extends GenericSketch {
     const endI = i + size - offset;
     const startJ = j + offset;
     const endJ = j + size - offset;
-    // this.p5.noFill();
-    // this.p5.square(startI, startJ, size);
-    const opts = { fillColor: randomColor, fill: true };
     let triangleSteps: any = [];
     if (orientation === 0) {
       if (n3 < 0.5) {
@@ -346,7 +319,7 @@ export class AliveGridSketch extends GenericSketch {
           startI,
           endJ
         );
-        this.pushFilling(endI, startJ, endI, endJ, startI, endJ);
+        this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
       } else {
         // ◤ Upper left triangle
         triangleSteps = this.recordJaggedTriangle(
@@ -357,7 +330,7 @@ export class AliveGridSketch extends GenericSketch {
           endI,
           startJ
         );
-        this.pushFilling(startI, endJ, startI, startJ, endI, startJ);
+        this.pushFilling(startI, endJ, startI, startJ, endI, startJ, false);
       }
     } else {
       if (n3 < 0.5) {
@@ -370,7 +343,7 @@ export class AliveGridSketch extends GenericSketch {
           startI,
           endJ
         );
-        this.pushFilling(startI, startJ, endI, endJ, startI, endJ);
+        this.pushFilling(startI, startJ, endI, endJ, startI, endJ, true);
       } else {
         // ◥ Upper right triangle
         triangleSteps = this.recordJaggedTriangle(
@@ -381,7 +354,7 @@ export class AliveGridSketch extends GenericSketch {
           endI,
           startJ
         );
-        this.pushFilling(startI, startJ, endI, endJ, endI, startJ);
+        this.pushFilling(startI, startJ, endI, endJ, endI, startJ, true);
       }
     }
     this.allTriangles.push(triangleSteps);
@@ -674,7 +647,8 @@ export class AliveGridSketch extends GenericSketch {
     x2: number,
     y2: number,
     x3: number,
-    y3: number
+    y3: number,
+    leftTriangle: boolean
   ) {
     // the x coordinates of the border points of the hachure
     const xCoords = [x1, x2, x3];
@@ -683,7 +657,13 @@ export class AliveGridSketch extends GenericSketch {
     // the gap between two hachure lines
     const gap = 5;
     // the angle of the hachure in degrees
-    const angle = 45;
+    let angle;
+    if (leftTriangle) {
+      angle = 45;
+    } else {
+      angle = 315;
+    }
+
     // set the thikness of our hachure lines
 
     // fill the rect with a hachure
