@@ -345,11 +345,16 @@ export default class Scribble {
   numEllipseSteps: number;
   ellipseInc: number;
 
-  constructor(p5: p5Types) {
+  constructor(
+    p5: p5Types,
+    bowing: number,
+    roughness: number,
+    maxOffset: number
+  ) {
     this.sketch = p5;
-    this.bowing = 3;
-    this.roughness = 4;
-    this.maxOffset = 3;
+    this.bowing = bowing;
+    this.roughness = roughness;
+    this.maxOffset = maxOffset;
     this.numEllipseSteps = 9;
     this.ellipseInc = (Math.PI * 2) / this.numEllipseSteps;
   }
