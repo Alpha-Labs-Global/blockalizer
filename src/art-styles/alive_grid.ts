@@ -84,12 +84,38 @@ export class AliveGridSketch extends GenericSketch {
 
     console.log(`stroke width: ${this.strokeWidth}px`);
 
+    let bowing = 3;
+    let roughness = 4;
+    let maxOffset = 3;
+    switch (this.gridSize) {
+      case 3:
+        bowing = 3;
+        roughness = 2;
+        maxOffset = 3;
+        break;
+      case 6:
+        bowing = 3;
+        roughness = 2;
+        maxOffset = 2;
+        break;
+      case 9:
+        bowing = 2;
+        roughness = 3;
+        maxOffset = 1;
+        break;
+      case 12:
+        bowing = 2;
+        roughness = 3;
+        maxOffset = 1;
+        break;
+    }
+
     this.iterator = 1;
     this.lineIterator = 0;
     this.firstLine = true;
     this.triangleIterator = 0;
     this.allTriangles = [];
-    this.scribble = new Scribble(this.p5);
+    this.scribble = new Scribble(this.p5, bowing, roughness, maxOffset);
     this.fillLines = [];
     this.fillIterator = 0;
     this.fillDone = true;
