@@ -19,7 +19,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const canvasWidth = 400;
   const canvasHeight = 400;
 
-  const [style, setStyle] = useState("3d-cube");
+  const [style, setStyle] = useState("alive-grid");
 
   const blockNumber = 11973589;
   const blockInfo: BlockInfo = {
@@ -32,8 +32,8 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const [gridSize, setGridSize] = useState(3);
-  const [antiBlock, setAntiBlock] = useState(0);
-  const [color, setColor] = useState("Alpine");
+  const [antiBlock, setAntiBlock] = useState(2);
+  const [color, setColor] = useState("Tidal");
   const [fill, setFill] = useState(true);
 
   const [gap, setGap] = useState(0);
@@ -158,6 +158,64 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       </div>
     ) : null;
 
+  const aliveGridControls =
+    style === "alive-grid" ? (
+      <div className="mt-5">
+        <div className="flex flex-row">
+          <p className="basis-1/2">Grid Size</p>
+          <input
+            className="basis-1/2"
+            type="range"
+            min="3"
+            max="12"
+            step="3"
+            value={gridSize}
+            onChange={(e) => setGridSize(Number(e.target.value))}
+          ></input>
+        </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Anti Block</p>
+          <input
+            className="basis-1/2"
+            type="range"
+            min="0"
+            max="3"
+            step="1"
+            value={antiBlock}
+            onChange={(e) => setAntiBlock(Number(e.target.value))}
+          ></input>
+        </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Fill</p>
+          <select
+            className="bg-transparent opacity-50"
+            onChange={(e) => setFill(e.target.value == "true")}
+            value={fill.toString()}
+          >
+            {[true, false].map((s, i) => (
+              <option key={i} value={s.toString()}>
+                {s.toString()}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Color</p>
+          <select
+            className="bg-transparent opacity-50"
+            onChange={(e) => setColor(e.target.value)}
+            value={color}
+          >
+            {colorNames.map((s, i) => (
+              <option key={i} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    ) : null;
+
   const cubeControls =
     style === "3d-cube" ? (
       <div className="mt-5">
@@ -220,6 +278,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       <Sketch key={uniqueKey} setup={setup} draw={draw} preload={preload} />
       <div>{gridControls}</div>
       <div>{cubeControls}</div>
+      <div>{aliveGridControls}</div>
     </div>
   );
 };
