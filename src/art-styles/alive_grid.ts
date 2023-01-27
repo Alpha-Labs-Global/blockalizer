@@ -78,7 +78,8 @@ export class AliveGridSketch extends GenericSketch {
     console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
-    this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
+    // this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
+    this.colorPalette = this.generatePalette(this.paletteIndex);
 
     this.blocksToRemove = this.computeBlocksToRemove();
     console.log("removed blocks: ", Array.from(this.blocksToRemove));
@@ -170,7 +171,7 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   draw() {
-    const strokeScale = 5;
+    const strokeScale = 3;
     const stokeRez = 0.02;
 
     // go over all triangles
@@ -192,6 +193,7 @@ export class AliveGridSketch extends GenericSketch {
             strokeScale *
             this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
           this.p5.strokeWeight(strokeOffset);
+          this.p5.stroke(20);
           this.p5.beginShape();
           this.p5.vertex(x1, y1);
           this.p5.vertex(x2, y2);
@@ -282,7 +284,7 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   preview() {
-    const strokeScale = 5;
+    const strokeScale = 3;
     const stokeRez = 0.02;
 
     for (let i = 0; i < this.allTriangles.length; i++) {
@@ -296,6 +298,7 @@ export class AliveGridSketch extends GenericSketch {
         let strokeOffset =
           strokeScale *
           this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
+        this.p5.stroke(10);
         this.p5.strokeWeight(strokeOffset);
         this.p5.beginShape();
         this.p5.vertex(x1, y1);
