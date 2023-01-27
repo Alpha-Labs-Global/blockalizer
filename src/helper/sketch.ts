@@ -1,8 +1,8 @@
 import p5Types from "p5";
 
-// import colors from "../data/default.json";
+import colors from "../data/default.json";
 // import colors from "../data/fourcolornostroke.json";
-import colors from "../data/palette.json";
+// import colors from "../data/palette.json";
 
 import {
   ColoredTriangleOptions,

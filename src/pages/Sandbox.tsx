@@ -15,7 +15,8 @@ interface ComponentProps {}
 const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   let sketch: GenericSketch;
   const styles = all_sketch_styles();
-  const colorNames = ["Alpine", "Tidal", "Autumn"];
+  // const colorNames = ["Alpine", "Tidal", "Autumn"];
+  const colorNames = [...Array(100)].map((item, index) => index.toString());
   const canvasWidth = 400;
   const canvasHeight = 400;
 
@@ -31,9 +32,9 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     to: "not_used",
   };
 
-  const [gridSize, setGridSize] = useState(3);
+  const [gridSize, setGridSize] = useState(9);
   const [antiBlock, setAntiBlock] = useState(2);
-  const [color, setColor] = useState("Tidal");
+  const [color, setColor] = useState("10");
   const [fill, setFill] = useState(true);
   const [animate, setAnimate] = useState(false);
 
