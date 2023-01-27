@@ -10,6 +10,7 @@ export interface AliveGridOptions {
   paletteIndex: number;
   noFill: boolean;
   removeBlocks: number;
+  animate: boolean;
 }
 
 const paper_links: Array<string> = [
@@ -40,9 +41,9 @@ export class AliveGridSketch extends GenericSketch {
   fillIterator: number;
   lineIterator: number;
   firstLine: boolean;
-  sequencer: number;
   fillDone: boolean;
   triangleFillColors: Array<p5Types.Color>;
+  animate: boolean;
 
   constructor(
     p5Instance: p5Types,
@@ -63,6 +64,7 @@ export class AliveGridSketch extends GenericSketch {
     this.noFill = opts.noFill;
     this.removeBlocks = opts.removeBlocks;
     this.margins = 10;
+    this.animate = opts.animate;
 
     this.sketchHeight = this.canvasHeight - 2 * this.margins;
     this.sketchWidth = this.canvasWidth - 2 * this.margins;
@@ -120,11 +122,6 @@ export class AliveGridSketch extends GenericSketch {
     this.fillIterator = 0;
     this.fillDone = true;
     this.triangleFillColors = [];
-
-    // step 1: draw outer square
-    // step 2: draw inner squares
-    // step 3: draw triangle and fill each triangle on draw
-    this.sequencer = 1;
   }
 
   setup(canvasParentRef: Element) {
@@ -155,18 +152,21 @@ export class AliveGridSketch extends GenericSketch {
 
     this.p5.frameRate(120); // highest possible framerate
     this.p5.loadImage(
-      paper_links[0],
+      paper_links[1],
       (img) => {
         console.log("paper image loaded");
         this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
-        this.p5.tint(50);
+        // this.p5.tint(50);
         this.p5.background(img);
         this.scaffolding();
+        if (!this.animate) this.preview();
       },
       (e) => {
         console.log(e);
       }
     );
+
+    if (!this.animate) this.p5.noLoop();
   }
 
   draw() {
@@ -263,7 +263,7 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   scaffolding() {
-    this.drawOuterEdge();
+    this.outline();
     let bitIndex = 0;
     for (
       let j = this.margins;
@@ -281,6 +281,72 @@ export class AliveGridSketch extends GenericSketch {
     }
   }
 
+  preview() {
+    const strokeScale = 5;
+    const stokeRez = 0.02;
+
+    for (let i = 0; i < this.allTriangles.length; i++) {
+      // first draw all vertices
+      const vertices = this.allTriangles[i];
+      for (let j = 1; j < vertices.length; j++) {
+        const x1 = vertices[j - 1][0];
+        const y1 = vertices[j - 1][1];
+        const x2 = vertices[j][0];
+        const y2 = vertices[j][1];
+        let strokeOffset =
+          strokeScale *
+          this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
+        this.p5.strokeWeight(strokeOffset);
+        this.p5.beginShape();
+        this.p5.vertex(x1, y1);
+        this.p5.vertex(x2, y2);
+        this.p5.endShape();
+      }
+    }
+
+    // then fill them
+    for (let i = 0; i < this.fillLines.length; i++) {
+      const fillLines = this.fillLines[i];
+      const fillColor = this.triangleFillColors[i].toString();
+      this.p5.push();
+      this.p5.strokeWeight(3);
+      this.p5.noFill();
+      this.p5.stroke(fillColor);
+      for (let j = 0; j < fillLines.length; j++) {
+        const lines = fillLines[j];
+
+        const firstLine = lines[0];
+        const secondLine = lines[1];
+        this.p5.beginShape();
+        for (let k = 0; k < firstLine.length; k++) {
+          const x = Number(firstLine[k][0]);
+          const y = Number(firstLine[k][1]);
+          const curve = firstLine[k][2];
+          if (curve) {
+            this.p5.curveVertex(x, y);
+          } else {
+            this.p5.vertex(x, y);
+          }
+        }
+        this.p5.endShape();
+
+        this.p5.beginShape();
+        for (let k = 0; k < secondLine.length; k++) {
+          const x = Number(secondLine[k][0]);
+          const y = Number(secondLine[k][1]);
+          const curve = secondLine[k][2];
+          if (curve) {
+            this.p5.curveVertex(x, y);
+          } else {
+            this.p5.vertex(x, y);
+          }
+        }
+        this.p5.endShape();
+      }
+      this.p5.pop();
+    }
+  }
+
   generateTriangles(i: number, j: number, bitIndex: number) {
     let noiseColor = this.p5.random();
     let color = this.pickColors(noiseColor);
@@ -288,12 +354,6 @@ export class AliveGridSketch extends GenericSketch {
     const rez2 = 0.01;
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
-    this.p5.push();
-    this.p5.noFill();
-    this.p5.stroke(255);
-    this.p5.strokeWeight(0.1);
-    this.p5.square(i, j, this.sizeOfBox);
-    this.p5.pop();
     if (this.shouldDrawBlock(bitIndex)) {
       this.triangleFillColors.push(color);
       this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
@@ -304,18 +364,48 @@ export class AliveGridSketch extends GenericSketch {
     return !this.blocksToRemove.has(bitIndex);
   }
 
-  drawOuterEdge() {
-    this.p5.push();
-    this.p5.noFill();
-    this.p5.stroke(255);
-    this.p5.strokeWeight(0.5);
-    this.p5.rect(
-      1 + this.margins,
-      1 + this.margins,
-      this.sketchWidth - 2,
-      this.sketchHeight - 2
-    );
-    this.p5.pop();
+  outline() {
+    for (let j = this.margins; j < this.canvasHeight; j += this.sizeOfBox) {
+      this.p5.push();
+      switch (this.gridSize) {
+        case 3:
+          this.p5.strokeWeight(3);
+          break;
+        case 6:
+          this.p5.strokeWeight(2);
+          break;
+        case 9:
+          this.p5.strokeWeight(1);
+          break;
+        case 12:
+          this.p5.strokeWeight(0.5);
+          break;
+      }
+      this.p5.stroke(0, 70);
+      this.p5.line(0, j, this.canvasHeight, j);
+      this.p5.pop();
+    }
+    for (let i = this.margins; i < this.canvasWidth; i += this.sizeOfBox) {
+      this.p5.push();
+      switch (this.gridSize) {
+        case 3:
+          this.p5.strokeWeight(3);
+          break;
+        case 6:
+          this.p5.strokeWeight(2);
+          break;
+        case 9:
+          this.p5.strokeWeight(1);
+          break;
+        case 12:
+          this.p5.strokeWeight(0.5);
+          break;
+      }
+      this.p5.strokeWeight(1);
+      this.p5.stroke(0, 70);
+      this.p5.line(i, 0, i, this.canvasWidth);
+      this.p5.pop();
+    }
   }
 
   generateTriangleOutline(

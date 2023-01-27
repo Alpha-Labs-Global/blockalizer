@@ -33,6 +33,7 @@ interface SketchOptions {
   removeBlocks?: number;
   gap?: number;
   cubeSize?: number;
+  animate?: boolean;
 }
 
 export function assign_sketch(
@@ -118,6 +119,7 @@ export function assign_sketch(
         paletteIndex: opts.paletteIndex || 0,
         noFill: opts.noFill || false,
         removeBlocks: opts.removeBlocks || 0,
+        animate: opts.animate || false,
       };
       sketch = new AliveGridSketch(
         p5,
