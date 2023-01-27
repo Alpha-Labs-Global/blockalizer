@@ -35,13 +35,14 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [antiBlock, setAntiBlock] = useState(2);
   const [color, setColor] = useState("Tidal");
   const [fill, setFill] = useState(true);
+  const [animate, setAnimate] = useState(false);
 
   const [gap, setGap] = useState(0);
   const [cubeSize, setCubeSize] = useState(3);
 
   useEffect(() => {
     regenerate();
-  }, [style, gridSize, antiBlock, fill, color, gap, cubeSize]);
+  }, [style, gridSize, antiBlock, fill, color, gap, cubeSize, animate]);
 
   const keyGenerator = () => {
     return (
@@ -50,6 +51,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       antiBlock.toString() +
       color +
       fill.toString() +
+      animate.toString() +
       gap.toString() +
       cubeSize.toString()
     );
@@ -78,6 +80,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       removeBlocks: antiBlock,
       gap: gap,
       cubeSize: cubeSize,
+      animate: animate,
     };
 
     sketch = assign_sketch(
@@ -209,6 +212,20 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
             {colorNames.map((s, i) => (
               <option key={i} value={s}>
                 {s}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-row">
+          <p className="basis-1/2">Animate</p>
+          <select
+            className="bg-transparent opacity-50"
+            onChange={(e) => setAnimate(e.target.value == "true")}
+            value={animate.toString()}
+          >
+            {[true, false].map((s, i) => (
+              <option key={i} value={s.toString()}>
+                {s.toString()}
               </option>
             ))}
           </select>
