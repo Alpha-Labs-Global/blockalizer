@@ -31,6 +31,7 @@ export const fetchBlocks = async (
 
 export const sendImage = async (
   blockNumber: number,
+  blockHash: string,
   image: string,
   address: string,
   grid_size: number,
@@ -42,6 +43,7 @@ export const sendImage = async (
   const endpoint = "/api/mint";
   const body = JSON.stringify({
     blockNumber,
+    blockHash,
     image,
     address,
     grid_size,

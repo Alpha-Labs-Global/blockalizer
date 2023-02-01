@@ -1,6 +1,7 @@
 // fill scribble effect
 // draw squares first
 
+import p5 from "p5";
 import p5Types, { Color } from "p5";
 import GenericSketch from "./generic_sketch";
 import Scribble from "./scribble";
@@ -14,9 +15,9 @@ export interface AliveGridOptions {
 }
 
 const paper_links: Array<string> = [
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmYPmQdJQJLtvMpbXgeHjWzatnyVyCMxcpQsknR8AbYuR6",
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmXdCnGST3VXiBBGAtEGLu4h3WyjZhayLJD9d6cUYtdDaj",
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/Qmc1UUU1dkfnKQNAtuZEq5QEDNpwAj4DR5N8eP2VFVxxgk",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-1.png",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-2.png",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-3.png",
 ];
 
 export class AliveGridSketch extends GenericSketch {
@@ -44,6 +45,7 @@ export class AliveGridSketch extends GenericSketch {
   fillDone: boolean;
   triangleFillColors: Array<p5Types.Color>;
   animate: boolean;
+  paper: p5Types.Image | null;
 
   constructor(
     p5Instance: p5Types,
@@ -123,6 +125,12 @@ export class AliveGridSketch extends GenericSketch {
     this.fillIterator = 0;
     this.fillDone = true;
     this.triangleFillColors = [];
+    this.paper = null;
+  }
+
+  preload() {
+    // const paper_type = this.p5.random([0, 1, 2]);
+    // this.paper = this.p5.loadImage(paper_links[paper_type]);
   }
 
   setup(canvasParentRef: Element) {
@@ -152,8 +160,9 @@ export class AliveGridSketch extends GenericSketch {
     // this.p5.background(this.backgroundColor);
 
     this.p5.frameRate(120); // highest possible framerate
+    const paper_type = this.p5.random([0, 1, 2]);
     this.p5.loadImage(
-      paper_links[1],
+      paper_links[paper_type],
       (img) => {
         console.log("paper image loaded");
         this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -166,6 +175,11 @@ export class AliveGridSketch extends GenericSketch {
         console.log(e);
       }
     );
+
+    // this.p5.image(this.paper!, 0, 0, this.canvasWidth, this.canvasHeight);
+    // this.p5.background(this.paper!);
+    // this.scaffolding();
+    // if (!this.animate) this.preview();
 
     if (!this.animate) this.p5.noLoop();
   }
@@ -266,6 +280,7 @@ export class AliveGridSketch extends GenericSketch {
 
   scaffolding() {
     this.outline();
+    this.selectColors();
     let bitIndex = 0;
     for (
       let j = this.margins;
@@ -350,6 +365,18 @@ export class AliveGridSketch extends GenericSketch {
     }
   }
 
+  selectColors() {
+    for (let j = 0; j < this.gridSize; j++) {
+      for (let i = 0; i < this.gridSize; i++) {
+        if (this.shouldDrawBlock(j * this.gridSize + i)) {
+          const noiseColor = this.p5.random();
+          const color = this.pickColors(noiseColor);
+          this.triangleFillColors.push(color);
+        }
+      }
+    }
+  }
+
   generateTriangles(i: number, j: number, bitIndex: number) {
     let noiseColor = this.p5.random();
     let color = this.pickColors(noiseColor);
@@ -358,7 +385,6 @@ export class AliveGridSketch extends GenericSketch {
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
     if (this.shouldDrawBlock(bitIndex)) {
-      this.triangleFillColors.push(color);
       this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
     }
   }
