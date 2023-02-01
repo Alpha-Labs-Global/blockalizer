@@ -94,6 +94,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       style,
       opts
     );
+    sketch.preload();
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {

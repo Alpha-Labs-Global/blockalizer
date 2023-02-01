@@ -28,6 +28,8 @@ export default class GenericSketch {
     this.p5.randomSeed(this.seedValue);
   }
 
+  preload() {}
+
   setup(canvasParentRef: Element) {
     this.p5
       .createCanvas(this.canvasWidth, this.canvasHeight)

@@ -23,6 +23,7 @@ interface ComponentProps {
 export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [style, setStyle] = useState("none");
   const [imgUrl, setImgUrl] = useState("");
+  const [animate, setAnimate] = useState(false);
 
   const blockNumber = props.blockNumber;
   const ready = props.ready;
@@ -53,11 +54,11 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     regenerate();
     if (ready) {
-      setStyle("grid");
+      setStyle("alive-grid");
     } else {
       setStyle("none");
     }
-  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill]);
+  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill, animate]);
 
   const keyGenerator = () => {
     return (
@@ -67,7 +68,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       tetri.toString() +
       chroma +
       noFill.toString() +
-      style
+      style +
+      animate.toString()
     );
   };
 
@@ -95,6 +97,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacitySwitch: true,
       noFill: noFill,
       removeBlocks: tetri,
+      animate: animate,
     };
 
     sketch = assign_sketch(
@@ -110,11 +113,16 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
+    console.log("setup called");
     sketch.setup(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
-    sketch.draw();
+    if (!sketch) {
+      console.log("sketch now undefined");
+      p5.noLoop();
+    }
+    sketch?.draw();
   };
 
   const regenerate = () => {
@@ -141,6 +149,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   return (
     <div>
+      <button onClick={(e) => setAnimate(!animate)}>Animate</button>
       {alreadyMinted ? (
         <img
           src={imgUrl}
@@ -164,4 +173,4 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   );
 };
 
-export default Art;
+export default React.memo(Art);

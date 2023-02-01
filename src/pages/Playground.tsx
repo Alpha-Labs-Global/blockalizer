@@ -31,6 +31,8 @@ import { ethers, BigNumber } from "ethers";
 import "./Playground.css";
 import Header from "../components/Header";
 
+import { BlockInfo } from "../helper/sketch";
+
 interface ComponentProps {
   pageState: string;
   onChange: any;
@@ -39,7 +41,7 @@ interface ComponentProps {
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [blockNumber, setBlockNumber] = useState<number>(-1);
   const [acquiredBlockNumber, setAcquiredBlockNumber] = useState<number>(-1);
-  const [blockInfo, setBlockInfo] = useState({});
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [loadArt, setLoadArt] = useState(false);
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blocksInformation, setBlocksInformation] = useState(new Map());
@@ -202,18 +204,26 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const sketchRef = useRef(null);
 
-  const mintHandler = async () => {
-    if (sketchRef && sketchRef.current) {
-      // @ts-ignore: Object is possibly 'null'.
+  const recordVideo = (e: BlobEvent) => {
+    console.log("recording");
+    if (e.data.size) {
+      console.log(e.data);
+      // chunks.push(e.data);
+    }
+  };
 
-      const canvas: any = sketchRef.current.sketch.canvas;
-      console.log(canvas);
+  const exportVideo = (e: Event) => {};
+
+  const mintHandler = async () => {
+    if (sketchRef && sketchRef.current && blockInfo) {
+      // @ts-ignore: Object is possibly 'null'.
+      const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
       const dataURL = canvas.toDataURL();
-      if (!onAllowlist && startDate > new Date(Date.now())) return;
 
       try {
         const result = await sendImage(
           blockNumber,
+          blockInfo.blockHash,
           dataURL,
           address,
           numOfBoxes,
@@ -225,10 +235,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         await mintToken(signer as ethers.Signer, result);
         setInformationText("Minting has started! Please wait...");
       } catch (e: any) {
-        mintingFailure(blockNumber);
+        // mintingFailure(blockNumber);
         console.error(e);
       } finally {
-        setAcquiredBlockNumber(blockNumber);
+        // setAcquiredBlockNumber(blockNumber);
       }
     }
   };
