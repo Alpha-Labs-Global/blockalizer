@@ -8,12 +8,15 @@ interface ComponentProps {
   blocks: string[];
   blocksInformation: Map<string, any>;
   blockNumber: number;
+  generation: number;
+  mintMax: number;
+  generationTotal: number;
   informationText: string;
   errorText: string;
   setBlockNumber(blockNumber: number): void;
   totalMinted: number;
   launchDate: Date;
-  onAllowlist: boolean
+  onAllowlist: boolean;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -28,7 +31,10 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const totalMinted = props.totalMinted;
   const currentDate = new Date(Date.now());
   const launchDate = props.launchDate;
-  const onAllowlist = props.onAllowlist
+  const onAllowlist = props.onAllowlist;
+  const generation = props.generation;
+  const mintMax = props.mintMax;
+  const generationTotal = props.generationTotal;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
@@ -222,14 +228,17 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                             Allowlist open for <Countdown date={launchDate} />
                             <br></br>
                             <span className="text-sm">
-                            {onAllowlist ? "Cool! Looks like you're on the allowlist. You can mint 2" : "Ooh, looks like you're not on the allowlist. Come back for public mint!"}
-                           </span>
-                           <span className="block mb-.2"/>
+                              {onAllowlist
+                                ? `Cool! Looks like you're on the allowlist. You can mint ${mintMax} in total`
+                                : "Ooh, looks like you're not on the allowlist. Come back for public mint!"}
+                            </span>
+                            <span className="block mb-.2" />
                           </span>
                         )}
                         <br></br>
                         <span>
-                          <span className="text-teal">{totalMinted}</span>/1000
+                          <span className="text-teal">{totalMinted}</span>/
+                          {generationTotal + " "}
                           Minted&nbsp;
                         </span>
 
@@ -239,7 +248,12 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                           viewBox="0 0 90 90"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
-                          onClick={() => {window.open("https://opensea.io/collection/blockalizer-chroma", '_blank');}}
+                          onClick={() => {
+                            window.open(
+                              "https://opensea.io/collection/blockalizer-chroma",
+                              "_blank"
+                            );
+                          }}
                         >
                           <g clipPath="url(#clip0_547_104)">
                             <rect
@@ -296,7 +310,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
           {orderedBlocksDisplay}
         </div>
         <br></br>
-        <span className="italic text-sm text-buttonText">Genesis 1 of 12</span>
+        <span className="italic text-sm text-buttonText">
+          Genesis {generation} of 12
+        </span>
         <span className="block mb-3"></span>
         <div>
           {informationText}

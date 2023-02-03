@@ -8,9 +8,6 @@ import Gallery from "../components/Gallery";
 
 import { Address, useSigner } from "wagmi";
 
-// @ts-ignore
-import sharp from "sharp";
-
 import {
   fetchBlocks,
   sendImage,
@@ -19,12 +16,15 @@ import {
 } from "../helper/server";
 import {
   mintToken,
+  preMintToken,
   getOwnedPieces,
   listenToEvents,
   getTotalMinted,
   getStartDate,
   getGeneration,
   isAllowed,
+  getMaxPerWallet,
+  getGenerationTotal,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -52,8 +52,14 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [alreadyMinted, setAlreadyMinted] = useState<boolean>(false);
   const [informationText, setInformationText] = useState<string>("");
   const [errorText, setErrorText] = useState<string>("");
-  const [generation, setGeneration] = useState<number>();
+  const [generation, setGeneration] = useState<number>(1);
   const [onAllowlist, setOnAllowlist] = useState<boolean>(false);
+  const [maxMintPerWallet, setMaxMintPerWallet] = useState<number>(2);
+  const [generationTotal, setGenerationTotal] = useState<number>(1000);
+  const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [animate, setAnimate] = useState(false);
+  const [mintIntention, setMintIntention] = useState(false);
+  const [disableMint, setDisableMint] = useState(true);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
   const [tetri, setTetri] = useState(0);
@@ -69,7 +75,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       if (newAddress == address) return;
 
       setAddress(newAddress);
-      console.log("Fetching blocks..");
       try {
         const result = await fetchBlocks(newAddress);
         setBlocksInformation(result);
@@ -88,18 +93,16 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (signer) {
       try {
         const address = await signer.getAddress();
+
         const result = await fetchBlocks(address);
         const ownedPieces = await getOwnedPieces(signer);
+        const tokenCount = await getTotalMinted(signer);
+        const start = await getStartDate(signer);
+
         setOwnedPieces(ownedPieces);
         setBlocksInformation(result);
-
-        const tokenCount = await getTotalMinted(signer);
         setTotalMinted(tokenCount.toNumber());
-
-        const start = await getStartDate(signer);
         setStartDate(new Date(start));
-
-        //call here
       } catch (e: any) {
         console.error(e);
       }
@@ -114,19 +117,22 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
-        console.log(ownedPieces);
-        setOwnedPieces(ownedPieces);
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber());
         const generation = await getGeneration(signer);
-        setGeneration(generation);
-
         const start = await getStartDate(signer);
-        setStartDate(new Date(start));
-
         const onAllow = await isAllowed(signer);
+        const maxPerWallet = await getMaxPerWallet(signer);
+        const generationTotal = await getGenerationTotal(signer);
+        const showGallery = ownedPieces.length > 0;
 
+        setOwnedPieces(ownedPieces);
+        setTotalMinted(tokenCount.toNumber());
+        setGeneration(generation);
+        setStartDate(new Date(start));
         setOnAllowlist(onAllow);
+        setMaxMintPerWallet(maxPerWallet);
+        setGenerationTotal(generationTotal);
+        setShowGallery(showGallery);
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -151,6 +157,53 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       lazySetGallery();
     }
   });
+
+  useEffect(() => {
+    const mint = async () => {
+      if (sketchRef && sketchRef.current && blockInfo) {
+        // @ts-ignore: Object is possibly 'null'.
+        const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
+        const dataURL = canvas.toDataURL();
+
+        try {
+          const result = await sendImage(
+            blockNumber,
+            blockInfo.blockHash,
+            dataURL,
+            address,
+            numOfBoxes,
+            tetri,
+            noFill,
+            chroma,
+            generation || 1
+          );
+          console.log("response: ", result);
+          if (new Date() < startDate && onAllowlist) {
+            console.log("pre-minting");
+            await preMintToken(signer as ethers.Signer, result);
+          } else {
+            await mintToken(signer as ethers.Signer, result);
+          }
+          setInformationText("Minting has started! Please wait...");
+        } catch (e: any) {
+          mintingFailure(blockNumber);
+          console.error(e);
+        } finally {
+          setAcquiredBlockNumber(blockNumber);
+        }
+      }
+    };
+
+    if (mintIntention) {
+      if (!animate) {
+        console.log("minting");
+        mint();
+        setMintIntention(false);
+      } else {
+        setAnimate(false);
+      }
+    }
+  }, [animate, mintIntention]);
 
   useEffect(() => {
     var elem = document.getElementById("widthIndicator");
@@ -180,6 +233,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [listeningMint]);
 
   useEffect(() => {
+    if (
+      alreadyMinted ||
+      totalMinted > generationTotal ||
+      (startDate > new Date() && !onAllowlist)
+    ) {
+      setDisableMint(true);
+    } else {
+      setDisableMint(false);
+    }
+  }, [alreadyMinted, totalMinted, generationTotal, startDate, onAllowlist]);
+
+  useEffect(() => {
     if (blockNumber > 0) {
       const info = blocksInformation.get(blockNumber.toString());
       setBlockInfo(info);
@@ -204,43 +269,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const sketchRef = useRef(null);
 
-  const recordVideo = (e: BlobEvent) => {
-    console.log("recording");
-    if (e.data.size) {
-      console.log(e.data);
-      // chunks.push(e.data);
-    }
-  };
-
-  const exportVideo = (e: Event) => {};
-
   const mintHandler = async () => {
-    if (sketchRef && sketchRef.current && blockInfo) {
-      // @ts-ignore: Object is possibly 'null'.
-      const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
-      const dataURL = canvas.toDataURL();
-
-      try {
-        const result = await sendImage(
-          blockNumber,
-          blockInfo.blockHash,
-          dataURL,
-          address,
-          numOfBoxes,
-          tetri,
-          noFill,
-          chroma,
-          generation || 1
-        );
-        await mintToken(signer as ethers.Signer, result);
-        setInformationText("Minting has started! Please wait...");
-      } catch (e: any) {
-        // mintingFailure(blockNumber);
-        console.error(e);
-      } finally {
-        // setAcquiredBlockNumber(blockNumber);
-      }
-    }
+    // first turn animate off before minting
+    setAnimate(false);
+    setMintIntention(true);
   };
 
   const iterateThroughBlocks = (key: string) => {
@@ -366,6 +398,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                   blockInfo={blockInfo}
                   refPointer={sketchRef}
                   alreadyMinted={alreadyMinted}
+                  animate={animate}
+                  setAnimate={setAnimate}
                 />
               )}
             </div>
@@ -412,7 +446,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setNoFill={setNoFill}
               setChroma={setChroma}
               mintHandler={mintHandler}
-              alreadyMinted={alreadyMinted}
+              disableMint={disableMint}
             ></Controls>
 
             <button
@@ -452,9 +486,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         totalMinted={totalMinted}
         launchDate={startDate}
         onAllowlist={onAllowlist}
+        generation={generation}
+        mintMax={maxMintPerWallet}
+        generationTotal={generationTotal}
       ></BlockSelector>
 
-      <Gallery ownedPieces={ownedPieces}></Gallery>
+      {showGallery ? <Gallery ownedPieces={ownedPieces}></Gallery> : null}
     </div>
   );
 };

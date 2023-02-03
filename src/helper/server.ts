@@ -52,6 +52,12 @@ export const sendImage = async (
     color,
     generation,
   });
+
+  const size = new TextEncoder().encode(JSON.stringify(body)).length;
+  const kiloBytes = size / 1024;
+  const megaBytes = kiloBytes / 1024;
+  console.log("size: ", megaBytes, " MB");
+
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
     headers: {
