@@ -18,12 +18,13 @@ interface ComponentProps {
   blockInfo: any;
   refPointer: React.MutableRefObject<null>;
   alreadyMinted: boolean;
+  animate: boolean;
+  setAnimate(animate: boolean): void;
 }
 
 export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [style, setStyle] = useState("none");
   const [imgUrl, setImgUrl] = useState("");
-  const [animate, setAnimate] = useState(false);
 
   const blockNumber = props.blockNumber;
   const ready = props.ready;
@@ -34,6 +35,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockInfo = props.blockInfo;
   const refPointer = props.refPointer;
   const alreadyMinted = props.alreadyMinted;
+  const animate = props.animate;
+  const setAnimate = props.setAnimate;
 
   const lazyGetInfo = async () => {
     if (alreadyMinted) {
@@ -113,7 +116,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    console.log("setup called");
     sketch.setup(canvasParentRef);
   };
 
@@ -149,7 +151,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   return (
     <div>
-      <button onClick={(e) => setAnimate(!animate)}>Animate</button>
       {alreadyMinted ? (
         <img
           src={imgUrl}
@@ -160,14 +161,17 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
           }}
         ></img>
       ) : (
-        <Sketch
-          ref={refPointer}
-          key={uniqueKey}
-          setup={setup}
-          draw={draw}
-          preload={preload}
-          windowResized={resizeCanvas}
-        />
+        <div>
+          <button onClick={(e) => setAnimate(!animate)}>Animate</button>
+          <Sketch
+            ref={refPointer}
+            key={uniqueKey}
+            setup={setup}
+            draw={draw}
+            preload={preload}
+            windowResized={resizeCanvas}
+          />
+        </div>
       )}
     </div>
   );

@@ -76,18 +76,18 @@ export class AliveGridSketch extends GenericSketch {
     this.sizeOfBox = this.sketchWidth / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    console.log(`size of box: ${this.sizeOfBox}px`);
-    console.log(`Palette selected: ${this.paletteIndex}`);
+    // console.log(`size of box: ${this.sizeOfBox}px`);
+    // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
     // this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
     this.colorPalette = this.generatePalette(this.paletteIndex);
 
     this.blocksToRemove = this.computeBlocksToRemove();
-    console.log("removed blocks: ", Array.from(this.blocksToRemove));
+    // console.log("removed blocks: ", Array.from(this.blocksToRemove));
     this.reseed();
 
-    console.log(`stroke width: ${this.strokeWidth}px`);
+    // console.log(`stroke width: ${this.strokeWidth}px`);
 
     let bowing = 3;
     let roughness = 4;
@@ -143,20 +143,20 @@ export class AliveGridSketch extends GenericSketch {
       this.colorTable.getNum(this.paletteIndex, 1),
       this.colorTable.getNum(this.paletteIndex, 2),
     ];
-    console.log(
-      `stroke: rgb(${r},${g},${b}) %c  `,
-      `background: rgb(${r},${g},${b});`
-    );
+    // console.log(
+    //   `stroke: rgb(${r},${g},${b}) %c  `,
+    //   `background: rgb(${r},${g},${b});`
+    // );
     this.p5.stroke(r, g, b);
     this.p5.strokeWeight(this.strokeWidth);
 
     r = this.p5.red(this.backgroundColor);
     g = this.p5.green(this.backgroundColor);
     b = this.p5.blue(this.backgroundColor);
-    console.log(
-      `background: rgb(${r},${g},${b}) %c  `,
-      `background: rgb(${r},${g},${b});`
-    );
+    // console.log(
+    //   `background: rgb(${r},${g},${b}) %c  `,
+    //   `background: rgb(${r},${g},${b});`
+    // );
     // this.p5.background(this.backgroundColor);
 
     this.p5.frameRate(120); // highest possible framerate
@@ -164,7 +164,7 @@ export class AliveGridSketch extends GenericSketch {
     this.p5.loadImage(
       paper_links[paper_type],
       (img) => {
-        console.log("paper image loaded");
+        // console.log("paper image loaded");
         this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
         // this.p5.tint(50);
         this.p5.background(img);
