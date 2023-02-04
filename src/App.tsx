@@ -453,17 +453,27 @@ const App: React.FC<ComponentProps> = (props: ComponentProps) => {
                       >
                         Overview
                       </a>
+                      &nbsp;&nbsp;&nbsp;<a href="https://playground.blockalizer.xyz" target="_blank">Playground</a>
                     </h1>
                   </div>
 
                   <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-20 lg:pl-10 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:hidden md:block sm:block">
                     <a
-                      href="https://twitter.com/blockalizerxyz"
-                      target="_blank"
-                    >
-                      Twitter
-                    </a>
-                    &nbsp;&nbsp;&nbsp;<a>Opensea</a>&nbsp;&nbsp;&nbsp;Docs
+                        href="https://twitter.com/blockalizerxyz"
+                        target="_blank"
+                      >
+                        Twitter
+                      </a>
+                      &nbsp;&nbsp;&nbsp;<a href="https://opensea.io/collection/blockalizer-chroma" target="_blank">Opensea</a>&nbsp;&nbsp;&nbsp;
+                      <a
+                        href="https://medium.com/alpha-labs/blockalzier-our-first-project-a2ef7e0b6f03"
+                        target="_blank"
+                      >
+                        Overview
+                      </a>
+                      <br></br>
+                     <a href="https://playground.blockalizer.xyz" target="_blank">Playground</a>
+                  
                   </h1>
                   <span className="block mb-5"></span>
                 </div>
