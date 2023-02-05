@@ -6,6 +6,7 @@ export const fetchBlocks = async (
   address: string
 ): Promise<Map<string, Object>> => {
   const endpoint = "/api/blocks";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ address });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -39,9 +40,11 @@ export const sendImage = async (
   noFill: boolean,
   color: string,
   generation: number,
+  paletteIndex: number,
   paperIndex: number
 ) => {
   const endpoint = "/api/mint";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({
     blockNumber,
     blockHash,
@@ -52,6 +55,7 @@ export const sendImage = async (
     fill: !noFill,
     color,
     generation,
+    paletteIndex,
     paperIndex,
   });
 
@@ -76,6 +80,7 @@ export const sendImage = async (
 
 export const latestBlock = async () => {
   const endpoint = "/api/latest";
+  console.log("calling " + endpoint);
   const response = await fetch(SERVER_URL + endpoint, {
     method: "GET",
     headers: {
@@ -91,6 +96,7 @@ export const latestBlock = async () => {
 
 export const mintingSuccess = async (blockNumber: number) => {
   const endpoint = "/api/mint-success";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ blockNumber });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -107,6 +113,7 @@ export const mintingSuccess = async (blockNumber: number) => {
 
 export const mintingFailure = async (blockNumber: number) => {
   const endpoint = "/api/mint-failure";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ blockNumber });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -123,6 +130,7 @@ export const mintingFailure = async (blockNumber: number) => {
 
 export const getBlockInfo = async (blockNumber: number) => {
   const endpoint = "/api/block/" + blockNumber;
+  console.log("calling " + endpoint);
   const response = await fetch(SERVER_URL + endpoint, {
     method: "GET",
     headers: {

@@ -60,7 +60,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [animate, setAnimate] = useState(false);
   const [mintIntention, setMintIntention] = useState(false);
   const [disableMint, setDisableMint] = useState(true);
-  const [seed, setSeed] = useState(1);
   const [blockUI, setBlockUI] = useState(false);
   const [paperIndex, setPaperIndex] = useState(0);
   const [premium, setPremium] = useState(false);
@@ -178,6 +177,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       const dataURL = canvas.toDataURL();
 
       try {
+        let paletteIndex = colorNames.indexOf(chroma);
+        setInformationText("Uploading art! Please wait...");
         const result = await sendImage(
           blockNumber,
           blockInfo.blockHash,
@@ -188,6 +189,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           noFill,
           chroma,
           generation,
+          paletteIndex,
           paperIndex
         );
         if (new Date() < startDate && onAllowlist) {
@@ -198,18 +200,19 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         }
         setInformationText("Minting has started! Please wait...");
       } catch (e: any) {
+        setInformationText("");
+        setErrorText("Minting failed!");
         mintingFailure(blockNumber);
         console.error(e);
       } finally {
         setAcquiredBlockNumber(blockNumber);
         setMintIntention(false);
-        setBlockUI(false);
-        setSeed(seed + 1);
       }
     }
   };
 
-  // mintIntention --> animate --> seed ---> blockUI --> mint
+  // mintIntention --> animate off ---> blockUI --> mint
+  // mintIntention ---> blockUI --> mint
 
   useEffect(() => {
     // finally mint
@@ -217,18 +220,20 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [blockUI]);
 
   useEffect(() => {
-    // next block the UI
-    if (mintIntention && !animate) setBlockUI(true);
-  }, [seed]);
-
-  useEffect(() => {
     // next ensure refresh the seed so art is properly refreshed
-    if (mintIntention && !animate) setSeed(seed + 1);
+    if (mintIntention && !animate) setBlockUI(true);
   }, [animate]);
 
   useEffect(() => {
-    // first ensure animate is off
-    if (mintIntention) setAnimate(false);
+    if (mintIntention) {
+      // first ensure animate is off
+      if (animate) {
+        setAnimate(false);
+      } else {
+        // skip to next step
+        setBlockUI(true);
+      }
+    }
   }, [mintIntention]);
 
   useEffect(() => {
@@ -254,6 +259,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
     if (listeningMint) {
       setInformationText("Minting completed. Enjoy your block!");
+      setBlockUI(false);
       lazyUpdateMint();
     }
   }, [listeningMint]);
@@ -296,6 +302,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const sketchRef = useRef(null);
 
   const mintHandler = async () => {
+    console.log("mint handler called");
     // first turn animate off before minting
     setAnimate(false);
     setMintIntention(true);
@@ -426,7 +433,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                 </div>
               ) : (
                 <Art
-                  key={seed}
                   blockNumber={blockNumber}
                   ready={loadArt}
                   numOfBoxes={numOfBoxes}
