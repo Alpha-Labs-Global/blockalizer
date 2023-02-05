@@ -1,8 +1,7 @@
 import p5Types from "p5";
 
-import colors from "../data/default.json";
-// import colors from "../data/fourcolornostroke.json";
-// import colors from "../data/palette.json";
+// import colors from "../data/default.json";
+import colors from "../data/palette.json";
 
 import {
   ColoredTriangleOptions,
@@ -34,6 +33,7 @@ interface SketchOptions {
   gap?: number;
   cubeSize?: number;
   animate?: boolean;
+  paperIndex?: number;
 }
 
 export function assign_sketch(
@@ -120,6 +120,7 @@ export function assign_sketch(
         noFill: opts.noFill || false,
         removeBlocks: opts.removeBlocks || 0,
         animate: opts.animate || false,
+        paperIndex: opts.paperIndex || 0,
       };
       sketch = new AliveGridSketch(
         p5,

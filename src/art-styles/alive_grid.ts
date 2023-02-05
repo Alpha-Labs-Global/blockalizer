@@ -12,18 +12,24 @@ export interface AliveGridOptions {
   noFill: boolean;
   removeBlocks: number;
   animate: boolean;
+  paperIndex: number;
 }
 
+// const paper_links: Array<string> = [
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmYPmQdJQJLtvMpbXgeHjWzatnyVyCMxcpQsknR8AbYuR6",
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmXdCnGST3VXiBBGAtEGLu4h3WyjZhayLJD9d6cUYtdDaj",
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/Qmc1UUU1dkfnKQNAtuZEq5QEDNpwAj4DR5N8eP2VFVxxgk",
+// ];
+
 const paper_links: Array<string> = [
-  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-1.png",
-  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-2.png",
-  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper-3.png",
+  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmT6zyejGzJtgGgXom6xrGd7TLcXYdhNyMWdGMzgcegoRH",
+  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmeajoNoy26zTcZMdEBWbJ9wxLtQGDERuHzmtcPLJWVUW7",
+  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmdY4wv2Lf2JsL1fuK44ahT6YndpHQNTuP58a66K9aMRCr",
 ];
 
 export class AliveGridSketch extends GenericSketch {
   backgroundColor: p5Types.Color; // background color to use if overridden
   sizeOfBox: number; // size in px of each individual square
-  strokeWidth: number; // stroke width to use
   noFill: boolean; // setting it to false removes all color
   removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
   blockOrientation: Array<number>; // Inform the shape of the block. 1 is ◣ and 0 is ◢.
@@ -46,6 +52,12 @@ export class AliveGridSketch extends GenericSketch {
   triangleFillColors: Array<p5Types.Color>;
   animate: boolean;
   paper: p5Types.Image | null;
+  strokeWidth: number; // stroke width to use
+  strokeWidthOutline: number;
+  strokeWidthFill: number;
+  fillGap: number;
+  strokeColor: p5.Color;
+  paperIndex: number; // 0,1,2
 
   constructor(
     p5Instance: p5Types,
@@ -65,18 +77,25 @@ export class AliveGridSketch extends GenericSketch {
     this.strokeWidth = 1.5;
     this.noFill = opts.noFill;
     this.removeBlocks = opts.removeBlocks;
-    this.margins = 10;
     this.animate = opts.animate;
 
-    this.sketchHeight = this.canvasHeight - 2 * this.margins;
-    this.sketchWidth = this.canvasWidth - 2 * this.margins;
+    const marginPct = 5;
+    const squareSize = Math.min(this.canvasHeight, this.canvasWidth);
+    this.margins = (squareSize * marginPct) / 100;
+
+    this.sketchHeight = squareSize;
+    this.sketchWidth = squareSize;
     const lengthOfBlockOrientation = this.gridSize * this.gridSize;
     this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
 
-    this.sizeOfBox = this.sketchWidth / this.gridSize;
+    this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    // console.log(`size of box: ${this.sizeOfBox}px`);
+    console.log(
+      this.sizeOfBox * this.gridSize,
+      squareSize,
+      squareSize - 2 * this.margins
+    );
     // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
@@ -87,32 +106,82 @@ export class AliveGridSketch extends GenericSketch {
     // console.log("removed blocks: ", Array.from(this.blocksToRemove));
     this.reseed();
 
-    // console.log(`stroke width: ${this.strokeWidth}px`);
-
     let bowing = 3;
     let roughness = 4;
     let maxOffset = 3;
     switch (this.gridSize) {
       case 3:
-        bowing = 3;
-        roughness = 2;
-        maxOffset = 3;
+        bowing = 2;
+        roughness = 3;
+        maxOffset = 2;
+        this.fillGap = 6;
+        this.strokeWidthFill = 5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 3;
         break;
       case 6:
         bowing = 3;
         roughness = 2;
-        maxOffset = 2;
+        maxOffset = 1;
+        this.fillGap = 5;
+        this.strokeWidthFill = 3.5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 2;
         break;
       case 9:
-        bowing = 2;
-        roughness = 3;
+        bowing = 3;
+        roughness = 2;
         maxOffset = 1;
+        this.fillGap = 4;
+        this.strokeWidthFill = 2.5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 1;
         break;
       case 12:
         bowing = 2;
+        roughness = 2;
+        maxOffset = 1;
+        this.fillGap = 3.5;
+        this.strokeWidthFill = 2;
+        this.strokeWidth = 1;
+        this.strokeWidthOutline = 0.5;
+        break;
+      default:
+        bowing = 3;
         roughness = 3;
         maxOffset = 1;
+        this.fillGap = 5;
+        this.strokeWidthFill = 3;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 0.5;
         break;
+    }
+
+    if (this.noFill) {
+      this.strokeColor = this.p5.color(
+        this.colorTable.getNum(this.paletteIndex, 0),
+        this.colorTable.getNum(this.paletteIndex, 1),
+        this.colorTable.getNum(this.paletteIndex, 2)
+      );
+      switch (this.gridSize) {
+        case 3:
+          this.strokeWidth = 12;
+          break;
+        case 6:
+          this.strokeWidth = 8;
+          break;
+        case 9:
+          this.strokeWidth = 6;
+          break;
+        case 12:
+          this.strokeWidth = 4;
+          break;
+        default:
+          this.strokeWidth = 1.5;
+          break;
+      }
+    } else {
+      this.strokeColor = this.p5.color(10);
     }
 
     this.iterator = 1;
@@ -126,11 +195,8 @@ export class AliveGridSketch extends GenericSketch {
     this.fillDone = true;
     this.triangleFillColors = [];
     this.paper = null;
-  }
 
-  preload() {
-    // const paper_type = this.p5.random([0, 1, 2]);
-    // this.paper = this.p5.loadImage(paper_links[paper_type]);
+    this.paperIndex = opts.paperIndex;
   }
 
   setup(canvasParentRef: Element) {
@@ -138,31 +204,9 @@ export class AliveGridSketch extends GenericSketch {
       .createCanvas(this.canvasWidth, this.canvasHeight)
       .parent(canvasParentRef);
 
-    let [r, g, b] = [
-      this.colorTable.getNum(this.paletteIndex, 0),
-      this.colorTable.getNum(this.paletteIndex, 1),
-      this.colorTable.getNum(this.paletteIndex, 2),
-    ];
-    // console.log(
-    //   `stroke: rgb(${r},${g},${b}) %c  `,
-    //   `background: rgb(${r},${g},${b});`
-    // );
-    this.p5.stroke(r, g, b);
-    this.p5.strokeWeight(this.strokeWidth);
-
-    r = this.p5.red(this.backgroundColor);
-    g = this.p5.green(this.backgroundColor);
-    b = this.p5.blue(this.backgroundColor);
-    // console.log(
-    //   `background: rgb(${r},${g},${b}) %c  `,
-    //   `background: rgb(${r},${g},${b});`
-    // );
-    // this.p5.background(this.backgroundColor);
-
     this.p5.frameRate(120); // highest possible framerate
-    const paper_type = this.p5.random([0, 1, 2]);
     this.p5.loadImage(
-      paper_links[paper_type],
+      paper_links[this.paperIndex],
       (img) => {
         // console.log("paper image loaded");
         this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -185,7 +229,7 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   draw() {
-    const strokeScale = 3;
+    const strokeScale = this.strokeWidth;
     const stokeRez = 0.02;
 
     // go over all triangles
@@ -194,7 +238,13 @@ export class AliveGridSketch extends GenericSketch {
 
       // check if triangle needs filling
       if (!this.fillDone) {
-        this.drawFill();
+        if (this.noFill) {
+          this.triangleIterator++;
+          this.iterator = 1;
+          this.fillDone = true;
+        } else {
+          this.drawFill();
+        }
       } else {
         // draw triangle outline
         if (this.iterator < vertices.length) {
@@ -207,7 +257,7 @@ export class AliveGridSketch extends GenericSketch {
             strokeScale *
             this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
           this.p5.strokeWeight(strokeOffset);
-          this.p5.stroke(20);
+          this.p5.stroke(this.strokeColor);
           this.p5.beginShape();
           this.p5.vertex(x1, y1);
           this.p5.vertex(x2, y2);
@@ -230,7 +280,7 @@ export class AliveGridSketch extends GenericSketch {
 
       if (this.lineIterator == 0) {
         this.p5.push();
-        this.p5.strokeWeight(3);
+        this.p5.strokeWeight(this.strokeWidthFill);
         this.p5.noFill();
         this.p5.stroke(fillColor);
         this.p5.beginShape();
@@ -284,14 +334,15 @@ export class AliveGridSketch extends GenericSketch {
     let bitIndex = 0;
     for (
       let j = this.margins;
-      j < this.canvasHeight - this.margins;
+      j < this.sketchHeight - this.margins;
       j += this.sizeOfBox
     ) {
       for (
         let i = this.margins;
-        i < this.canvasWidth - this.margins;
+        i < this.sketchWidth - this.margins;
         i += this.sizeOfBox
       ) {
+        // this.point(j, i);
         this.generateTriangles(i, j, bitIndex);
         bitIndex += 1;
       }
@@ -299,7 +350,7 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   preview() {
-    const strokeScale = 3;
+    const strokeScale = this.strokeWidth;
     const stokeRez = 0.02;
 
     for (let i = 0; i < this.allTriangles.length; i++) {
@@ -313,7 +364,7 @@ export class AliveGridSketch extends GenericSketch {
         let strokeOffset =
           strokeScale *
           this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
-        this.p5.stroke(10);
+        this.p5.stroke(this.strokeColor);
         this.p5.strokeWeight(strokeOffset);
         this.p5.beginShape();
         this.p5.vertex(x1, y1);
@@ -327,7 +378,7 @@ export class AliveGridSketch extends GenericSketch {
       const fillLines = this.fillLines[i];
       const fillColor = this.triangleFillColors[i].toString();
       this.p5.push();
-      this.p5.strokeWeight(3);
+      this.p5.strokeWeight(this.strokeWidthFill);
       this.p5.noFill();
       this.p5.stroke(fillColor);
       for (let j = 0; j < fillLines.length; j++) {
@@ -378,13 +429,11 @@ export class AliveGridSketch extends GenericSketch {
   }
 
   generateTriangles(i: number, j: number, bitIndex: number) {
-    let noiseColor = this.p5.random();
-    let color = this.pickColors(noiseColor);
-
     const rez2 = 0.01;
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
     if (this.shouldDrawBlock(bitIndex)) {
+      // this.triangleFillColors.push(color); // extract out so not affected by random calls
       this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
     }
   }
@@ -396,43 +445,16 @@ export class AliveGridSketch extends GenericSketch {
   outline() {
     for (let j = this.margins; j < this.canvasHeight; j += this.sizeOfBox) {
       this.p5.push();
-      switch (this.gridSize) {
-        case 3:
-          this.p5.strokeWeight(3);
-          break;
-        case 6:
-          this.p5.strokeWeight(2);
-          break;
-        case 9:
-          this.p5.strokeWeight(1);
-          break;
-        case 12:
-          this.p5.strokeWeight(0.5);
-          break;
-      }
+      this.p5.strokeWeight(this.strokeWidthOutline);
       this.p5.stroke(0, 70);
-      this.p5.line(0, j, this.canvasHeight, j);
+      this.p5.line(0, j, this.canvasWidth, j);
       this.p5.pop();
     }
     for (let i = this.margins; i < this.canvasWidth; i += this.sizeOfBox) {
       this.p5.push();
-      switch (this.gridSize) {
-        case 3:
-          this.p5.strokeWeight(3);
-          break;
-        case 6:
-          this.p5.strokeWeight(2);
-          break;
-        case 9:
-          this.p5.strokeWeight(1);
-          break;
-        case 12:
-          this.p5.strokeWeight(0.5);
-          break;
-      }
-      this.p5.strokeWeight(1);
+      this.p5.strokeWeight(this.strokeWidthOutline);
       this.p5.stroke(0, 70);
-      this.p5.line(i, 0, i, this.canvasWidth);
+      this.p5.line(i, 0, i, this.canvasHeight);
       this.p5.pop();
     }
   }
@@ -639,153 +661,6 @@ export class AliveGridSketch extends GenericSketch {
     return vertices1.concat(vertices2).concat(vertices3);
   }
 
-  drawJaggedTriangle(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    x3: number,
-    y3: number,
-    opts: any = {}
-  ) {
-    const strokeScale = opts.strokeScale || 2;
-    const stokeRez = opts.strokeRez || 0.03;
-    const fill = opts.fill || false;
-    const fillColor = opts.fillColor || this.p5.color(0, 0, 255);
-
-    const vertices1 = this.jaggedLineFreeFlow(x1, y1, x2, y2, opts);
-    const vertices2 = this.jaggedLineFreeFlow(x2, y2, x3, y3, opts);
-    const vertices3 = this.jaggedLineFreeFlow(x3, y3, x1, y1, opts);
-
-    const vertices = vertices1.concat(vertices2).concat(vertices3);
-
-    if (fill) {
-      this.p5.push();
-      this.p5.fill(fillColor);
-      this.p5.noStroke();
-      this.p5.beginShape();
-      for (let i = 1; i < vertices.length; i++) {
-        const x1 = vertices[i - 1][0];
-        const y1 = vertices[i - 1][1];
-        const x2 = vertices[i][0];
-        const y2 = vertices[i][1];
-        this.p5.vertex(x1, y1);
-        this.p5.vertex(x2, y2);
-      }
-      this.p5.endShape();
-      this.p5.pop();
-    }
-
-    for (let i = 1; i < vertices.length; i++) {
-      const x1 = vertices[i - 1][0];
-      const y1 = vertices[i - 1][1];
-      const x2 = vertices[i][0];
-      const y2 = vertices[i][1];
-      let strokeOffset =
-        strokeScale * this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
-      this.p5.strokeWeight(strokeOffset);
-      this.p5.beginShape();
-      this.p5.vertex(x1, y1);
-      this.p5.vertex(x2, y2);
-      this.p5.endShape();
-    }
-  }
-
-  drawJaggedSquare(
-    startX: number,
-    startY: number,
-    length: number,
-    opts: any = {}
-  ) {
-    const strokeScale = opts.strokeScale || 5;
-    const stokeRez = opts.strokeRez || 0.03;
-    const fill = opts.fill || false;
-    const fillColor = opts.fillColor || this.p5.color(0, 0, 255);
-
-    const endX = startX + length;
-    const endY = startY + length;
-    const vertices1 = this.jaggedLineFreeFlow(
-      startX,
-      startY,
-      endX,
-      startY,
-      opts
-    );
-    const vertices2 = this.jaggedLineFreeFlow(endX, startY, endX, endY, opts);
-    const vertices3 = this.jaggedLineFreeFlow(endX, endY, startX, endY, opts);
-    const vertices4 = this.jaggedLineFreeFlow(
-      startX,
-      endY,
-      startX,
-      startY,
-      opts
-    );
-
-    const vertices = vertices1
-      .concat(vertices2)
-      .concat(vertices3)
-      .concat(vertices4);
-
-    if (fill) {
-      this.p5.push();
-      this.p5.fill(fillColor);
-      this.p5.noStroke();
-      this.p5.beginShape();
-      for (let i = 1; i < vertices.length; i++) {
-        const x1 = vertices[i - 1][0];
-        const y1 = vertices[i - 1][1];
-        const x2 = vertices[i][0];
-        const y2 = vertices[i][1];
-        this.p5.vertex(x1, y1);
-        this.p5.vertex(x2, y2);
-      }
-      this.p5.endShape();
-      this.p5.pop();
-    }
-
-    for (let i = 1; i < vertices.length; i++) {
-      const x1 = vertices[i - 1][0];
-      const y1 = vertices[i - 1][1];
-      const x2 = vertices[i][0];
-      const y2 = vertices[i][1];
-      let strokeOffset =
-        strokeScale * this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
-      this.p5.strokeWeight(strokeOffset);
-      this.p5.beginShape();
-      this.p5.vertex(x1, y1);
-      this.p5.vertex(x2, y2);
-      this.p5.endShape();
-    }
-  }
-
-  drawJaggedLine(
-    startX: number,
-    startY: number,
-    endX: number,
-    endY: number,
-    opts: any = {}
-  ) {
-    const strokeScale = opts.strokeScale || 3;
-    const stokeRez = opts.strokeRez || 0.01;
-
-    const vertices = this.jaggedLine(startX, startY, endX, endY, opts);
-
-    // draw the actual line
-    for (let i = 1; i < vertices.length; i++) {
-      const x1 = vertices[i - 1][0];
-      const y1 = vertices[i - 1][1];
-      const x2 = vertices[i][0];
-      const y2 = vertices[i][1];
-      let strokeOffset =
-        strokeScale * this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
-      this.p5.strokeWeight(strokeOffset);
-      this.p5.beginShape();
-      this.p5.vertex(x1, y1);
-      this.p5.vertex(x2, y2);
-      this.p5.endShape();
-    }
-  }
-
   pushFilling(
     x1: number,
     y1: number,
@@ -800,7 +675,7 @@ export class AliveGridSketch extends GenericSketch {
     // the y coordinates of the border points of the hachure
     const yCoords = [y1, y2, y3];
     // the gap between two hachure lines
-    const gap = 5;
+    const gap = this.fillGap;
     // the angle of the hachure in degrees
     let angle;
     if (leftTriangle) {

@@ -17,6 +17,7 @@ interface ComponentProps {
   totalMinted: number;
   launchDate: Date;
   onAllowlist: boolean;
+  blockUI: boolean;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -35,6 +36,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const generation = props.generation;
   const mintMax = props.mintMax;
   const generationTotal = props.generationTotal;
+  const blockUI = props.blockUI;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
@@ -111,7 +113,6 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   useEffect(() => {
     if (sort == "Oldest") {
-      //ask about this
       setOrderedBlocks([...blocks]);
       setBlockNumber(Number(blocks[0]));
     } else {
@@ -122,6 +123,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [sort, blocks]);
 
   const blockHandler = (e: any) => {
+    if (blockUI) return;
+
     const selectedBlockNumber: number = Number(e.currentTarget.value);
     setBlockNumber(selectedBlockNumber);
   };

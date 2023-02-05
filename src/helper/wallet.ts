@@ -92,18 +92,18 @@ export const createSiweMessage = (address: string, statement: string) => {
 
 export const mintToken = async (
   signer: ethers.Signer,
-  tokenUri: string
+  result: any
 ): Promise<void> => {
   const [controller, generation, collection] = await getContracts(signer);
 
+  const uri = result.uri;
+  const sig = result.sig;
+
+  const uriBytes = ethers.utils.toUtf8Bytes(uri);
   const mintPrice = await generation.mintPrice();
   const options = { value: mintPrice };
 
-  // return await blockalizerControllerContract.publicMint(
-  //   COLLECTION_ID,
-  //   tokenUri,
-  //   options
-  // );
+  await controller.publicMint(uriBytes, sig, options);
 };
 
 export const preMintToken = async (
