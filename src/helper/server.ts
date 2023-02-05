@@ -38,7 +38,8 @@ export const sendImage = async (
   anti_block: number,
   noFill: boolean,
   color: string,
-  generation: number
+  generation: number,
+  paperIndex: number
 ) => {
   const endpoint = "/api/mint";
   const body = JSON.stringify({
@@ -51,6 +52,7 @@ export const sendImage = async (
     fill: !noFill,
     color,
     generation,
+    paperIndex,
   });
 
   const size = new TextEncoder().encode(JSON.stringify(body)).length;

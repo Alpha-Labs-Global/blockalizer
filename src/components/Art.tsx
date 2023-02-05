@@ -19,6 +19,8 @@ interface ComponentProps {
   refPointer: React.MutableRefObject<null>;
   alreadyMinted: boolean;
   animate: boolean;
+  colorNames: Array<string>;
+  paperIndex: number;
   setAnimate(animate: boolean): void;
 }
 
@@ -36,6 +38,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const refPointer = props.refPointer;
   const alreadyMinted = props.alreadyMinted;
   const animate = props.animate;
+  const colorNames = props.colorNames;
+  const paperIndex = props.paperIndex;
   const setAnimate = props.setAnimate;
 
   const lazyGetInfo = async () => {
@@ -78,11 +82,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
 
-  // In order of how the palette is generated. Ideally it would be
-  // best if the names would come from the data. But I will get to
-  // that later
-  const colorNames = ["Alpine", "Tidal", "Autumn"];
-
   const canvasWidth: any =
     document.getElementById("widthIndicator")?.offsetWidth;
   const canvasHeight: any =
@@ -101,6 +100,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       noFill: noFill,
       removeBlocks: tetri,
       animate: animate,
+      paperIndex: paperIndex,
     };
 
     sketch = assign_sketch(
