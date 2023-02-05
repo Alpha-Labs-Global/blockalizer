@@ -22,9 +22,9 @@ export interface AliveGridOptions {
 // ];
 
 const paper_links: Array<string> = [
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmT6zyejGzJtgGgXom6xrGd7TLcXYdhNyMWdGMzgcegoRH",
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmeajoNoy26zTcZMdEBWbJ9wxLtQGDERuHzmtcPLJWVUW7",
-  "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmdY4wv2Lf2JsL1fuK44ahT6YndpHQNTuP58a66K9aMRCr",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper1.webp",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper2.webp",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper3.webp",
 ];
 
 export class AliveGridSketch extends GenericSketch {
@@ -91,11 +91,6 @@ export class AliveGridSketch extends GenericSketch {
     this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    console.log(
-      this.sizeOfBox * this.gridSize,
-      squareSize,
-      squareSize - 2 * this.margins
-    );
     // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
