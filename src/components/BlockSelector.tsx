@@ -18,6 +18,8 @@ interface ComponentProps {
   launchDate: Date;
   onAllowlist: boolean;
   blockUI: boolean;
+  animate: boolean;
+  setAnimate (animate: boolean): void;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -37,6 +39,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const mintMax = props.mintMax;
   const generationTotal = props.generationTotal;
   const blockUI = props.blockUI;
+  const animate = props.animate;
+  const setAnimate = props.setAnimate;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
@@ -123,7 +127,10 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [sort, blocks]);
 
   const blockHandler = (e: any) => {
+
+    setAnimate(false)
     if (blockUI) return;
+
 
     const selectedBlockNumber: number = Number(e.currentTarget.value);
     setBlockNumber(selectedBlockNumber);
@@ -147,7 +154,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         } 
       ${
         blockNumber.toString() === b
-          ? "text-buttonActiveText"
+          ? blockTaken(b) ? 'text-white':'text-buttonActiveText'
           : "text-buttonText"
       }
       w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-xs midSm:text-md border-2 border-button  ${

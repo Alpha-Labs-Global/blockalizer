@@ -162,7 +162,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
         ></img>
       ) : (
         <div>
-          <button onClick={(e) => setAnimate(!animate)}>Animate</button>
+         
           <Sketch
             ref={refPointer}
             key={uniqueKey}
