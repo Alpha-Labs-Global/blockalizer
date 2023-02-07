@@ -234,3 +234,25 @@ export const getGenerationTotal = async (
 
   return (await generation.maxSupply()).toNumber();
 };
+
+export const decodeErrorName = (signer: ethers.Signer, e: any) => {
+  const data = e.error.data.originalError.data;
+
+  // @ts-ignore
+  const controller: BlockalizerControllerV3 = new ethers.Contract(
+    controllerContractAddress,
+    controllerContract.abi,
+    signer
+  );
+
+  if (e.code == "UNPREDICTABLE_GAS_LIMIT") {
+    const errorId = data.slice(0, 10);
+    for (const [signature, errorFragment] of Object.entries(
+      controller.interface.errors
+    )) {
+      const customErrorId = ethers.utils.id(signature).slice(0, 10);
+      if (errorId == customErrorId) return errorFragment.name;
+    }
+  }
+  return e.code;
+};

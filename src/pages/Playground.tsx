@@ -25,6 +25,7 @@ import {
   isAllowed,
   getMaxPerWallet,
   getGenerationTotal,
+  decodeErrorName,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
@@ -175,7 +176,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
       const dataURL = canvas.toDataURL();
-
+      let reason = "";
       try {
         let paletteIndex = colorNames.indexOf(chroma);
         setInformationText("Uploading art! Please wait...");
@@ -192,16 +193,21 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           paletteIndex,
           paperIndex
         );
-        if (new Date() < startDate && onAllowlist) {
-          console.log("pre-minting");
-          await preMintToken(signer as ethers.Signer, result);
-        } else {
-          await mintToken(signer as ethers.Signer, result);
+        try {
+          if (new Date() < startDate && onAllowlist) {
+            console.log("pre-minting");
+            await preMintToken(signer as ethers.Signer, result);
+          } else {
+            await mintToken(signer as ethers.Signer, result);
+          }
+          setInformationText("Minting has started! Please wait...");
+        } catch (e: any) {
+          reason = "Error: " + decodeErrorName(signer as ethers.Signer, e);
+          throw e;
         }
-        setInformationText("Minting has started! Please wait...");
       } catch (e: any) {
         setInformationText("");
-        setErrorText("Minting failed!");
+        setErrorText("Minting failed! " + reason);
         mintingFailure(blockNumber);
         console.error(e);
       } finally {
