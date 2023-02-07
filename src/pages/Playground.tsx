@@ -72,6 +72,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [totalMinted, setTotalMinted] = useState(0);
   const [startDate, setStartDate] = useState<Date>(new Date());
 
+
+  //reset animation variable 
+
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
   // that later
@@ -317,6 +320,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const iterateThroughBlocks = (key: string) => {
     if (blockUI) return;
 
+    
+    setAnimate(false)
+    
     if (sort === "Oldest") {
       if (key == "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
@@ -349,23 +355,52 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const handleLeft = (e: any) => {
+
     if (blockUI) return;
 
-    if (blocks.indexOf(blockNumber.toString()) > 0) {
-      setBlockNumber(
-        Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
-      );
+    if (sort === "Oldest") {
+      if (blocks.indexOf(blockNumber.toString()) > 0) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+        );
+      }
     }
+    else {
+
+      if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+        );
+        }
+
+        
+
+    }
+
   };
 
   const handleRight = (e: any) => {
     if (blockUI) return;
 
-    if (blocks.indexOf(blockNumber.toString()) < blocks.length - 1) {
-      setBlockNumber(
-        Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
-      );
+    if(sort === "Oldest")
+    {
+      if (blocks.indexOf(blockNumber.toString()) < blocks.length - 1) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+        );
+      }
+      
     }
+    else {
+      if (blocks.indexOf(blockNumber.toString()) !== 0) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+        );
+      }
+    }
+    
+
+    
   };
 
   return (
@@ -398,7 +433,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           <span className="block mt-4"></span>
 
           <div className="m-auto w-[100%] flex flex-row flex-wrap">
-            <button className="w-[10%] flex" onClick={handleLeft}>
+            <button className="w-[10%] flex" onClick={(e) => {handleLeft(e); setAnimate(false)}}>
               <svg
                 className="align-middle w-full m-auto w-[60%] mr-[40%]"
                 viewBox="0 0 26 68"
@@ -456,7 +491,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               )}
             </div>
 
-            <button className="w-[10%] flex" onClick={handleRight}>
+            <button className="w-[10%] flex"  onClick={(e) => {handleRight(e); setAnimate(false)}}>
               <svg
                 className="align-middle w-full m-auto w-[60%] ml-[40%]"
                 viewBox="0 0 26 68"
@@ -484,6 +519,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setNoFill={setNoFill}
               setChroma={setChroma}
               mintHandler={mintHandler}
+              animate={animate}
+              setAnimate={setAnimate}
               premium={premium}
               disableMint={disableMint || blockUI}
             ></Controls>
@@ -503,6 +540,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber={blockNumber}
         blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
+        animate={animate}
+        setAnimate={setAnimate}
         informationText={informationText}
         errorText={errorText}
         totalMinted={totalMinted}
