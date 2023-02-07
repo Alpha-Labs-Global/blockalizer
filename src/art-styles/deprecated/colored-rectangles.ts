@@ -1,3 +1,4 @@
+/*
 import p5Types from "p5";
 import GenericSketch from "../generic_sketch";
 
@@ -56,3 +57,7 @@ export default class ColoredRectanglesSketch extends GenericSketch {
     }
   }
 }
+
+*/
+
+export {};

@@ -51,7 +51,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
   alpha: number; // color opacity for each shape
 
   constructor(
-    p5Instance: p5Types,
+    p5Instance: p5Types.Graphics,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,

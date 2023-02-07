@@ -10,7 +10,7 @@ import {
 import GenericSketch from "../art-styles/generic_sketch";
 import NoiseSketch from "../art-styles/noise_sketch";
 import NoneSketch from "../art-styles/none_sketch";
-import CubeSketch from "../art-styles/cube_sketch";
+// import CubeSketch from "../art-styles/cube_sketch";
 import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
 
 export interface BlockInfo {
@@ -37,7 +37,7 @@ interface SketchOptions {
 }
 
 export function assign_sketch(
-  p5: p5Types,
+  p5: p5Types.Graphics,
   canvasWidth: number,
   canvasHeight: number,
   table: p5Types.Table,
@@ -97,6 +97,7 @@ export function assign_sketch(
         parseInt(blockNumber)
       );
       break;
+    /*
     case "3d-cube":
       let cubeOpts: any = {
         gap: opts.gap || 0,
@@ -113,6 +114,7 @@ export function assign_sketch(
         cubeOpts
       );
       break;
+      */
     case "alive-grid":
       let aliveGridOptions: AliveGridOptions = {
         numOfBoxes: opts.numOfBoxes || 9,

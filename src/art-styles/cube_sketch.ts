@@ -1,3 +1,4 @@
+/*
 import p5Types from "p5";
 import GenericSketch from "./generic_sketch";
 
@@ -99,3 +100,6 @@ export default class CubeSketch extends GenericSketch {
     }
   }
 }
+*/
+
+export {};

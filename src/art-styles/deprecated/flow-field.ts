@@ -1,3 +1,5 @@
+/*
+
 import p5 from "p5";
 import p5Types from "p5";
 import GenericSketch from "../generic_sketch";
@@ -138,3 +140,7 @@ export default class FlowfieldSketch extends GenericSketch {
     }
   }
 }
+
+*/
+
+export {};

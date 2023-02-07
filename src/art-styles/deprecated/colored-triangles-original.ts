@@ -1,24 +1,6 @@
+/*
 import p5Types from "p5";
 import GenericSketch from "../generic_sketch";
-
-/* Palette has a collection of 5 colors and we consider two palettes
-
-{
-  R1, G1, B1, // used for background
-  R2, G2, B2, //   randomly
-  R3, G3, B3, //     used
-  R4, G4, B4, //    in the
-  R5, G5, B5  //    palette 1
-}
-
-{
-  R1, G1, B1, // used for background
-  R2, G2, B2, //   randomly
-  R3, G3, B3, //     used
-  R4, G4, B4, //    in the
-  R5, G5, B5  //    palette 2
-}
-*/
 
 export interface ColoredTriangleOptions {
   numOfBoxes: number;
@@ -298,3 +280,6 @@ export class ColoredTrianglesSketch extends GenericSketch {
     console.log(str, ...css_arr);
   }
 }
+*/
+
+export {};

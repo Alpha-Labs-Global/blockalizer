@@ -6,7 +6,7 @@ export default class NoneSketch extends GenericSketch {
   rez: number;
 
   constructor(
-    p5Instance: p5Types,
+    p5Instance: p5Types.Graphics,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
