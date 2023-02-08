@@ -1,14 +1,14 @@
 import p5Types from "p5";
 
 export default class GenericSketch {
-  p5: p5Types.Graphics;
+  p5: p5Types;
   canvasWidth: number;
   canvasHeight: number;
   colorTable: p5Types.Table;
   seedValue: number;
 
   constructor(
-    p5Instance: p5Types.Graphics,
+    p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
@@ -30,7 +30,11 @@ export default class GenericSketch {
 
   preload() {}
 
-  setup() {
+  setup(canvasParentRef: Element) {
+    this.p5
+      .createCanvas(this.canvasWidth, this.canvasHeight)
+      .parent(canvasParentRef);
+
     this.p5.noLoop();
   }
 
@@ -39,7 +43,7 @@ export default class GenericSketch {
   point(x: number, y: number) {
     this.p5.push();
     this.p5.stroke(255);
-    this.p5.strokeWeight(50);
+    this.p5.strokeWeight(5);
     this.p5.point(x, y);
     this.p5.pop();
   }

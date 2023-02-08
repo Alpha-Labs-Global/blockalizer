@@ -8,7 +8,7 @@ import {
   ColoredTrianglesSketch,
 } from "../art-styles/colored-triangles";
 import GenericSketch from "../art-styles/generic_sketch";
-import NoiseSketch from "../art-styles/noise_sketch";
+// import NoiseSketch from "../art-styles/noise_sketch";
 import NoneSketch from "../art-styles/none_sketch";
 // import CubeSketch from "../art-styles/cube_sketch";
 import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
@@ -37,7 +37,7 @@ interface SketchOptions {
 }
 
 export function assign_sketch(
-  p5: p5Types.Graphics,
+  p5: p5Types,
   canvasWidth: number,
   canvasHeight: number,
   table: p5Types.Table,
@@ -54,6 +54,7 @@ export function assign_sketch(
     parseInt(blockNumber)
   );
   switch (selectedStyle) {
+    /*
     case "grid":
       let coloredTriangleOptions: ColoredTriangleOptions = {
         numOfBoxes: opts.numOfBoxes || 9,
@@ -88,6 +89,7 @@ export function assign_sketch(
         noiseOptions
       );
       break;
+      */
     case "none":
       sketch = new NoneSketch(
         p5,

@@ -7,6 +7,7 @@ import BlockSelector from "../components/BlockSelector";
 import Gallery from "../components/Gallery";
 
 import { useSigner } from "wagmi";
+import { trackAmplitude } from "../helper/amplitude";
 
 import {
   fetchBlocks,
@@ -72,8 +73,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [totalMinted, setTotalMinted] = useState(0);
   const [startDate, setStartDate] = useState<Date>(new Date());
 
-
-  //reset animation variable 
+  //reset animation variable
 
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
@@ -179,9 +179,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
       const dataURL = canvas.toDataURL();
+      console.log(dataURL);
       let reason = "";
       try {
         let paletteIndex = colorNames.indexOf(chroma);
+        setErrorText("");
         setInformationText("Uploading art! Please wait...");
         const result = await sendImage(
           blockNumber,
@@ -196,10 +198,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           paletteIndex,
           paperIndex
         );
+        setInformationText("Upload complete! Please approve transaction!");
+        trackAmplitude("upload-success");
         try {
           if (new Date() < startDate && onAllowlist) {
             console.log("pre-minting");
             await preMintToken(signer as ethers.Signer, result);
+            trackAmplitude("whitelist-minting");
           } else {
             await mintToken(signer as ethers.Signer, result);
           }
@@ -211,9 +216,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       } catch (e: any) {
         setInformationText("");
         setErrorText("Minting failed! " + reason);
+        trackAmplitude("minting-failed");
         mintingFailure(blockNumber);
+        setBlockUI(false);
         console.error(e);
       } finally {
+        trackAmplitude("minting-approved");
         setAcquiredBlockNumber(blockNumber);
         setMintIntention(false);
       }
@@ -268,8 +276,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
     if (listeningMint) {
       setInformationText("Minting completed. Enjoy your block!");
+      trackAmplitude("minting-complete");
       setBlockUI(false);
       lazyUpdateMint();
+      setDisableMint(true);
     }
   }, [listeningMint]);
 
@@ -311,6 +321,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const sketchRef = useRef(null);
 
   const mintHandler = async () => {
+    trackAmplitude("mint-button-pressed");
     console.log("mint handler called");
     // first turn animate off before minting
     setAnimate(false);
@@ -320,9 +331,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const iterateThroughBlocks = (key: string) => {
     if (blockUI) return;
 
-    
-    setAnimate(false)
-    
+    setAnimate(false);
+
     if (sort === "Oldest") {
       if (key == "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
@@ -355,7 +365,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const handleLeft = (e: any) => {
-
     if (blockUI) return;
 
     if (sort === "Oldest") {
@@ -364,43 +373,31 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
         );
       }
-    }
-    else {
-
+    } else {
       if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
         setBlockNumber(
           Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
         );
-        }
-
-        
-
+      }
     }
-
   };
 
   const handleRight = (e: any) => {
     if (blockUI) return;
 
-    if(sort === "Oldest")
-    {
+    if (sort === "Oldest") {
       if (blocks.indexOf(blockNumber.toString()) < blocks.length - 1) {
         setBlockNumber(
           Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
         );
       }
-      
-    }
-    else {
+    } else {
       if (blocks.indexOf(blockNumber.toString()) !== 0) {
         setBlockNumber(
           Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
         );
       }
     }
-    
-
-    
   };
 
   return (
@@ -433,7 +430,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
           <span className="block mt-4"></span>
 
           <div className="m-auto w-[100%] flex flex-row flex-wrap">
-            <button className="w-[10%] flex" onClick={(e) => {handleLeft(e); setAnimate(false)}}>
+            <button
+              className="w-[10%] flex"
+              onClick={(e) => {
+                handleLeft(e);
+                setAnimate(false);
+              }}
+            >
               <svg
                 className="align-middle w-full m-auto w-[60%] mr-[40%]"
                 viewBox="0 0 26 68"
@@ -491,7 +494,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               )}
             </div>
 
-            <button className="w-[10%] flex"  onClick={(e) => {handleRight(e); setAnimate(false)}}>
+            <button
+              className="w-[10%] flex"
+              onClick={(e) => {
+                handleRight(e);
+                setAnimate(false);
+              }}
+            >
               <svg
                 className="align-middle w-full m-auto w-[60%] ml-[40%]"
                 viewBox="0 0 26 68"

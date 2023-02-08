@@ -6,6 +6,8 @@ import placeHolder from "../media/square.png";
 
 import { latestBlock } from "../helper/server";
 
+import { trackAmplitude } from "../helper/amplitude";
+
 import dayjs from "dayjs";
 
 const relativeTime = require("dayjs/plugin/relativeTime");
@@ -221,6 +223,7 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
             <p
               className="lg:text-2xl md:text-xl sm:text-lg lg:ml-12 md:ml-8 sm:ml-6 "
               onClick={(e) => {
+                trackAmplitude("navigate-to-playground");
                 setPage("Mint");
               }}
               role="button"

@@ -14,7 +14,6 @@ interface ComponentProps {}
 
 const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   let sketch: GenericSketch;
-  let context: p5Types.Graphics;
   const styles = all_sketch_styles();
   // const colorNames = ["Alpine", "Tidal", "Autumn"];
   const colorNames = [...Array(100)].map((item, index) => index.toString());
@@ -85,11 +84,8 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       animate: animate,
     };
 
-    const sketchWidth = 1200;
-    const sketchHeight = 1200;
-    context = p5.createGraphics(sketchWidth, sketchHeight);
     sketch = assign_sketch(
-      context,
+      p5,
       canvasWidth,
       canvasHeight,
       table,
@@ -102,20 +98,11 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.frameRate(120); // highest possible framerate
-    // p5.pixelDensity(1);
-    p5.createCanvas(canvasWidth, canvasHeight).parent(canvasParentRef);
-
-    sketch.setup();
+    sketch.setup(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
-    if (!sketch) {
-      console.log("sketch now undefined");
-      p5.noLoop();
-    }
-    sketch?.draw();
-    p5.image(context, 0, 0, canvasWidth, canvasHeight);
+    sketch.draw();
   };
 
   const gridControls =

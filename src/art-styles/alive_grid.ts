@@ -60,7 +60,7 @@ export class AliveGridSketch extends GenericSketch {
   paperIndex: number; // 0,1,2
 
   constructor(
-    p5Instance: p5Types.Graphics,
+    p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
@@ -91,11 +91,6 @@ export class AliveGridSketch extends GenericSketch {
     this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    console.log(
-      this.sizeOfBox * this.gridSize,
-      squareSize,
-      squareSize - 2 * this.margins
-    );
     // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
@@ -199,7 +194,12 @@ export class AliveGridSketch extends GenericSketch {
     this.paperIndex = opts.paperIndex;
   }
 
-  setup() {
+  setup(canvasParentRef: Element) {
+    this.p5
+      .createCanvas(this.canvasWidth, this.canvasHeight)
+      .parent(canvasParentRef);
+
+    this.p5.frameRate(120); // highest possible framerate
     this.p5.loadImage(
       paper_links[this.paperIndex],
       (img) => {

@@ -25,8 +25,8 @@ function hexToRgb(hex) {
 // var sunshine = ["#FFDAA8", "#FFAA2C", "#FF9218", "#311400"];
 // var noir = ["#E6E6E6", "#979797", "#8A8A8A", "#070707"];
 // var allColors = [alpine, tidal, autumn];
-var tropicana = ["#7534FF", "#FF34D2", "#FFC634"];
-var neon_fruit = ["#FB34FF", "#EFFF34", "#69FF34"];
+var tropicana = ["#FFC634", "#7534FF", "#FF34D2"];
+var neon_fruit = ["#69FF34", "#FB34FF", "#EFFF34"];
 var zest = ["#FF347D", "#BEFF34", "#FF7D34"];
 var waterfall = ["#34CEFF", "#3491FF", "#6934FF"];
 var allColors = [tropicana, neon_fruit, zest, waterfall];

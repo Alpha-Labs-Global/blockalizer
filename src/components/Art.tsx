@@ -87,7 +87,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const canvasHeight: any =
     document.getElementById("widthIndicator")?.offsetWidth;
   let sketch: GenericSketch;
-  let context: p5Types.Graphics;
 
   const preload = (p5: p5Types) => {
     let paletteIndex = colorNames.indexOf(chroma);
@@ -104,11 +103,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       paperIndex: paperIndex,
     };
 
-    const sketchWidth = 1200;
-    const sketchHeight = 1200;
-    context = p5.createGraphics(sketchWidth, sketchHeight);
     sketch = assign_sketch(
-      context,
+      p5,
       canvasWidth,
       canvasHeight,
       table,
@@ -120,11 +116,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.frameRate(120); // highest possible framerate
-    // p5.pixelDensity(1);
-    p5.createCanvas(canvasWidth, canvasHeight).parent(canvasParentRef);
-
-    sketch.setup();
+    sketch.setup(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
@@ -133,7 +125,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       p5.noLoop();
     }
     sketch?.draw();
-    p5.image(context, 0, 0, canvasWidth, canvasHeight);
   };
 
   const regenerate = () => {
@@ -171,7 +162,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
         ></img>
       ) : (
         <div>
-         
           <Sketch
             ref={refPointer}
             key={uniqueKey}
