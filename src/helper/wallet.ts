@@ -196,7 +196,7 @@ export const getGeneration = async (signer: ethers.Signer): Promise<number> => {
 };
 
 export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
-  const userAddress = (await signer.getAddress()).toString();
+  const userAddress = (await signer.getAddress()).toLowerCase();
 
   return whitelist.includes(userAddress);
 };
