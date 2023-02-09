@@ -19,7 +19,7 @@ interface ComponentProps {
   onAllowlist: boolean;
   blockUI: boolean;
   animate: boolean;
-  setAnimate (animate: boolean): void;
+  setAnimate(animate: boolean): void;
 }
 
 const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -42,6 +42,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const animate = props.animate;
   const setAnimate = props.setAnimate;
 
+  const preparationForNextGen = true;
+
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
   type renderObj = {
@@ -50,7 +52,27 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
     price: number;
   };
 
-  const Completionist = () => <span></span>;
+  const allowListPreGen = (
+    <span>
+      {onAllowlist
+        ? `Congrats! You are on the whitelist! Ready to mint?`
+        : "Ooh, looks like you're not on the whitelist. Come back for public mint!"}
+    </span>
+  );
+
+  const allowListPostGen =
+    launchDate > currentDate ? (
+      <span>
+        Allowlist open for <Countdown date={launchDate} />
+        <br></br>
+        <span className="text-sm">
+          {onAllowlist
+            ? `Cool! Looks like you're on the allowlist. You can mint ${mintMax} in total`
+            : "Ooh, looks like you're not on the allowlist. Come back for public mint!"}
+        </span>
+        <span className="block mb-.2" />
+      </span>
+    ) : null;
 
   function deleteArtificialAdditions() {
     var elements = document.getElementsByClassName("artificialAddition");
@@ -127,10 +149,8 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [sort, blocks]);
 
   const blockHandler = (e: any) => {
-
-    setAnimate(false)
+    setAnimate(false);
     if (blockUI) return;
-
 
     const selectedBlockNumber: number = Number(e.currentTarget.value);
     setBlockNumber(selectedBlockNumber);
@@ -154,7 +174,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         } 
       ${
         blockNumber.toString() === b
-          ? blockTaken(b) ? 'text-white':'text-buttonActiveText'
+          ? blockTaken(b)
+            ? "text-white"
+            : "text-buttonActiveText"
           : "text-buttonText"
       }
       w-fit mt-2 mb-2 py-1 mr-2 ml-0 px-3 shadow-md no-underline rounded-full text-md sm:text-xs midSm:text-md border-2 border-button  ${
@@ -233,18 +255,9 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                         <div className="mt-3"></div>
                       </h1>
                       <h1 className="lg:text-lg md:text-md sm:text-md bg-transparent">
-                        {launchDate > currentDate && (
-                          <span>
-                            Allowlist open for <Countdown date={launchDate} />
-                            <br></br>
-                            <span className="text-sm">
-                              {onAllowlist
-                                ? `Cool! Looks like you're on the allowlist. You can mint ${mintMax} in total`
-                                : "Ooh, looks like you're not on the allowlist. Come back for public mint!"}
-                            </span>
-                            <span className="block mb-.2" />
-                          </span>
-                        )}
+                        {preparationForNextGen
+                          ? allowListPreGen
+                          : allowListPostGen}
                         <br></br>
                         <span>
                           <span className="text-teal">{totalMinted}</span>/
