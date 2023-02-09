@@ -196,15 +196,9 @@ export const getGeneration = async (signer: ethers.Signer): Promise<number> => {
 };
 
 export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
-  const whitelisted = [
-    "0xB2D17c014D9a5BC9De4aDCc656e1a3B3b608238D", // blockalizer
-    "0xe1EBc6DB1cfE34b4cAed238dD5f59956335E2998", // uneeb 1
-    "0xBb6f397d9d8bf128dDa607005397F539B43CD710", // uneeb 2
-  ];
+  const userAddress = (await signer.getAddress()).toString();
 
-  const userAddress = await signer.getAddress();
-
-  return whitelisted.includes(userAddress);
+  return whitelist.includes(userAddress);
 };
 
 export const getMaxPerWallet = async (
