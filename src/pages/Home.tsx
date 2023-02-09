@@ -433,6 +433,10 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
               >
                 Overview
               </a>
+              &nbsp;&nbsp;&nbsp;
+              <a href="https://playground.blockalizer.xyz" target="_blank">
+                Playground
+              </a>
             </h1>
           </div>
 
