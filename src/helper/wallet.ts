@@ -6,15 +6,15 @@ import { BigNumber, ethers } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 
-import controllerContract from "./contracts/V5/BlockalizerControllerV3.json";
-import generationV2Contract from "./contracts/V3/BlockalizerGenerationV2.json";
-import nftV3Contract from "./contracts/V3/BlockalizerV3.json";
+import controllerContract from "./contracts/BlockalizerControllerV5.sol/BlockalizerControllerV5.json";
+import generationV2Contract from "./contracts/BlockalizerGenerationV2.sol/BlockalizerGenerationV2.json";
+import nftV3Contract from "./contracts/BlockalizerV3.sol/BlockalizerV3.json";
 
 import {
-  BlockalizerControllerV3,
+  BlockalizerControllerV5,
   BlockalizerV3,
   BlockalizerGenerationV2,
-} from "./contracts/typechain-types";
+} from "./contracts/types";
 
 const {
   REACT_APP_ALCHEMY_API_KEY,
@@ -41,10 +41,10 @@ const supportedChains = () => {
 const getContracts = async (
   signer: ethers.Signer
 ): Promise<
-  [BlockalizerControllerV3, BlockalizerGenerationV2, BlockalizerV3]
+  [BlockalizerControllerV5, BlockalizerGenerationV2, BlockalizerV3]
 > => {
   // @ts-ignore
-  const controller: BlockalizerControllerV3 = new ethers.Contract(
+  const controller: BlockalizerControllerV5 = new ethers.Contract(
     controllerContractAddress,
     controllerContract.abi,
     signer
@@ -239,7 +239,7 @@ export const decodeErrorName = (signer: ethers.Signer, e: any) => {
   const data = e.error.data.originalError.data;
 
   // @ts-ignore
-  const controller: BlockalizerControllerV3 = new ethers.Contract(
+  const controller: BlockalizerControllerV5 = new ethers.Contract(
     controllerContractAddress,
     controllerContract.abi,
     signer
