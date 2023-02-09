@@ -7,7 +7,7 @@ export default class NoiseSketch extends GenericSketch {
   options: number;
 
   constructor(
-    p5Instance: p5Types,
+    p5Instance: p5Types.Graphics,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,

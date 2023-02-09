@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../App.css";
+import "./MainScreen.css";
 
 import Art from "../components/Art";
 import Controls from "../components/Controls";
 import BlockSelector from "../components/BlockSelector";
 import Gallery from "../components/Gallery";
 
-import { Address, useSigner } from "wagmi";
-
-// @ts-ignore
-import sharp from "sharp";
+import { useSigner } from "wagmi";
+import { trackAmplitude } from "../helper/amplitude";
 
 import {
   fetchBlocks,
@@ -19,17 +17,23 @@ import {
 } from "../helper/server";
 import {
   mintToken,
+  preMintToken,
   getOwnedPieces,
   listenToEvents,
   getTotalMinted,
   getStartDate,
   getGeneration,
   isAllowed,
+  getMaxPerWallet,
+  getGenerationTotal,
+  decodeErrorName,
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
 import "./Playground.css";
 import Header from "../components/Header";
+
+import { BlockInfo } from "../helper/sketch";
 
 interface ComponentProps {
   pageState: string;
@@ -39,7 +43,7 @@ interface ComponentProps {
 const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [blockNumber, setBlockNumber] = useState<number>(-1);
   const [acquiredBlockNumber, setAcquiredBlockNumber] = useState<number>(-1);
-  const [blockInfo, setBlockInfo] = useState({});
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [loadArt, setLoadArt] = useState(false);
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blocksInformation, setBlocksInformation] = useState(new Map());
@@ -50,24 +54,38 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [alreadyMinted, setAlreadyMinted] = useState<boolean>(false);
   const [informationText, setInformationText] = useState<string>("");
   const [errorText, setErrorText] = useState<string>("");
-  const [generation, setGeneration] = useState<number>();
+  const [generation, setGeneration] = useState<number>(1);
   const [onAllowlist, setOnAllowlist] = useState<boolean>(false);
+  const [maxMintPerWallet, setMaxMintPerWallet] = useState<number>(2);
+  const [generationTotal, setGenerationTotal] = useState<number>(1000);
+  const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [animate, setAnimate] = useState(false);
+  const [mintIntention, setMintIntention] = useState(false);
+  const [disableMint, setDisableMint] = useState(true);
+  const [blockUI, setBlockUI] = useState(true);
+  const [paperIndex, setPaperIndex] = useState(0);
+  const [premium, setPremium] = useState(false);
 
   const [numOfBoxes, setNumOfBoxes] = useState(9);
-  const [tetri, setTetri] = useState(0);
+  const [tetri, setTetri] = useState(2);
   const [noFill, setNoFill] = useState(false);
-  const [chroma, setChroma] = useState("Alpine");
+  const [chroma, setChroma] = useState("Tropicana");
   const [totalMinted, setTotalMinted] = useState(0);
   const [startDate, setStartDate] = useState<Date>(new Date());
 
+  //reset animation variable
+
+  // In order of how the palette is generated. Ideally it would be
+  // best if the names would come from the data. But I will get to
+  // that later
+  const colorNames = ["Tropicana", "Neon Fruit", "Zest", "Waterfall"];
+
   const lazySetBlocks = async () => {
     if (signer) {
-      // TODO: replace with useMemo
       const newAddress = await signer.getAddress();
       if (newAddress == address) return;
 
       setAddress(newAddress);
-      console.log("Fetching blocks..");
       try {
         const result = await fetchBlocks(newAddress);
         setBlocksInformation(result);
@@ -86,45 +104,52 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (signer) {
       try {
         const address = await signer.getAddress();
+
         const result = await fetchBlocks(address);
-        const ownedPieces = await getOwnedPieces(signer);
-        setOwnedPieces(ownedPieces);
         setBlocksInformation(result);
 
+        const ownedPieces = await getOwnedPieces(signer);
         const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber());
-
         const start = await getStartDate(signer);
-        setStartDate(new Date(start));
 
-        //call here
+        setOwnedPieces(ownedPieces);
+        setTotalMinted(tokenCount.toNumber());
+        setStartDate(new Date(start));
       } catch (e: any) {
         console.error(e);
       }
     }
   };
 
-  const lazySetGallery = async () => {
+  const lazyLoadAll = async () => {
     if (signer) {
-      // TODO: replace with useMemo
       const newAddress = await signer.getAddress();
       if (newAddress == address) return;
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
-        console.log(ownedPieces);
-        setOwnedPieces(ownedPieces);
-        const tokenCount = await getTotalMinted(signer);
-        setTotalMinted(tokenCount.toNumber());
+        const gentokenCount = await getTotalMinted(signer);
         const generation = await getGeneration(signer);
-        setGeneration(generation);
-
         const start = await getStartDate(signer);
-        setStartDate(new Date(start));
-
         const onAllow = await isAllowed(signer);
+        const maxPerWallet = await getMaxPerWallet(signer);
+        const generationTotal = await getGenerationTotal(signer);
+        const showGallery = ownedPieces.length > 0;
+        const paperIndex = Math.floor(Math.random() * 3);
 
+        setOwnedPieces(ownedPieces);
+        setTotalMinted(gentokenCount.toNumber());
+        setGeneration(generation);
+        setStartDate(new Date(start));
         setOnAllowlist(onAllow);
+        setMaxMintPerWallet(maxPerWallet);
+        setGenerationTotal(generationTotal);
+        setShowGallery(showGallery);
+        setPaperIndex(paperIndex);
+        if (ownedPieces.length > 0) {
+          setPremium(true);
+        }
+        setBlockUI(false);
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
@@ -146,9 +171,89 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       setBlocks([]);
     } else {
       lazySetBlocks();
-      lazySetGallery();
+      lazyLoadAll();
     }
   });
+
+  const mint = async () => {
+    console.log("minting");
+    if (sketchRef && sketchRef.current && blockInfo) {
+      // @ts-ignore: Object is possibly 'null'.
+      const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
+      const dataURL = canvas.toDataURL();
+      console.log(dataURL);
+      let reason = "";
+      try {
+        let paletteIndex = colorNames.indexOf(chroma);
+        setErrorText("");
+        setInformationText("Uploading art! Please wait...");
+        const result = await sendImage(
+          blockNumber,
+          blockInfo.blockHash,
+          dataURL,
+          address,
+          numOfBoxes,
+          tetri,
+          noFill,
+          chroma,
+          generation,
+          paletteIndex,
+          paperIndex
+        );
+        setInformationText("Upload complete! Please approve transaction!");
+        trackAmplitude("upload-success");
+        try {
+          if (new Date() < startDate && onAllowlist) {
+            console.log("pre-minting");
+            await preMintToken(signer as ethers.Signer, result);
+            trackAmplitude("whitelist-minting");
+          } else {
+            await mintToken(signer as ethers.Signer, result);
+          }
+          setInformationText("Minting has started! Please wait...");
+        } catch (e: any) {
+          reason = "Error: " + decodeErrorName(signer as ethers.Signer, e);
+          throw e;
+        }
+      } catch (e: any) {
+        setInformationText("");
+        setErrorText("Minting failed! " + reason);
+        trackAmplitude("minting-failed");
+        mintingFailure(blockNumber);
+        setBlockUI(false);
+        console.error(e);
+      } finally {
+        trackAmplitude("minting-approved");
+        setAcquiredBlockNumber(blockNumber);
+        setMintIntention(false);
+      }
+    }
+  };
+
+  // mintIntention --> animate off ---> blockUI --> mint
+  // mintIntention ---> blockUI --> mint
+
+  useEffect(() => {
+    // finally mint
+    if (mintIntention && !animate && blockUI) mint();
+  }, [blockUI]);
+
+  useEffect(() => {
+    // next ensure refresh the seed so art is properly refreshed
+    if (mintIntention && !animate) setBlockUI(true);
+  }, [animate]);
+
+  useEffect(() => {
+    if (mintIntention) {
+      // first ensure animate is off
+      if (animate) {
+        setAnimate(false);
+      } else {
+        // skip to next step
+        setBlockUI(true);
+      }
+    }
+  }, [mintIntention]);
 
   useEffect(() => {
     var elem = document.getElementById("widthIndicator");
@@ -164,18 +269,39 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     }
   });
 
-  const lazyUpdateMint = async () => {
-    await mintingSuccess(acquiredBlockNumber);
-    await resetView();
-    setListeningMint(false);
-  };
-
   useEffect(() => {
+    const lazyUpdateMint = async () => {
+      await mintingSuccess(acquiredBlockNumber);
+      await resetView();
+      setListeningMint(false);
+    };
+
     if (listeningMint) {
       setInformationText("Minting completed. Enjoy your block!");
+      trackAmplitude("minting-complete");
+      setBlockUI(false);
       lazyUpdateMint();
+      setDisableMint(true);
     }
   }, [listeningMint]);
+
+  useEffect(() => {
+    if (alreadyMinted || (startDate > new Date() && !onAllowlist)) {
+      setDisableMint(true);
+    } else {
+      setDisableMint(false);
+    }
+
+    if (totalMinted >= generationTotal) {
+      setDisableMint(true);
+      setErrorText(
+        "All tokens in current generation have been minted. Come back for next generation!"
+      );
+      if (onAllowlist) {
+        setInformationText("You are on the allowlist for next generation!");
+      }
+    }
+  }, [alreadyMinted, totalMinted, generationTotal, startDate, onAllowlist]);
 
   useEffect(() => {
     if (blockNumber > 0) {
@@ -203,37 +329,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const sketchRef = useRef(null);
 
   const mintHandler = async () => {
-    if (sketchRef && sketchRef.current) {
-      // @ts-ignore: Object is possibly 'null'.
-
-      const canvas: any = sketchRef.current.sketch.canvas;
-      console.log(canvas);
-      const dataURL = canvas.toDataURL();
-      if (!onAllowlist && startDate > new Date(Date.now())) return;
-
-      try {
-        const result = await sendImage(
-          blockNumber,
-          dataURL,
-          address,
-          numOfBoxes,
-          tetri,
-          noFill,
-          chroma,
-          generation || 1
-        );
-        await mintToken(signer as ethers.Signer, result);
-        setInformationText("Minting has started! Please wait...");
-      } catch (e: any) {
-        mintingFailure(blockNumber);
-        console.error(e);
-      } finally {
-        setAcquiredBlockNumber(blockNumber);
-      }
-    }
+    trackAmplitude("mint-button-pressed");
+    console.log("mint handler called");
+    // first turn animate off before minting
+    setAnimate(false);
+    setMintIntention(true);
   };
 
   const iterateThroughBlocks = (key: string) => {
+    if (blockUI) return;
+
+    setAnimate(false);
+
     if (sort === "Oldest") {
       if (key == "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
@@ -261,6 +368,42 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
           );
         }
+      }
+    }
+  };
+
+  const handleLeft = (e: any) => {
+    if (blockUI) return;
+
+    if (sort === "Oldest") {
+      if (blocks.indexOf(blockNumber.toString()) > 0) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+        );
+      }
+    } else {
+      if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+        );
+      }
+    }
+  };
+
+  const handleRight = (e: any) => {
+    if (blockUI) return;
+
+    if (sort === "Oldest") {
+      if (blocks.indexOf(blockNumber.toString()) < blocks.length - 1) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
+        );
+      }
+    } else {
+      if (blocks.indexOf(blockNumber.toString()) !== 0) {
+        setBlockNumber(
+          Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
+        );
       }
     }
   };
@@ -298,13 +441,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             <button
               className="w-[10%] flex"
               onClick={(e) => {
-                if (blocks.indexOf(blockNumber.toString()) - 1 === -1) {
-                  //setBlockNumber(Number(blocks[blocks.length - 1]));
-                } else {
-                  setBlockNumber(
-                    Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
-                  );
-                }
+                handleLeft(e);
+                setAnimate(false);
               }}
             >
               <svg
@@ -356,6 +494,10 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
                   blockInfo={blockInfo}
                   refPointer={sketchRef}
                   alreadyMinted={alreadyMinted}
+                  animate={animate}
+                  colorNames={colorNames}
+                  paperIndex={paperIndex}
+                  setAnimate={setAnimate}
                 />
               )}
             </div>
@@ -363,16 +505,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             <button
               className="w-[10%] flex"
               onClick={(e) => {
-                if (
-                  blocks.indexOf(blockNumber.toString()) + 1 ===
-                  blocks.length
-                ) {
-                  //setBlockNumber(Number(blocks[0]));
-                } else {
-                  setBlockNumber(
-                    Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
-                  );
-                }
+                handleRight(e);
+                setAnimate(false);
               }}
             >
               <svg
@@ -402,26 +536,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               setNoFill={setNoFill}
               setChroma={setChroma}
               mintHandler={mintHandler}
-              alreadyMinted={alreadyMinted}
+              animate={animate}
+              setAnimate={setAnimate}
+              premium={premium}
+              disableMint={disableMint || blockUI}
             ></Controls>
-
-            <button
-              className="w-[10%] flex"
-              onClick={(e) => {
-                if (
-                  blocks.indexOf(blockNumber.toString()) + 1 ===
-                  blocks.length
-                ) {
-                  setBlockNumber(Number(blocks[0]));
-                } else {
-                  setBlockNumber(
-                    Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
-                  );
-                }
-              }}
-            ></button>
           </div>
-
           <span className="block mt-8"></span>
 
           <div className="w-[100%]">
@@ -437,14 +557,20 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         blockNumber={blockNumber}
         blocksInformation={blocksInformation}
         setBlockNumber={setBlockNumber}
+        animate={animate}
+        setAnimate={setAnimate}
         informationText={informationText}
         errorText={errorText}
         totalMinted={totalMinted}
         launchDate={startDate}
         onAllowlist={onAllowlist}
+        generation={generation}
+        mintMax={maxMintPerWallet}
+        generationTotal={generationTotal}
+        blockUI={blockUI}
       ></BlockSelector>
 
-      <Gallery ownedPieces={ownedPieces}></Gallery>
+      {showGallery ? <Gallery ownedPieces={ownedPieces}></Gallery> : null}
     </div>
   );
 };

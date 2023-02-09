@@ -6,6 +6,7 @@ export const fetchBlocks = async (
   address: string
 ): Promise<Map<string, Object>> => {
   const endpoint = "/api/blocks";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ address });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -31,17 +32,22 @@ export const fetchBlocks = async (
 
 export const sendImage = async (
   blockNumber: number,
+  blockHash: string,
   image: string,
   address: string,
   grid_size: number,
   anti_block: number,
   noFill: boolean,
   color: string,
-  generation: number
+  generation: number,
+  paletteIndex: number,
+  paperIndex: number
 ) => {
   const endpoint = "/api/mint";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({
     blockNumber,
+    blockHash,
     image,
     address,
     grid_size,
@@ -49,7 +55,15 @@ export const sendImage = async (
     fill: !noFill,
     color,
     generation,
+    paletteIndex,
+    paperIndex,
   });
+
+  const size = new TextEncoder().encode(JSON.stringify(body)).length;
+  const kiloBytes = size / 1024;
+  const megaBytes = kiloBytes / 1024;
+  console.log("size: ", megaBytes, " MB");
+
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
     headers: {
@@ -66,6 +80,7 @@ export const sendImage = async (
 
 export const latestBlock = async () => {
   const endpoint = "/api/latest";
+  console.log("calling " + endpoint);
   const response = await fetch(SERVER_URL + endpoint, {
     method: "GET",
     headers: {
@@ -81,6 +96,7 @@ export const latestBlock = async () => {
 
 export const mintingSuccess = async (blockNumber: number) => {
   const endpoint = "/api/mint-success";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ blockNumber });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -97,6 +113,7 @@ export const mintingSuccess = async (blockNumber: number) => {
 
 export const mintingFailure = async (blockNumber: number) => {
   const endpoint = "/api/mint-failure";
+  console.log("calling " + endpoint);
   const body = JSON.stringify({ blockNumber });
   const response = await fetch(SERVER_URL + endpoint, {
     method: "POST",
@@ -113,6 +130,7 @@ export const mintingFailure = async (blockNumber: number) => {
 
 export const getBlockInfo = async (blockNumber: number) => {
   const endpoint = "/api/block/" + blockNumber;
+  console.log("calling " + endpoint);
   const response = await fetch(SERVER_URL + endpoint, {
     method: "GET",
     headers: {

@@ -1,7 +1,6 @@
 import p5Types from "p5";
 
 // import colors from "../data/default.json";
-// import colors from "../data/fourcolornostroke.json";
 import colors from "../data/palette.json";
 
 import {
@@ -9,8 +8,10 @@ import {
   ColoredTrianglesSketch,
 } from "../art-styles/colored-triangles";
 import GenericSketch from "../art-styles/generic_sketch";
-import NoiseSketch from "../art-styles/noise_sketch";
+// import NoiseSketch from "../art-styles/noise_sketch";
 import NoneSketch from "../art-styles/none_sketch";
+// import CubeSketch from "../art-styles/cube_sketch";
+import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
 
 export interface BlockInfo {
   blockHash: string;
@@ -29,6 +30,10 @@ interface SketchOptions {
   opacitySwitch?: boolean;
   noFill?: boolean;
   removeBlocks?: number;
+  gap?: number;
+  cubeSize?: number;
+  animate?: boolean;
+  paperIndex?: number;
 }
 
 export function assign_sketch(
@@ -49,7 +54,8 @@ export function assign_sketch(
     parseInt(blockNumber)
   );
   switch (selectedStyle) {
-    case "triangles":
+    /*
+    case "grid":
       let coloredTriangleOptions: ColoredTriangleOptions = {
         numOfBoxes: opts.numOfBoxes || 9,
         opacity: opts.opacity || 255,
@@ -83,6 +89,7 @@ export function assign_sketch(
         noiseOptions
       );
       break;
+      */
     case "none":
       sketch = new NoneSketch(
         p5,
@@ -90,6 +97,43 @@ export function assign_sketch(
         canvasWidth,
         table,
         parseInt(blockNumber)
+      );
+      break;
+    /*
+    case "3d-cube":
+      let cubeOpts: any = {
+        gap: opts.gap || 0,
+        cubeSize: opts.cubeSize || 3,
+        paletteIndex: opts.paletteIndex || 0,
+      };
+
+      sketch = new CubeSketch(
+        p5,
+        canvasWidth,
+        canvasWidth,
+        table,
+        parseInt(blockNumber),
+        cubeOpts
+      );
+      break;
+      */
+    case "alive-grid":
+      let aliveGridOptions: AliveGridOptions = {
+        numOfBoxes: opts.numOfBoxes || 9,
+        paletteIndex: opts.paletteIndex || 0,
+        noFill: opts.noFill || false,
+        removeBlocks: opts.removeBlocks || 0,
+        animate: opts.animate || false,
+        paperIndex: opts.paperIndex || 0,
+      };
+      sketch = new AliveGridSketch(
+        p5,
+        canvasWidth,
+        canvasHeight,
+        table,
+        parseInt(blockNumber),
+        hex2bin(blockInfo.blockHash),
+        aliveGridOptions
       );
       break;
   }
@@ -117,9 +161,11 @@ export function load_colors(): p5Types.Table {
 
 export function all_sketch_styles(): Array<string> {
   return [
-    "triangles",
+    "grid",
     "noise",
     "none",
+    "3d-cube",
+    "alive-grid",
 
     // deprecated styles
 

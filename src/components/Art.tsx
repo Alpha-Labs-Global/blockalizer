@@ -4,7 +4,7 @@ import p5Types from "p5";
 
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
 import { getBlockInfo } from "../helper/server";
-import placeholder from '../media/updatingMint.png';
+import placeholder from "../media/updatingMint.png";
 
 import GenericSketch from "../art-styles/generic_sketch";
 
@@ -18,6 +18,10 @@ interface ComponentProps {
   blockInfo: any;
   refPointer: React.MutableRefObject<null>;
   alreadyMinted: boolean;
+  animate: boolean;
+  colorNames: Array<string>;
+  paperIndex: number;
+  setAnimate(animate: boolean): void;
 }
 
 export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -33,6 +37,10 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const blockInfo = props.blockInfo;
   const refPointer = props.refPointer;
   const alreadyMinted = props.alreadyMinted;
+  const animate = props.animate;
+  const colorNames = props.colorNames;
+  const paperIndex = props.paperIndex;
+  const setAnimate = props.setAnimate;
 
   const lazyGetInfo = async () => {
     if (alreadyMinted) {
@@ -53,11 +61,11 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     regenerate();
     if (ready) {
-      setStyle("triangles");
+      setStyle("alive-grid");
     } else {
       setStyle("none");
     }
-  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill]);
+  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill, animate]);
 
   const keyGenerator = () => {
     return (
@@ -67,16 +75,12 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       tetri.toString() +
       chroma +
       noFill.toString() +
-      style
+      style +
+      animate.toString()
     );
   };
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
-
-  // In order of how the palette is generated. Ideally it would be
-  // best if the names would come from the data. But I will get to
-  // that later
-  const colorNames = ["Alpine", "Tidal", "Autumn"];
 
   const canvasWidth: any =
     document.getElementById("widthIndicator")?.offsetWidth;
@@ -95,6 +99,8 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacitySwitch: true,
       noFill: noFill,
       removeBlocks: tetri,
+      animate: animate,
+      paperIndex: paperIndex,
     };
 
     sketch = assign_sketch(
@@ -114,7 +120,11 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const draw = (p5: p5Types) => {
-    sketch.draw();
+    if (!sketch) {
+      console.log("sketch now undefined");
+      p5.noLoop();
+    }
+    sketch?.draw();
   };
 
   const regenerate = () => {
@@ -142,21 +152,28 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   return (
     <div>
       {alreadyMinted ? (
-        <img src={imgUrl} className="w-[100%]"  onError={({ currentTarget }) => {
-          currentTarget.onerror = null; // prevents looping
-          currentTarget.src=placeholder;}}></img>
+        <img
+          src={imgUrl}
+          className="w-[100%]"
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = placeholder;
+          }}
+        ></img>
       ) : (
-        <Sketch
-          ref={refPointer}
-          key={uniqueKey}
-          setup={setup}
-          draw={draw}
-          preload={preload}
-          windowResized={resizeCanvas}
-        />
+        <div>
+          <Sketch
+            ref={refPointer}
+            key={uniqueKey}
+            setup={setup}
+            draw={draw}
+            preload={preload}
+            windowResized={resizeCanvas}
+          />
+        </div>
       )}
     </div>
   );
 };
 
-export default Art;
+export default React.memo(Art);

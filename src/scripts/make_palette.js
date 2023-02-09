@@ -17,14 +17,19 @@ function hexToRgb(hex) {
     : null;
 }
 
-var alpine = ["#22FC93", "#ADFFD8"];
+// var alpine = ["#22FC93", "#ADFFD8"];
 // var lavendar = ["#CE66FF", "#D1ADFF"];
-var autumn = ["#FF603D", "#C8644E"];
-var tidal = ["#22CAFF", "#63A9FB"];
+// var autumn = ["#FF603D", "#C8644E"];
+// var tidal = ["#22CAFF", "#63A9FB"];
 //var crimson = ["#FF0033", "#FF597A"];
 // var sunshine = ["#FFDAA8", "#FFAA2C", "#FF9218", "#311400"];
 // var noir = ["#E6E6E6", "#979797", "#8A8A8A", "#070707"];
-var allColors = [alpine, tidal, autumn];
+// var allColors = [alpine, tidal, autumn];
+var tropicana = ["#FFC634", "#7534FF", "#FF34D2"];
+var neon_fruit = ["#69FF34", "#FB34FF", "#EFFF34"];
+var zest = ["#FF347D", "#BEFF34", "#FF7D34"];
+var waterfall = ["#34CEFF", "#3491FF", "#6934FF"];
+var allColors = [tropicana, neon_fruit, zest, waterfall];
 
 var data = [];
 var obj = {};

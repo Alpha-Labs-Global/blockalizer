@@ -51,7 +51,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
   alpha: number; // color opacity for each shape
 
   constructor(
-    p5Instance: p5Types,
+    p5Instance: p5Types.Graphics,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
@@ -83,9 +83,9 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.sizeOfBox = this.canvasWidth / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    console.log(`size of box: ${this.sizeOfBox}px`);
-    console.log("alpha:", this.alpha);
-    console.log(`Palette selected: ${this.paletteIndex}`);
+    // console.log(`size of box: ${this.sizeOfBox}px`);
+    // console.log("alpha:", this.alpha);
+    // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
     if (this.toggleOpacity) {
@@ -97,7 +97,7 @@ export class ColoredTrianglesSketch extends GenericSketch {
     this.blocksToRemove = this.computeBlocksToRemove2();
     this.reseed();
 
-    console.log(`stroke width: ${this.strokeWidth}px`);
+    // console.log(`stroke width: ${this.strokeWidth}px`);
   }
 
   draw() {
@@ -111,20 +111,20 @@ export class ColoredTrianglesSketch extends GenericSketch {
         let r = this.p5.red(this.strokeOverrideColor);
         let g = this.p5.green(this.strokeOverrideColor);
         let b = this.p5.blue(this.strokeOverrideColor);
-        console.log(
-          `stroke: rgb(${r},${g},${b}) %c  `,
-          `background: rgb(${r},${g},${b});`
-        );
+        // console.log(
+        //   `stroke: rgb(${r},${g},${b}) %c  `,
+        //   `background: rgb(${r},${g},${b});`
+        // );
       }
     }
 
     let r = this.p5.red(this.backgroundOverrideColor);
     let g = this.p5.green(this.backgroundOverrideColor);
     let b = this.p5.blue(this.backgroundOverrideColor);
-    console.log(
-      `background: rgb(${r},${g},${b}) %c  `,
-      `background: rgb(${r},${g},${b});`
-    );
+    // console.log(
+    //   `background: rgb(${r},${g},${b}) %c  `,
+    //   `background: rgb(${r},${g},${b});`
+    // );
     this.p5.background(this.backgroundOverrideColor);
 
     this.drawShapes();
@@ -136,10 +136,10 @@ export class ColoredTrianglesSketch extends GenericSketch {
       this.colorTable.getNum(this.paletteIndex, 1),
       this.colorTable.getNum(this.paletteIndex, 2),
     ];
-    console.log(
-      `stroke: rgb(${r},${g},${b}) %c  `,
-      `background: rgb(${r},${g},${b});`
-    );
+    // console.log(
+    //   `stroke: rgb(${r},${g},${b}) %c  `,
+    //   `background: rgb(${r},${g},${b});`
+    // );
     this.p5.stroke(r, g, b);
     this.p5.strokeWeight(this.strokeWidth);
   }
