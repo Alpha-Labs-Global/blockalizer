@@ -9,6 +9,7 @@ import keccak256 from "keccak256";
 import controllerContract from "./contracts/BlockalizerControllerV5.sol/BlockalizerControllerV5.json";
 import generationV2Contract from "./contracts/BlockalizerGenerationV2.sol/BlockalizerGenerationV2.json";
 import nftV3Contract from "./contracts/BlockalizerV3.sol/BlockalizerV3.json";
+import whitelist from "./contracts/whitelist.json";
 
 import {
   BlockalizerControllerV5,
@@ -119,18 +120,12 @@ export const preMintToken = async (
   const mintPrice = await generation.mintPrice();
   const options = { value: mintPrice };
 
-  // TODO: move to backend
-  const address = await signer.getAddress();
-  const addresses = [
-    "0xB2D17c014D9a5BC9De4aDCc656e1a3B3b608238D",
-    "0xe1EBc6DB1cfE34b4cAed238dD5f59956335E2998",
-    "0xBb6f397d9d8bf128dDa607005397F539B43CD710",
-  ];
-  const leaves = addresses.map((address) =>
-    ethers.utils.solidityKeccak256(["address"], [address])
+  const address = (await signer.getAddress()).toLowerCase();
+  const leaves = whitelist.map((leaf) =>
+    ethers.utils.solidityKeccak256(["address"], [leaf])
   );
-  const index = addresses.indexOf(address);
   const tree = new MerkleTree(leaves, keccak256, { sort: true });
+  const index = whitelist.indexOf(address);
   const proof = tree.getHexProof(leaves[index]);
 
   await controller.preMint(uriBytes, sig, proof, options);
@@ -236,6 +231,7 @@ export const getGenerationTotal = async (
 };
 
 export const decodeErrorName = (signer: ethers.Signer, e: any) => {
+  console.log(e);
   const data = e.error.data.originalError.data;
 
   // @ts-ignore

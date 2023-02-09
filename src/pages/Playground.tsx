@@ -295,8 +295,11 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (totalMinted >= generationTotal) {
       setDisableMint(true);
       setErrorText(
-        "All tokens in current generation have been minted. Come back next month!"
+        "All tokens in current generation have been minted. Come back for next generation!"
       );
+      if (onAllowlist) {
+        setInformationText("You are on the allowlist for next generation!");
+      }
     }
   }, [alreadyMinted, totalMinted, generationTotal, startDate, onAllowlist]);
 
