@@ -62,7 +62,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [animate, setAnimate] = useState(false);
   const [mintIntention, setMintIntention] = useState(false);
   const [disableMint, setDisableMint] = useState(true);
-  const [blockUI, setBlockUI] = useState(false);
+  const [blockUI, setBlockUI] = useState(true);
   const [paperIndex, setPaperIndex] = useState(0);
   const [premium, setPremium] = useState(false);
 
@@ -106,12 +106,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const address = await signer.getAddress();
 
         const result = await fetchBlocks(address);
+        setBlocksInformation(result);
+
         const ownedPieces = await getOwnedPieces(signer);
         const tokenCount = await getTotalMinted(signer);
         const start = await getStartDate(signer);
 
         setOwnedPieces(ownedPieces);
-        setBlocksInformation(result);
         setTotalMinted(tokenCount.toNumber());
         setStartDate(new Date(start));
       } catch (e: any) {
@@ -148,6 +149,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         if (ownedPieces.length > 0) {
           setPremium(true);
         }
+        setBlockUI(false);
 
         listenToEvents(signer, (from: string, to: string, token: BigNumber) => {
           // TODO: validate
