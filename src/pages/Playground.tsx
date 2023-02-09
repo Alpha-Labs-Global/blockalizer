@@ -128,7 +128,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
-        const tokenCount = await getTotalMinted(signer);
+        const gentokenCount = await getTotalMinted(signer);
         const generation = await getGeneration(signer);
         const start = await getStartDate(signer);
         const onAllow = await isAllowed(signer);
@@ -138,7 +138,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         const paperIndex = Math.floor(Math.random() * 3);
 
         setOwnedPieces(ownedPieces);
-        setTotalMinted(tokenCount.toNumber());
+        setTotalMinted(gentokenCount.toNumber());
         setGeneration(generation);
         setStartDate(new Date(start));
         setOnAllowlist(onAllow);
@@ -286,14 +286,17 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   }, [listeningMint]);
 
   useEffect(() => {
-    if (
-      alreadyMinted ||
-      totalMinted > generationTotal ||
-      (startDate > new Date() && !onAllowlist)
-    ) {
+    if (alreadyMinted || (startDate > new Date() && !onAllowlist)) {
       setDisableMint(true);
     } else {
       setDisableMint(false);
+    }
+
+    if (totalMinted >= generationTotal) {
+      setDisableMint(true);
+      setErrorText(
+        "All tokens in current generation have been minted. Come back next month!"
+      );
     }
   }, [alreadyMinted, totalMinted, generationTotal, startDate, onAllowlist]);
 
