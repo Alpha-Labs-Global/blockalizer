@@ -66,10 +66,19 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [paperIndex, setPaperIndex] = useState(0);
   const [premium, setPremium] = useState(false);
 
-  const [numOfBoxes, setNumOfBoxes] = useState(9);
-  const [tetri, setTetri] = useState(2);
-  const [noFill, setNoFill] = useState(false);
-  const [chroma, setChroma] = useState("Tropicana");
+  const numOfBoxesOptions = [3, 6, 9, 12];
+  const tetriOptions = [true, false];
+  const noFillOptions = [true, false];
+  const chromaOptions = ["Tropicana", "Neon Fruit"];
+
+  const randSelect = (lst: Array<any>) =>
+    lst[Math.floor(Math.random() * lst.length)];
+
+  const [numOfBoxes, setNumOfBoxes] = useState(randSelect(numOfBoxesOptions));
+  const [tetri, setTetri] = useState(randSelect(tetriOptions));
+  const [noFill, setNoFill] = useState(randSelect(noFillOptions));
+  const [chroma, setChroma] = useState(randSelect(chromaOptions));
+
   const [totalMinted, setTotalMinted] = useState(0);
   const [startDate, setStartDate] = useState<Date>(new Date());
 
