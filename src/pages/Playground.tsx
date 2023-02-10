@@ -67,7 +67,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [premium, setPremium] = useState(false);
 
   const numOfBoxesOptions = [3, 6, 9, 12];
-  const tetriOptions = [true, false];
+  const tetriOptions = [0, 1, 2, 3];
   const noFillOptions = [true, false];
   const chromaOptions = ["Tropicana", "Neon Fruit"];
 
