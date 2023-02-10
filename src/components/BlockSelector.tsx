@@ -42,7 +42,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const animate = props.animate;
   const setAnimate = props.setAnimate;
 
-  const preparationForNextGen = true;
+  const preparationForNextGen = false;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
