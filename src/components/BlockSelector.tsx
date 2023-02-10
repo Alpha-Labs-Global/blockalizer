@@ -334,7 +334,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
         </div>
         <br></br>
         <span className="italic text-sm text-buttonText">
-          Genesis {generation + 1} of 12
+          Genesis {generation} of 12
         </span>
         <span className="block mb-3"></span>
         <div>

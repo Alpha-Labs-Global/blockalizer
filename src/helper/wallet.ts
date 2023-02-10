@@ -192,7 +192,8 @@ export const getGeneration = async (signer: ethers.Signer): Promise<number> => {
 
   const generationCount = await controller.getGenerationCount();
 
-  return generationCount.toNumber();
+  // starts from zero
+  return generationCount.toNumber() + 1;
 };
 
 export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
