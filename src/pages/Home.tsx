@@ -346,7 +346,7 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
                 <div className="flex">
                   <span className="mr-2">&nbsp;▫️</span>
                   <span className="text-buttonText">
-                    2 max mints per wallet
+                    1 max mints per wallet
                   </span>
                 </div>
                 <br></br>
