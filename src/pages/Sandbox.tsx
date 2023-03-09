@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
@@ -41,11 +41,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [gap, setGap] = useState(0);
   const [cubeSize, setCubeSize] = useState(3);
 
-  useEffect(() => {
-    regenerate();
-  }, [style, gridSize, antiBlock, fill, color, gap, cubeSize, animate]);
-
-  const keyGenerator = () => {
+  const keyGenerator = useCallback(() => {
     return (
       style +
       gridSize.toString() +
@@ -56,17 +52,22 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
       gap.toString() +
       cubeSize.toString()
     );
-  };
+  },[style, gridSize, antiBlock, fill, color, gap, cubeSize, animate]);
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
 
-  const regenerate = () => {
-    if (uniqueKey != keyGenerator()) {
+  const regenerate = useCallback(() => {
+    if (uniqueKey !== keyGenerator()) {
       setUniqueKey(keyGenerator());
       // p5Instance.redraw();
       console.log("Regenerating Art...");
     }
-  };
+    // style, gridSize, antiBlock, fill, color, gap, cubeSize, animate,
+  }, [keyGenerator, uniqueKey, setUniqueKey]);
+
+  useEffect(() => {
+    regenerate();
+  }, [regenerate]);
 
   const preload = (p5: p5Types) => {
     let paletteIndex = colorNames.indexOf(color);
@@ -136,7 +137,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
           <p className="basis-1/2">Fill</p>
           <select
             className="bg-transparent opacity-50"
-            onChange={(e) => setFill(e.target.value == "true")}
+            onChange={(e) => setFill(e.target.value === "true")}
             value={fill.toString()}
           >
             {[true, false].map((s, i) => (
@@ -194,7 +195,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
           <p className="basis-1/2">Fill</p>
           <select
             className="bg-transparent opacity-50"
-            onChange={(e) => setFill(e.target.value == "true")}
+            onChange={(e) => setFill(e.target.value === "true")}
             value={fill.toString()}
           >
             {[true, false].map((s, i) => (
@@ -222,7 +223,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
           <p className="basis-1/2">Animate</p>
           <select
             className="bg-transparent opacity-50"
-            onChange={(e) => setAnimate(e.target.value == "true")}
+            onChange={(e) => setAnimate(e.target.value === "true")}
             value={animate.toString()}
           >
             {[true, false].map((s, i) => (

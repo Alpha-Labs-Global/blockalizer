@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 
@@ -40,9 +40,9 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   const animate = props.animate;
   const colorNames = props.colorNames;
   const paperIndex = props.paperIndex;
-  const setAnimate = props.setAnimate;
+  // const setAnimate = props.setAnimate;
 
-  const lazyGetInfo = async () => {
+  const lazyGetInfo = useCallback(async () => {
     if (alreadyMinted) {
       try {
         const info = await getBlockInfo(blockNumber);
@@ -52,22 +52,13 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
         console.log(e);
       }
     }
-  };
-
-  useEffect(() => {
-    lazyGetInfo();
   }, [alreadyMinted, blockNumber]);
 
   useEffect(() => {
-    regenerate();
-    if (ready) {
-      setStyle("alive-grid");
-    } else {
-      setStyle("none");
-    }
-  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill, animate]);
+    lazyGetInfo();
+  }, [lazyGetInfo]);
 
-  const keyGenerator = () => {
+  const keyGenerator = useCallback(() => {
     return (
       blockNumber +
       ready.toString() +
@@ -78,9 +69,26 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       style +
       animate.toString()
     );
-  };
+  }, [ready, blockNumber, numOfBoxes, tetri, chroma, noFill, animate, style]);
 
   const [uniqueKey, setUniqueKey] = useState(keyGenerator());
+
+  const regenerate = useCallback(() => {
+    if (uniqueKey !== keyGenerator()) {
+      setUniqueKey(keyGenerator());
+      // p5Instance.redraw();
+      console.log("Regenerating Art...");
+    }
+  }, [uniqueKey, keyGenerator, setUniqueKey]);
+
+  useEffect(() => {
+    regenerate();
+    if (ready) {
+      setStyle("alive-grid");
+    } else {
+      setStyle("none");
+    }
+  }, [regenerate, ready]);
 
   const canvasWidth: any =
     document.getElementById("widthIndicator")?.offsetWidth;
@@ -127,14 +135,6 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
     sketch?.draw();
   };
 
-  const regenerate = () => {
-    if (uniqueKey != keyGenerator()) {
-      setUniqueKey(keyGenerator());
-      // p5Instance.redraw();
-      console.log("Regenerating Art...");
-    }
-  };
-
   const resizeCanvas = (p5: p5Types) => {
     //console.log(document.getElementById("defaultCanvas0")?.style.width = 0)
 
@@ -154,6 +154,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       {alreadyMinted ? (
         <img
           src={imgUrl}
+          alt="displays a minted nft"
           className="w-[100%]"
           onError={({ currentTarget }) => {
             currentTarget.onerror = null; // prevents looping

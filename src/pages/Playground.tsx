@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "./MainScreen.css";
 
 import Art from "../components/Art";
@@ -87,12 +87,14 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
   // that later
-  const colorNames = ["Tropicana", "Neon Fruit", "Zest", "Waterfall"];
+  const colorNames = useMemo(() => (["Tropicana", "Neon Fruit", "Zest", "Waterfall"]), []);
 
-  const lazySetBlocks = async () => {
+  const { data: signer } = useSigner();
+
+  const lazySetBlocks = useCallback(async () => {
     if (signer) {
       const newAddress = await signer.getAddress();
-      if (newAddress == address) return;
+      if (newAddress === address) return;
 
       setAddress(newAddress);
       try {
@@ -107,9 +109,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         console.error(e);
       }
     }
-  };
+  }, [signer, setAddress, address]);
 
-  const resetView = async () => {
+  const resetView = useCallback(async () => {
     if (signer) {
       try {
         const address = await signer.getAddress();
@@ -128,12 +130,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         console.error(e);
       }
     }
-  };
+  }, [signer, setBlocksInformation, setOwnedPieces, setTotalMinted, setStartDate]);
 
-  const lazyLoadAll = async () => {
+  const lazyLoadAll = useCallback(async () => {
     if (signer) {
       const newAddress = await signer.getAddress();
-      if (newAddress == address) return;
+      if (newAddress === address) return;
 
       try {
         const ownedPieces = await getOwnedPieces(signer);
@@ -168,7 +170,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         console.log(e);
       }
     }
-  };
+  }, [signer, address]);
 
   // order of state execution
   // blockInformation --> blocks
@@ -182,9 +184,9 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       lazySetBlocks();
       lazyLoadAll();
     }
-  });
+  }, [setAddress, setBlocks, signer, lazySetBlocks, lazyLoadAll]);
 
-  const mint = async () => {
+  const mint = useCallback(async () => {
     console.log("minting");
     if (sketchRef && sketchRef.current && blockInfo) {
       // @ts-ignore: Object is possibly 'null'.
@@ -237,7 +239,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setMintIntention(false);
       }
     }
-  };
+  }, [address, blockInfo, blockNumber, chroma, colorNames, generation, noFill, numOfBoxes, onAllowlist, paperIndex, signer, startDate, tetri]);
 
   // mintIntention --> animate off ---> blockUI --> mint
   // mintIntention ---> blockUI --> mint
@@ -245,12 +247,12 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     // finally mint
     if (mintIntention && !animate && blockUI) mint();
-  }, [blockUI]);
+  }, [blockUI, mintIntention, animate, mint]);
 
   useEffect(() => {
     // next ensure refresh the seed so art is properly refreshed
     if (mintIntention && !animate) setBlockUI(true);
-  }, [animate]);
+  }, [animate, mintIntention]);
 
   useEffect(() => {
     if (mintIntention) {
@@ -262,18 +264,18 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setBlockUI(true);
       }
     }
-  }, [mintIntention]);
+  }, [mintIntention, animate]);
 
   useEffect(() => {
     var elem = document.getElementById("widthIndicator");
-    if (elem != undefined) {
+  if (elem !== null) {
       elem.style.height = elem.offsetWidth + "px";
     }
   });
 
   window.addEventListener("resize", (e) => {
     var elem = document.getElementById("widthIndicator");
-    if (elem != undefined) {
+    if (elem !== null) {
       elem.style.height = elem.offsetWidth + "px";
     }
   });
@@ -292,7 +294,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
       lazyUpdateMint();
       setDisableMint(true);
     }
-  }, [listeningMint]);
+  }, [listeningMint, acquiredBlockNumber, resetView]);
 
   useEffect(() => {
     if (alreadyMinted || (startDate > new Date() && !onAllowlist)) {
@@ -328,9 +330,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         setInformationText("Looks good! Ready to mint?");
       }
     }
-  }, [blockNumber]);
-
-  const { data: signer, isError, isLoading } = useSigner();
+  }, [blockNumber, blocksInformation]);
 
   const sketchRef = useRef(null);
 
@@ -348,13 +348,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
     setAnimate(false);
 
     if (sort === "Oldest") {
-      if (key == "ArrowRight") {
+      if (key === "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
           );
         }
-      } else if (key == "ArrowLeft") {
+      } else if (key === "ArrowLeft") {
         if (blocks.indexOf(blockNumber.toString()) !== 0) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
@@ -362,13 +362,13 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         }
       }
     } else if (sort === "Newest") {
-      if (key == "ArrowRight") {
+      if (key === "ArrowRight") {
         if (blocks.indexOf(blockNumber.toString()) !== 0) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) - 1])
           );
         }
-      } else if (key == "ArrowLeft") {
+      } else if (key === "ArrowLeft") {
         if (blocks.indexOf(blockNumber.toString()) !== blocks.length - 1) {
           setBlockNumber(
             Number(blocks[blocks.indexOf(blockNumber.toString()) + 1])
@@ -424,8 +424,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
         <Header onChange={props.onChange}></Header>
       </div>
 
-      {address !== "" && blocks.length == 0 ? null : null}
-      {address !== "" && blocks.length > 0 && blockNumber == -1
+      {address !== "" && blocks.length === 0 ? null : null}
+      {address !== "" && blocks.length > 0 && blockNumber === -1
         ? "Click Block to get started"
         : null}
 
@@ -435,7 +435,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             className="lg:text-lg md:text-lg sm:text-md text-neutral-500 ml-[10%]"
             id="specialIndicator"
           >
-            {address !== "" && blocks.length == 0 ? (
+            {address !== "" && blocks.length === 0 ? (
               <div className="text-neutral-500">Loading...</div>
             ) : (
               <div className="text-neutral-500">#{blockNumber}</div>
@@ -452,7 +452,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               }}
             >
               <svg
-                className="align-middle w-full m-auto w-[60%] mr-[40%]"
+                className="align-middle w-full m-auto mr-[40%]"
                 viewBox="0 0 26 68"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -467,7 +467,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
             </button>
 
             <div className="w-[80%]" id="widthIndicator">
-              {address !== "" && blocks.length == 0 ? (
+              {address !== "" && blocks.length === 0 ? (
                 <div className="m-auto w-full">
                   <svg
                     viewBox="0 0 353 351"

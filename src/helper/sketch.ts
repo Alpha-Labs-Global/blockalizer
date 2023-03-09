@@ -3,10 +3,10 @@ import p5Types from "p5";
 // import colors from "../data/default.json";
 import colors from "../data/palette.json";
 
-import {
-  ColoredTriangleOptions,
-  ColoredTrianglesSketch,
-} from "../art-styles/colored-triangles";
+// import {
+//   ColoredTriangleOptions,
+//   ColoredTrianglesSketch,
+// } from "../art-styles/colored-triangles";
 import GenericSketch from "../art-styles/generic_sketch";
 // import NoiseSketch from "../art-styles/noise_sketch";
 import NoneSketch from "../art-styles/none_sketch";
@@ -149,7 +149,7 @@ export function load_colors(): p5Types.Table {
   }
 
   let row: p5Types.TableRow;
-  colors.map((color: any) => {
+  colors.forEach((color: any) => {
     row = table.addRow();
     let prop: keyof typeof color;
     for (prop in color) {

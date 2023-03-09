@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Collapsible from "react-collapsible";
 
 import placeholder from "../media/updatingMint.png";
-import placeHolder from "../media/square.png";
 
 import { latestBlock } from "../helper/server";
 
@@ -20,9 +19,9 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
   const setPage = props.setPage;
 
   const [recentlyMintedBlocks, setRecentlyMintedBlocks] = useState([]);
-  const [blockNumber, setBlockNumber] = useState(12345);
-  const [timestamp, setTimestamp] = useState("2023-01-09T00:05:41.661Z");
-  const [imgUrl, setImgUrl] = useState(placeHolder);
+  // const [blockNumber, setBlockNumber] = useState(12345);
+  // const [timestamp, setTimestamp] = useState("2023-01-09T00:05:41.661Z");
+  // const [imgUrl, setImgUrl] = useState(placeHolder);
   const [index, setIndex] = useState(0);
 
   dayjs().format();
@@ -410,41 +409,41 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
                 #{recentBlock.blockNumber}|{" "}
                 {(dayjs(recentBlock.createdAt) as any).fromNow()}
                 <span className="block mb-2"></span>
-                <img src={recentBlock.imageUrl} className="w-[100%]"></img>
+                <img src={recentBlock.imageUrl} className="w-[100%]" alt="stylistic rendering of a block hash data"></img>
               </h1>
             </div>
 
             <span className="block mb-10"></span>
             <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-0 lg:pl-7 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:block md:hiden sm:hidden">
-              <a href="https://twitter.com/blockalizerxyz" target="_blank">
+              <a href="https://twitter.com/blockalizerxyz" rel="noreferrer">
                 Twitter
               </a>
               &nbsp;&nbsp;&nbsp;
               <a
                 href="https://opensea.io/collection/blockalizer-chroma"
-                target="_blank"
+                rel="noreferrer"
               >
                 Opensea
               </a>
               &nbsp;&nbsp;&nbsp;
               <a
                 href="https://medium.com/alpha-labs/blockalzier-our-first-project-a2ef7e0b6f03"
-                target="_blank"
+                rel="noreferrer"
               >
                 Overview
               </a>
               &nbsp;&nbsp;&nbsp;
-              <a href="https://playground.blockalizer.xyz" target="_blank">
+              <a href="https://playground.blockalizer.xyz" rel="noreferrer">
                 Playground
               </a>
             </h1>
           </div>
 
           <h1 className="lg:mb-auto lg:mt-auto lg:text-left lg:bg-transparent lg:ml-20 lg:pl-10 lg:mb-6 md:mb-20 sm:mb-20 md:text-center sm:text-center md:bg-zinc-800 sm:bg-zinc-800 md:pt-2 md:pb-2 sm:pt-2 sm:pb-2 lg:hidden md:block sm:block">
-            <a href="https://twitter.com/blockalizerxyz" target="_blank">
+            <a href="https://twitter.com/blockalizerxyz" rel="noreferrer">
               Twitter
             </a>
-            &nbsp;&nbsp;&nbsp;<a>Opensea</a>&nbsp;&nbsp;&nbsp;Docs
+            &nbsp;&nbsp;&nbsp;<a href="opensea.io">Opensea</a>&nbsp;&nbsp;&nbsp;Docs
           </h1>
           <span className="block mb-5"></span>
         </div>
@@ -461,6 +460,7 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
               <span className="block mb-2"></span>
               <img
                 src={recentBlock.imageUrl}
+                alt="a given block's data"
                 className="w-[100%]"
                 onError={({ currentTarget }) => {
                   currentTarget.onerror = null; // prevents looping
