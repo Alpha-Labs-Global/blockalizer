@@ -443,7 +443,7 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
             <a href="https://twitter.com/blockalizerxyz" rel="noreferrer">
               Twitter
             </a>
-            &nbsp;&nbsp;&nbsp;<a href="opensea.io">Opensea</a>&nbsp;&nbsp;&nbsp;Docs
+            &nbsp;&nbsp;&nbsp;<a href="https://docs.opensea.io/docs/">Opensea</a>&nbsp;&nbsp;&nbsp;Docs
           </h1>
           <span className="block mb-5"></span>
         </div>
