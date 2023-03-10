@@ -39,18 +39,17 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
   const mintMax = props.mintMax;
   const generationTotal = props.generationTotal;
   const blockUI = props.blockUI;
-  const animate = props.animate;
   const setAnimate = props.setAnimate;
 
   const preparationForNextGen = false;
 
   const [orderedBlocks, setOrderedBlocks] = useState<Array<string>>([]);
 
-  type renderObj = {
-    hours: string;
-    author: string;
-    price: number;
-  };
+  // type renderObj = {
+  //   hours: string;
+  //   author: string;
+  //   price: number;
+  // };
 
   const allowListPreGen = (
     <span>
@@ -74,71 +73,72 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       </span>
     ) : null;
 
-  function deleteArtificialAdditions() {
-    var elements = document.getElementsByClassName("artificialAddition");
-    while (elements.length > 0) {
-      if (elements[0].parentNode !== null) {
-        elements[0].parentNode.removeChild(elements[0]);
-      }
-    }
-  }
+  // function deleteArtificialAdditions() {
+  //   var elements = document.getElementsByClassName("artificialAddition");
+  //   while (elements.length > 0) {
+  //     if (elements[0].parentNode !== null) {
+  //       elements[0].parentNode.removeChild(elements[0]);
+  //     }
+  //   }
+  // }
 
   const blockTaken = (b: string) => {
     return (
-      blocksInformation.get(b).status == "reserved" ||
-      blocksInformation.get(b).status == "acquired"
+      blocksInformation.get(b).status === "reserved" ||
+      blocksInformation.get(b).status === "acquired"
     );
   };
 
-  function createArtificialAdditions() {
-    var buttonContainer = document.getElementById("showScroll");
+  // function createArtificialAdditions() {
+  //   var buttonContainer = document.getElementById("showScroll");
 
-    if (buttonContainer) {
-      if (buttonContainer.children.length > 0) {
-        var yPositionOfFirstRow =
-          buttonContainer.children[0].getBoundingClientRect().y;
-        var foundDiff = false;
-        var count = 0;
+  //   if (buttonContainer) {
+  //     if (buttonContainer.children.length > 0) {
+  //       var yPositionOfFirstRow =
+  //         buttonContainer.children[0].getBoundingClientRect().y;
+  //       var foundDiff = false;
+  //       var count = 0;
 
-        while (foundDiff === false) {
-          for (var i = 0; i < buttonContainer.children.length; i++) {
-            if (
-              buttonContainer.children[i].getBoundingClientRect().y !==
-              yPositionOfFirstRow
-            ) {
-              foundDiff = true;
-              break;
-            }
-            count++;
-          }
-        }
+  //       while (foundDiff === false) {
+  //         for (var i = 0; i < buttonContainer.children.length; i++) {
+  //           if (
+  //             buttonContainer.children[i].getBoundingClientRect().y !==
+  //             yPositionOfFirstRow
+  //           ) {
+  //             foundDiff = true;
+  //             break;
+  //           }
+  //           count++;
+  //         }
+  //       }
 
-        if (blocks.length % count !== 0) {
-          var amountToAdd = count - (blocks.length % count);
-          for (var i = 0; i < amountToAdd; i++) {
-            var clone = buttonContainer.children[0].cloneNode(
-              true
-            ) as HTMLElement;
-            clone.classList.add("artificialAddition");
-            buttonContainer.appendChild(clone);
-          }
-        }
-      }
-    }
-  }
+  //       if (blocks.length % count !== 0) {
+  //         var amountToAdd = count - (blocks.length % count);
+  //         for (var i = 0; i < amountToAdd; i++) {
+  //           var clone = buttonContainer.children[0].cloneNode(
+  //             true
+  //           ) as HTMLElement;
+  //           clone.classList.add("artificialAddition");
+  //           buttonContainer.appendChild(clone);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   window.addEventListener("resize", (e) => {
     //deleteArtificialAdditions();
     //createArtificialAdditions();
   });
 
+  const orderedBlocksLength = orderedBlocks.length !== 0
   useEffect(() => {
     //createArtificialAdditions();
     //document.getElementById("showScroll")?.focus()
-  }, [orderedBlocks.length != 0]);
+  }, [orderedBlocksLength]);
 
   useEffect(() => {
-    if (sort == "Oldest") {
+    if (sort === "Oldest") {
       setOrderedBlocks([...blocks]);
       setBlockNumber(Number(blocks[0]));
     } else {
@@ -146,7 +146,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
       setOrderedBlocks([...reversed]);
       setBlockNumber(Number(reversed[0]));
     }
-  }, [sort, blocks]);
+  }, [sort, blocks, orderedBlocks, setBlockNumber]);
 
   const blockHandler = (e: any) => {
     setAnimate(false);
@@ -171,7 +171,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
                   : "bg-white border-white"
               }`
             : ` ${blockTaken(b) ? "bg-transparent" : "bg-button"} `
-        } 
+        }
       ${
         blockNumber.toString() === b
           ? blockTaken(b)
@@ -346,6 +346,7 @@ const BlockSelector: React.FC<ComponentProps> = (props: ComponentProps) => {
             <div id="tweet-button">
               <a
                 id="tweet"
+                href="#top"
                 target="_blank"
                 role="button"
                 className="underline"

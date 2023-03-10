@@ -8,6 +8,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -17,10 +18,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "sourceMap": false,
+    "outDir": "dist",
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
-  ]
+    "./src"
+  ],
+  "exclude": ["./node_modules/**/*"]
 }

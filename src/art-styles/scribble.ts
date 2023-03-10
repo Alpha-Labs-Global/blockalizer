@@ -50,7 +50,7 @@ class Segment {
     this.b = this.x1 - this.x2;
     this.c = this.x2 * this.y1 - this.x1 * this.y2;
 
-    if (this.a == 0 && this.b == 0 && this.c == 0) {
+    if (this.a === 0 && this.b === 0 && this.c === 0) {
       this.undef = true;
     } else {
       this.undef = false;
@@ -123,9 +123,9 @@ class Segment {
       int2 = -otherSegment.getC() / otherSegment.getB();
     }
 
-    if (grad1 == Number.MAX_VALUE) {
-      if (grad2 == Number.MAX_VALUE) {
-        if (-this.c / this.a != -otherSegment.getC() / otherSegment.getA()) {
+    if (grad1 === Number.MAX_VALUE) {
+      if (grad2 === Number.MAX_VALUE) {
+        if (-this.c / this.a !== -otherSegment.getC() / otherSegment.getA()) {
           return Relation.SEPARATE;
         }
 
@@ -174,7 +174,7 @@ class Segment {
       return Relation.INTERSECTS;
     }
 
-    if (grad2 == Number.MAX_VALUE) {
+    if (grad2 === Number.MAX_VALUE) {
       this.xi = otherSegment.getPx1();
       this.yi = grad1 * this.xi + int1;
 
@@ -195,8 +195,8 @@ class Segment {
       return Relation.INTERSECTS;
     }
 
-    if (grad1 == grad2) {
-      if (int1 != int2) {
+    if (grad1 === grad2) {
+      if (int1 !== int2) {
         return Relation.SEPARATE;
       }
 
@@ -315,11 +315,11 @@ class HachureIterator {
 
         const s = new Segment(xLower, yLower, xUpper, yUpper);
 
-        if (s.compare(this.sLeft!) == Relation.INTERSECTS) {
+        if (s.compare(this.sLeft!) === Relation.INTERSECTS) {
           xLower = s.getIntersectionX();
           yLower = s.getIntersectionY();
         }
-        if (s.compare(this.sRight!) == Relation.INTERSECTS) {
+        if (s.compare(this.sRight!) === Relation.INTERSECTS) {
           xUpper = s.getIntersectionX();
           yUpper = s.getIntersectionY();
         }
@@ -372,10 +372,10 @@ export default class Scribble {
     let result = [];
 
     if (
-      xCoords == null ||
-      yCoords == null ||
-      xCoords.length == 0 ||
-      yCoords.length == 0
+      xCoords === null ||
+      yCoords === null ||
+      xCoords.length === 0 ||
+      yCoords.length === 0
     ) {
       return;
     }
@@ -390,7 +390,7 @@ export default class Scribble {
     let top = yCoords[0];
     let bottom = yCoords[0];
 
-    for (var i = 1; i < xCoords.length; i++) {
+    for (let i = 1; i < xCoords.length; i++) {
       left = Math.min(left, xCoords[i]);
       right = Math.max(right, xCoords[i]);
       top = Math.min(top, yCoords[i]);
@@ -409,10 +409,10 @@ export default class Scribble {
     );
     var rectCoords = null;
 
-    while ((rectCoords = it.getNextLine()) != null) {
+    while ((rectCoords = it.getNextLine()) !== null) {
       var lines = this.getIntersectingLines(rectCoords, xCoords, yCoords);
 
-      for (var i = 0; i < lines.length; i += 2) {
+      for (let i = 0; i < lines.length; i += 2) {
         if (i < lines.length - 1) {
           let p1 = lines[i];
           let p2 = lines[i + 1];
@@ -450,7 +450,7 @@ export default class Scribble {
         yCoords[(i + 1) % xCoords.length]
       );
 
-      if (s1.compare(s2) == Relation.INTERSECTS) {
+      if (s1.compare(s2) === Relation.INTERSECTS) {
         intersections.push([s1.getIntersectionX(), s1.getIntersectionY()]);
       }
     }
@@ -639,7 +639,7 @@ export default class Scribble {
   }
 }
 
-/*  
+/*
 
   buildEllipse(
     cx: number,
@@ -712,7 +712,7 @@ export default class Scribble {
              x4+this.getOffset( -3, 3 ), y4+this.getOffset( -4, 4 ),
              x2+this.getOffset( -2, 2 ), y2+this.getOffset( -2, 2 ) );
   }
-  
+
     this.scribbleRect = function( x, y, w, h ) {
       var halfWidth = w/2;
       var halfHeight = h/2;
@@ -720,51 +720,51 @@ export default class Scribble {
       var right  = Math.max( x-halfWidth, x+halfWidth );
       var top    = Math.min( y-halfHeight, y+halfHeight );
       var bottom = Math.max( y-halfHeight, y+halfHeight );
-  
+
         this.scribbleLine( left, top, right, top );
         this.scribbleLine( right, top, right, bottom );
         this.scribbleLine( right, bottom, left, bottom );
         this.scribbleLine( left, bottom, left, top );
     }
-  
+
     this.scribbleRoundedRect = function( x, y, w, h, radius ) {
       var halfWidth = w/2;
       var halfHeight = h/2;
-  
-      if ( radius == 0 || radius > halfWidth || radius > halfHeight ) {
+
+      if ( radius === 0 || radius > halfWidth || radius > halfHeight ) {
         this.scribbleRect( x, y, w, h );
         return;
       }
-  
+
       var left   = Math.min( x-halfWidth, x+halfWidth );
       var right  = Math.max( x-halfWidth, x+halfWidth );
       var top    = Math.min( y-halfHeight, y+halfHeight );
       var bottom = Math.max( y-halfHeight, y+halfHeight );
-  
+
       this.scribbleLine( left+radius, top, right-radius, top, 1.5 );
       this.scribbleLine( right, top+radius, right, bottom-radius, 1.5 );
       this.scribbleLine( right-radius, bottom, left+radius, bottom, 1.5 );
       this.scribbleLine( left, bottom-radius, left, top+radius, 1.5 );
-  
+
       this.scribbleCurve( left+radius, top, left, top+radius, left+radius*0.1, top+radius*0.1, left+radius*0.1, top+radius*0.1 );
       this.scribbleCurve( right-radius, top, right, top+radius, right-radius*0.1, top+radius*0.1, right-radius*0.1, top+radius*0.1 );
       this.scribbleCurve( left+radius, bottom, left, bottom-radius, left+radius*0.1, bottom-radius*0.1, left+radius*0.1, bottom-radius*0.1 );
       this.scribbleCurve( right-radius, bottom, right, bottom-radius, right-radius*0.1, bottom-radius*0.1, right-radius*0.1, bottom-radius*0.1 );
     }
-  
+
     this.scribbleEllipse = function( x, y, w, h ) {
       var rx = Math.abs(w/2);
       var ry = Math.abs(h/2);
-  
+
       rx += this.getOffset( -rx*0.05, rx*0.05 );
       ry += this.getOffset( -ry*0.05, ry*0.05 );
-  
+
       this.buildEllipse( x, y, rx, ry, 1, this.ellipseInc*this.getOffset( 0.1, this.getOffset( 0.4, 1 ) ) );
       this.buildEllipse( x, y, rx, ry, 1.5, 0 );
     }
-  
-    
+
+
   }
-  
+
 
   */

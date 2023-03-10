@@ -273,7 +273,7 @@ export class AliveGridSketch extends GenericSketch {
     if (this.fillIterator < fillLines.length) {
       const lines = fillLines[this.fillIterator];
 
-      if (this.lineIterator == 0) {
+      if (this.lineIterator === 0) {
         this.p5.push();
         this.p5.strokeWeight(this.strokeWidthFill);
         this.p5.noFill();

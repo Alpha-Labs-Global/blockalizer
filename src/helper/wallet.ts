@@ -23,7 +23,7 @@ const {
   REACT_APP_ENV,
 } = process.env;
 const ALCHEMY_API_KEY = REACT_APP_ALCHEMY_API_KEY || "alchemy_api_key";
-const PRODUCTION = REACT_APP_ENV == "production";
+const PRODUCTION = REACT_APP_ENV === "production";
 
 const COLLECTION_ID = BigNumber.from(0);
 
@@ -95,7 +95,7 @@ export const mintToken = async (
   signer: ethers.Signer,
   result: any
 ): Promise<void> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [controller, generation, ] = await getContracts(signer);
 
   const uri = result.uri;
   const sig = result.sig;
@@ -111,7 +111,7 @@ export const preMintToken = async (
   signer: ethers.Signer,
   result: any
 ): Promise<void> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [controller, generation, ] = await getContracts(signer);
 
   const uri = result.uri;
   const sig = result.sig;
@@ -143,7 +143,7 @@ export const listenToEvents = async (
   signer: ethers.Signer,
   callback: (from: string, to: string, amount: BigNumber, event: any) => void
 ) => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, , collection] = await getContracts(signer);
 
   const userAddress = await signer.getAddress();
   const filterTo = collection.filters.Transfer(null, userAddress);
@@ -154,7 +154,7 @@ export const listenToEvents = async (
 export const getOwnedPieces = async (
   signer: ethers.Signer
 ): Promise<Array<any>[]> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, , collection] = await getContracts(signer);
 
   const result = [];
   const userAddress = await signer.getAddress();
@@ -180,7 +180,7 @@ export const getOwnedPieces = async (
 export const getTotalMinted = async (
   signer: ethers.Signer
 ): Promise<BigNumber> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, generation, ] = await getContracts(signer);
 
   const totalMinted = await generation.getTokenCount();
 
@@ -188,7 +188,7 @@ export const getTotalMinted = async (
 };
 
 export const getGeneration = async (signer: ethers.Signer): Promise<number> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [controller, , ] = await getContracts(signer);
 
   const generationCount = await controller.getGenerationCount();
 
@@ -205,12 +205,12 @@ export const isAllowed = async (signer: ethers.Signer): Promise<boolean> => {
 export const getMaxPerWallet = async (
   signer: ethers.Signer
 ): Promise<number> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, generation, ] = await getContracts(signer);
   return await generation.maxMintsPerWallet();
 };
 
 export const getStartDate = async (signer: ethers.Signer): Promise<number> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, generation, ] = await getContracts(signer);
 
   const startTime = await generation.startTime();
 
@@ -220,7 +220,7 @@ export const getStartDate = async (signer: ethers.Signer): Promise<number> => {
 export const getGenerationTotal = async (
   signer: ethers.Signer
 ): Promise<number> => {
-  const [controller, generation, collection] = await getContracts(signer);
+  const [, generation, ] = await getContracts(signer);
 
   return (await generation.maxSupply()).toNumber();
 };
@@ -236,13 +236,13 @@ export const decodeErrorName = (signer: ethers.Signer, e: any) => {
     signer
   );
 
-  if (e.code == "UNPREDICTABLE_GAS_LIMIT") {
+  if (e.code === "UNPREDICTABLE_GAS_LIMIT") {
     const errorId = data.slice(0, 10);
     for (const [signature, errorFragment] of Object.entries(
       controller.interface.errors
     )) {
       const customErrorId = ethers.utils.id(signature).slice(0, 10);
-      if (errorId == customErrorId) return errorFragment.name;
+      if (errorId === customErrorId) return errorFragment.name;
     }
   }
   return e.code;

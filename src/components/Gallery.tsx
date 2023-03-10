@@ -12,6 +12,7 @@ const Gallery: React.FC<ComponentProps> = (props: ComponentProps) => {
         {piece.metadata.name} by <span className="text-teal">you</span>
         <span className="block mb-2"></span>
         <img
+          alt="metadata of piece"
           src={piece.metadata.image}
           onError={({ currentTarget }) => {
             currentTarget.onerror = null; // prevents looping
