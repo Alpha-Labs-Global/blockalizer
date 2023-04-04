@@ -1,255 +1,525 @@
+// fill scribble effect
+// draw squares first
+
+import p5 from "p5";
 import p5Types, { Color } from "p5";
 import GenericSketch from "./generic_sketch";
+import Scribble from "./scribble";
 
-/* Palette has a collection of 5 colors and we consider two palettes or one
-
-{
-  R1, G1, B1, // used for background
-  R2, G2, B2, //   randomly
-  R3, G3, B3, //     used
-  R4, G4, B4, //    in the
-  R5, G5, B5  //    palette 1
-}
-
-{
-  R1, G1, B1, // used for background
-  R2, G2, B2, //   randomly
-  R3, G3, B3, //     used
-  R4, G4, B4, //    in the
-  R5, G5, B5  //    palette 2
-}
-*/
-
-export interface ColoredTriangleOptions {
+export interface CircleSketchOptions {
   numOfBoxes: number;
-  opacity: number;
-  strokeWidth: number;
   paletteIndex: number;
-  opacitySwitch: boolean;
   noFill: boolean;
   removeBlocks: number;
+  animate: boolean;
+  paperIndex: number;
 }
 
+// const paper_links: Array<string> = [
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmYPmQdJQJLtvMpbXgeHjWzatnyVyCMxcpQsknR8AbYuR6",
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/QmXdCnGST3VXiBBGAtEGLu4h3WyjZhayLJD9d6cUYtdDaj",
+//   "https://maroon-petite-shrew-493.mypinata.cloud/ipfs/Qmc1UUU1dkfnKQNAtuZEq5QEDNpwAj4DR5N8eP2VFVxxgk",
+// ];
+
+const paper_links: Array<string> = [
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper1.webp",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper2.webp",
+  "https://blockalizer-animation-template.s3.us-east-2.amazonaws.com/paper3.webp",
+];
+
 export class CircleSketch extends GenericSketch {
+  backgroundColor: p5Types.Color; // background color to use if overridden
   sizeOfBox: number; // size in px of each individual square
-  setStroke: boolean; // true or false if stroke should be set
-  firstColorForStroke: boolean; // whether to use default stroke color or override
-  backgroundOverrideColor: p5Types.Color; // background color to use if overridden
-  strokeOverrideColor: p5Types.Color; // stroke color to use if overridden
-  strokeWidth: number; // stroke width to use
-  toggleOpacity: boolean; // when set to true it toggles opacity as opposed to color
   noFill: boolean; // setting it to false removes all color
   removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
-  drawHalf: boolean; // only draw half of the block (1 triangle only)
   blockOrientation: Array<number>; // Inform the shape of the block. 1 is ◣ and 0 is ◢.
   colorPalette: Array<Color>; // Color Palette to be used
   paletteIndex: number; // Selected index from color table
   gridSize: number; // Size of the grid
   blocksToRemove: Set<number>; // Set of blocks to remove
-
-  // DEPRECATED
-  alpha: number; // color opacity for each shape
+  iterator: number; // iterate over bits
+  triangleIterator: number;
+  margins: number; // margin around sketch;
+  sketchWidth: number;
+  sketchHeight: number;
+  allTriangles: Array<Array<Array<number>>>; // arrays of trianges to array of vertices to a pair
+  scribble: Scribble;
+  fillLines: Array<Array<Array<Array<Array<number | boolean>>>>>;
+  fillIterator: number;
+  lineIterator: number;
+  firstLine: boolean;
+  fillDone: boolean;
+  triangleFillColors: Array<p5Types.Color>;
+  animate: boolean;
+  paper: p5Types.Image | null;
+  strokeWidth: number; // stroke width to use
+  strokeWidthOutline: number;
+  strokeWidthFill: number;
+  fillGap: number;
+  strokeColor: p5.Color;
+  paperIndex: number; // 0,1,2
 
   constructor(
-    p5Instance: p5Types.Graphics,
+    p5Instance: p5Types,
     canvasWidth: number,
     canvasHeight: number,
     colorTable: p5Types.Table,
     blockNumber: number,
     blockBits: string,
-    opts: ColoredTriangleOptions
+    opts: CircleSketchOptions
   ) {
     super(p5Instance, canvasWidth, canvasHeight, colorTable, blockNumber);
     const blockBitsDecomp = blockBits.split("").map((b) => Number(b));
 
     // CONTROLS
-    this.setStroke = true;
-    // higher value creates overlayed effect of triangles
-    // 2 would create only triangles
     this.gridSize = opts.numOfBoxes;
-    this.alpha = opts.opacity; // lowers values create a layered effect
-    this.firstColorForStroke = true; // uses the first RGB color from palette
-    this.backgroundOverrideColor = this.p5.color(14, 15, 15);
-    this.strokeOverrideColor = this.p5.color(255, 255, 255);
-    this.strokeWidth = opts.strokeWidth;
-    this.toggleOpacity = opts.opacitySwitch;
+    this.backgroundColor = this.p5.color(14, 15, 15);
+    this.strokeWidth = 1.5;
     this.noFill = opts.noFill;
     this.removeBlocks = opts.removeBlocks;
-    this.drawHalf = true;
+    this.animate = opts.animate;
 
+    const marginPct = 5;
+    const squareSize = Math.min(this.canvasHeight, this.canvasWidth);
+    this.margins = (squareSize * marginPct) / 100;
+
+    this.sketchHeight = squareSize;
+    this.sketchWidth = squareSize;
     const lengthOfBlockOrientation = this.gridSize * this.gridSize;
     this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
 
-    this.sizeOfBox = this.canvasWidth / this.gridSize;
+    this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    // console.log(`size of box: ${this.sizeOfBox}px`);
-    // console.log("alpha:", this.alpha);
     // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
-    if (this.toggleOpacity) {
-      this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
-    } else {
-      this.colorPalette = this.generatePalette(this.paletteIndex);
-    }
+    // this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
+    this.colorPalette = this.generatePalette(this.paletteIndex);
 
-    this.blocksToRemove = this.computeBlocksToRemove2();
+    this.blocksToRemove = this.computeBlocksToRemove();
+    // console.log("removed blocks: ", Array.from(this.blocksToRemove));
     this.reseed();
 
-    // console.log(`stroke width: ${this.strokeWidth}px`);
+    let bowing = 3;
+    let roughness = 4;
+    let maxOffset = 3;
+    switch (this.gridSize) {
+      case 3:
+        bowing = 2;
+        roughness = 3;
+        maxOffset = 2;
+        this.fillGap = 6;
+        this.strokeWidthFill = 5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 3;
+        break;
+      case 6:
+        bowing = 3;
+        roughness = 2;
+        maxOffset = 1;
+        this.fillGap = 5;
+        this.strokeWidthFill = 3.5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 2;
+        break;
+      case 9:
+        bowing = 3;
+        roughness = 2;
+        maxOffset = 1;
+        this.fillGap = 4;
+        this.strokeWidthFill = 2.5;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 1;
+        break;
+      case 12:
+        bowing = 2;
+        roughness = 2;
+        maxOffset = 1;
+        this.fillGap = 3.5;
+        this.strokeWidthFill = 2;
+        this.strokeWidth = 1;
+        this.strokeWidthOutline = 0.5;
+        break;
+      default:
+        bowing = 3;
+        roughness = 3;
+        maxOffset = 1;
+        this.fillGap = 5;
+        this.strokeWidthFill = 3;
+        this.strokeWidth = 1.5;
+        this.strokeWidthOutline = 0.5;
+        break;
+    }
+
+    if (this.noFill) {
+      this.strokeColor = this.p5.color(
+        this.colorTable.getNum(this.paletteIndex, 0),
+        this.colorTable.getNum(this.paletteIndex, 1),
+        this.colorTable.getNum(this.paletteIndex, 2)
+      );
+      switch (this.gridSize) {
+        case 3:
+          this.strokeWidth = 12;
+          break;
+        case 6:
+          this.strokeWidth = 8;
+          break;
+        case 9:
+          this.strokeWidth = 6;
+          break;
+        case 12:
+          this.strokeWidth = 4;
+          break;
+        default:
+          this.strokeWidth = 1.5;
+          break;
+      }
+    } else {
+      this.strokeColor = this.p5.color(10);
+    }
+
+    this.iterator = 1;
+    this.lineIterator = 0;
+    this.firstLine = true;
+    this.triangleIterator = 0;
+    this.allTriangles = [];
+    this.scribble = new Scribble(this.p5, bowing, roughness, maxOffset);
+    this.fillLines = [];
+    this.fillIterator = 0;
+    this.fillDone = true;
+    this.triangleFillColors = [];
+    this.paper = null;
+
+    this.paperIndex = opts.paperIndex;
+  }
+
+  setup(canvasParentRef: Element) {
+    this.p5
+      .createCanvas(this.canvasWidth, this.canvasHeight)
+      .parent(canvasParentRef);
+
+    this.p5.frameRate(120); // highest possible framerate
+    this.p5.loadImage(
+      paper_links[this.paperIndex],
+      (img) => {
+        // console.log("paper image loaded");
+        this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
+        // this.p5.tint(50);
+        this.p5.background(img);
+        this.scaffolding();
+        if (!this.animate) this.preview();
+      },
+      (e) => {
+        console.log(e);
+      }
+    );
+
+    // this.p5.image(this.paper!, 0, 0, this.canvasWidth, this.canvasHeight);
+    // this.p5.background(this.paper!);
+    // this.scaffolding();
+    // if (!this.animate) this.preview();
+
+    if (!this.animate) this.p5.noLoop();
   }
 
   draw() {
-    if (!this.setStroke) {
-      this.p5.noStroke();
-    } else {
-      if (this.firstColorForStroke) this.fillDefaultStroke();
-      else {
-        this.p5.stroke(this.strokeOverrideColor);
-        this.p5.strokeWeight(this.strokeWidth);
-        let r = this.p5.red(this.strokeOverrideColor);
-        let g = this.p5.green(this.strokeOverrideColor);
-        let b = this.p5.blue(this.strokeOverrideColor);
-        // console.log(
-        //   `stroke: rgb(${r},${g},${b}) %c  `,
-        //   `background: rgb(${r},${g},${b});`
-        // );
+    const strokeScale = this.strokeWidth;
+    const stokeRez = 0.02;
+
+    // go over all triangles
+    if (this.triangleIterator < this.allTriangles.length) {
+      const vertices = this.allTriangles[this.triangleIterator];
+
+      // check if triangle needs filling
+      if (!this.fillDone) {
+        if (this.noFill) {
+          this.triangleIterator++;
+          this.iterator = 1;
+          this.fillDone = true;
+        } else {
+          this.drawFill();
+        }
+      } else {
+        // draw triangle outline
+        if (this.iterator < vertices.length) {
+          const i = this.iterator;
+          const x1 = vertices[i - 1][0];
+          const y1 = vertices[i - 1][1];
+          const x2 = vertices[i][0];
+          const y2 = vertices[i][1];
+          let strokeOffset =
+            strokeScale *
+            this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
+          this.p5.strokeWeight(strokeOffset);
+          this.p5.stroke(this.strokeColor);
+          this.p5.beginShape();
+          this.p5.vertex(x1, y1);
+          this.p5.vertex(x2, y2);
+          this.p5.endShape();
+
+          this.iterator++;
+        } else {
+          // fill triangle
+          this.fillDone = false;
+        }
       }
     }
-
-    let r = this.p5.red(this.backgroundOverrideColor);
-    let g = this.p5.green(this.backgroundOverrideColor);
-    let b = this.p5.blue(this.backgroundOverrideColor);
-    // console.log(
-    //   `background: rgb(${r},${g},${b}) %c  `,
-    //   `background: rgb(${r},${g},${b});`
-    // );
-    this.p5.background(this.backgroundOverrideColor);
-
-    this.drawShapes();
   }
 
-  fillDefaultStroke() {
-    let [r, g, b] = [
-      this.colorTable.getNum(this.paletteIndex, 0),
-      this.colorTable.getNum(this.paletteIndex, 1),
-      this.colorTable.getNum(this.paletteIndex, 2),
-    ];
-    // console.log(
-    //   `stroke: rgb(${r},${g},${b}) %c  `,
-    //   `background: rgb(${r},${g},${b});`
-    // );
-    this.p5.stroke(r, g, b);
-    this.p5.strokeWeight(this.strokeWidth);
+  drawFill() {
+    const fillLines = this.fillLines[this.triangleIterator];
+    const fillColor = this.triangleFillColors[this.triangleIterator].toString();
+    if (this.fillIterator < fillLines.length) {
+      const lines = fillLines[this.fillIterator];
+
+      if (this.lineIterator == 0) {
+        this.p5.push();
+        this.p5.strokeWeight(this.strokeWidthFill);
+        this.p5.noFill();
+        this.p5.stroke(fillColor);
+        this.p5.beginShape();
+      }
+
+      let line;
+      if (this.firstLine) {
+        line = lines[0];
+      } else {
+        line = lines[1];
+      }
+
+      if (this.lineIterator < line.length) {
+        const x = Number(line[this.lineIterator][0]);
+        const y = Number(line[this.lineIterator][1]);
+        const curve = line[this.lineIterator][2];
+        // console.log("line details: ", x, y, curve);
+        if (curve) {
+          this.p5.curveVertex(x, y);
+        } else {
+          this.p5.vertex(x, y);
+        }
+        this.lineIterator++;
+      } else {
+        if (this.firstLine) {
+          this.p5.endShape();
+          this.p5.pop();
+          this.lineIterator = 0;
+          this.firstLine = false;
+        } else {
+          this.p5.endShape();
+          this.p5.pop();
+          this.lineIterator = 0;
+          this.fillIterator++;
+          this.firstLine = true;
+        }
+      }
+    } else {
+      // draw next triangle
+      this.triangleIterator++;
+      this.fillIterator = 0;
+      this.iterator = 1;
+      this.fillDone = true;
+      // if (this.fillLines!.length > 0) this.p5.noLoop();
+    }
   }
 
-  drawShapes() {
+  scaffolding() {
+    this.outline();
+    this.selectColors();
     let bitIndex = 0;
-    for (let j = 0; j < this.canvasHeight; j += this.sizeOfBox) {
-      for (let i = 0; i < this.canvasWidth; i += this.sizeOfBox) {
-        this.drawShape(i, j, bitIndex);
-        // const bucketText = bitIndex.toString();
-        // this.p5.push();
-        // this.p5.fill(255);
-        // this.p5.noStroke();
-        // this.p5.text(bucketText, i, j + this.sizeOfBox / 4);
-        // this.p5.pop();
+    for (
+      let j = this.margins;
+      j < this.sketchHeight - this.margins;
+      j += this.sizeOfBox
+    ) {
+      for (
+        let i = this.margins;
+        i < this.sketchWidth - this.margins;
+        i += this.sizeOfBox
+      ) {
+        // this.point(j, i);
+        this.generateTriangles(i, j, bitIndex);
         bitIndex += 1;
       }
     }
   }
 
-  drawShape(i: number, j: number, bitIndex: number) {
-    // const rez1 = 100;
-    // let noiseColor = this.p5.noise(i * rez1, j * rez1);
-    let noiseColor = this.p5.random();
-    let color = this.pickColors(noiseColor);
+  preview() {
+    const strokeScale = this.strokeWidth;
+    const stokeRez = 0.02;
 
-    const rez2 = 0.1;
+    for (let i = 0; i < this.allTriangles.length; i++) {
+      // first draw all vertices
+      const vertices = this.allTriangles[i];
+      for (let j = 1; j < vertices.length; j++) {
+        const x1 = vertices[j - 1][0];
+        const y1 = vertices[j - 1][1];
+        const x2 = vertices[j][0];
+        const y2 = vertices[j][1];
+        let strokeOffset =
+          strokeScale *
+          this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
+        this.p5.stroke(this.strokeColor);
+        this.p5.strokeWeight(strokeOffset);
+        this.p5.beginShape();
+        this.p5.vertex(x1, y1);
+        this.p5.vertex(x2, y2);
+        this.p5.endShape();
+      }
+    }
+
+    // then fill them
+    for (let i = 0; i < this.fillLines.length; i++) {
+      const fillLines = this.fillLines[i];
+      const fillColor = this.triangleFillColors[i].toString();
+      this.p5.push();
+      this.p5.strokeWeight(this.strokeWidthFill);
+      this.p5.noFill();
+      this.p5.stroke(fillColor);
+      for (let j = 0; j < fillLines.length; j++) {
+        const lines = fillLines[j];
+
+        const firstLine = lines[0];
+        const secondLine = lines[1];
+        this.p5.beginShape();
+        for (let k = 0; k < firstLine.length; k++) {
+          const x = Number(firstLine[k][0]);
+          const y = Number(firstLine[k][1]);
+          const curve = firstLine[k][2];
+          if (curve) {
+            this.p5.curveVertex(x, y);
+          } else {
+            this.p5.vertex(x, y);
+          }
+        }
+        this.p5.endShape();
+
+        this.p5.beginShape();
+        for (let k = 0; k < secondLine.length; k++) {
+          const x = Number(secondLine[k][0]);
+          const y = Number(secondLine[k][1]);
+          const curve = secondLine[k][2];
+          if (curve) {
+            this.p5.curveVertex(x, y);
+          } else {
+            this.p5.vertex(x, y);
+          }
+        }
+        this.p5.endShape();
+      }
+      this.p5.pop();
+    }
+  }
+
+  selectColors() {
+    for (let j = 0; j < this.gridSize; j++) {
+      for (let i = 0; i < this.gridSize; i++) {
+        if (this.shouldDrawBlock(j * this.gridSize + i)) {
+          const noiseColor = this.p5.random();
+          const color = this.pickColors(noiseColor);
+          this.triangleFillColors.push(color);
+        }
+      }
+    }
+  }
+
+  generateTriangles(i: number, j: number, bitIndex: number) {
+    const rez2 = 0.01;
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
     if (this.shouldDrawBlock(bitIndex)) {
-      this.drawDoublePalettePatterns(n3, i, j, color, this.sizeOfBox, bitIndex);
+      // this.triangleFillColors.push(color); // extract out so not affected by random calls
+      this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
     }
-    this.drawOuterEdge();
   }
 
   shouldDrawBlock(bitIndex: number) {
     return !this.blocksToRemove.has(bitIndex);
-    // let percentRemoval = 0;
-    // switch (this.removeBlocks) {
-    //   case 0:
-    //     percentRemoval = 0;
-    //     break;
-    //   case 1:
-    //     percentRemoval = 0.1;
-    //     break;
-    //   case 2:
-    //     percentRemoval = 0.2;
-    //     break;
-    //   case 3:
-    //     percentRemoval = 0.3;
-    //     break;
-    // }
-    // return this.p5.random() > percentRemoval;
   }
 
-  drawOuterEdge() {
-    this.p5.fill(0, 0, 0, 0);
-    this.p5.rect(1, 1, this.canvasWidth - 2, this.canvasHeight - 2);
+  outline() {
+    for (let j = this.margins; j < this.canvasHeight; j += this.sizeOfBox) {
+      this.p5.push();
+      this.p5.strokeWeight(this.strokeWidthOutline);
+      this.p5.stroke(0, 70);
+      this.p5.line(0, j, this.canvasWidth, j);
+      this.p5.pop();
+    }
+    for (let i = this.margins; i < this.canvasWidth; i += this.sizeOfBox) {
+      this.p5.push();
+      this.p5.strokeWeight(this.strokeWidthOutline);
+      this.p5.stroke(0, 70);
+      this.p5.line(i, 0, i, this.canvasHeight);
+      this.p5.pop();
+    }
   }
 
-  drawDoublePalettePatterns(
+  generateTriangleOutline(
     n3: number,
     i: number,
     j: number,
-    randomColor: p5Types.Color,
     size: number,
     bitIndex: number
   ) {
     // 1 is ◣ and 0 is ◢
     this.p5.strokeJoin(this.p5.BEVEL);
     const orientation = this.blockOrientation[bitIndex];
-    const noColor = this.p5.color(0, 0, 0, 0);
     const offset = 0;
     const startI = i + offset;
     const endI = i + size - offset;
     const startJ = j + offset;
     const endJ = j + size - offset;
+    let triangleSteps: any = [];
     if (orientation === 0) {
       if (n3 < 0.5) {
         // ◢ Lower right triangle
-        this.p5.fill(randomColor);
-        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
-        // ◤ Upper left triangle
-        this.p5.fill(noColor);
-        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
+        triangleSteps = this.recordJaggedTriangle(
+          endI,
+          startJ,
+          endI,
+          endJ,
+          startI,
+          endJ
+        );
+        this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
       } else {
-        // ◢ Lower right triangle
-        this.p5.fill(noColor);
-        this.p5.triangle(endI, startJ, endI, endJ, startI, endJ);
         // ◤ Upper left triangle
-        this.p5.fill(randomColor);
-        this.p5.triangle(startI, endJ, startI, startJ, endI, startJ);
+        triangleSteps = this.recordJaggedTriangle(
+          startI,
+          endJ,
+          startI,
+          startJ,
+          endI,
+          startJ
+        );
+        this.pushFilling(startI, endJ, startI, startJ, endI, startJ, false);
       }
     } else {
       if (n3 < 0.5) {
         // ◣ Lower left triangle
-        this.p5.fill(randomColor);
-        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
-        // ◥ Upper right triangle
-        this.p5.fill(noColor);
-        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
+        triangleSteps = this.recordJaggedTriangle(
+          startI,
+          startJ,
+          endI,
+          endJ,
+          startI,
+          endJ
+        );
+        this.pushFilling(startI, startJ, endI, endJ, startI, endJ, true);
       } else {
         // ◥ Upper right triangle
-        this.p5.fill(randomColor);
-        this.p5.triangle(startI, startJ, endI, endJ, endI, startJ);
-        // ◣ Lower left triangle
-        this.p5.fill(noColor);
-        this.p5.triangle(startI, startJ, endI, endJ, startI, endJ);
+        triangleSteps = this.recordJaggedTriangle(
+          startI,
+          startJ,
+          endI,
+          endJ,
+          endI,
+          startJ
+        );
+        this.pushFilling(startI, startJ, endI, endJ, endI, startJ, true);
       }
     }
+    this.allTriangles.push(triangleSteps);
   }
 
   generatePaletteWithOpacity(paletteIndex: number) {
@@ -327,54 +597,7 @@ export class CircleSketch extends GenericSketch {
     console.log(str, ...css_arr);
   }
 
-  computeBlocksToRemove(): Set<number> {
-    let result = new Set<number>();
-    const blockRemovalMatrix = [
-      [0, 1, 2, 3],
-      [0, 3, 6, 9],
-      [0, 7, 14, 21],
-      [0, 12, 24, 36],
-    ];
-    let countOfBlockToRemove;
-    switch (this.gridSize) {
-      case 3:
-        countOfBlockToRemove = blockRemovalMatrix[0][this.removeBlocks];
-        break;
-      case 6:
-        countOfBlockToRemove = blockRemovalMatrix[1][this.removeBlocks];
-        break;
-      case 9:
-        countOfBlockToRemove = blockRemovalMatrix[2][this.removeBlocks];
-        break;
-      case 12:
-        countOfBlockToRemove = blockRemovalMatrix[3][this.removeBlocks];
-        break;
-      default:
-        countOfBlockToRemove = 0;
-        break;
-    }
-    const rez = 0.1;
-    let noiseGrid: Array<number> = [];
-    for (let i = 0; i < this.gridSize; i++) {
-      let noiseRow: Array<number> = [];
-      for (let j = 0; j < this.gridSize; j++) {
-        noiseRow.push(this.p5.noise(i * rez, j * rez));
-      }
-      noiseGrid = noiseGrid.concat(noiseRow);
-    }
-
-    let i = 0;
-    while (i < countOfBlockToRemove) {
-      const max = Math.max(...noiseGrid);
-      const index = noiseGrid.indexOf(max);
-      noiseGrid[index] = 0;
-      result.add(index);
-      i++;
-    }
-    return result;
-  }
-
-  computeBlocksToRemove2() {
+  computeBlocksToRemove() {
     let result = new Set<number>();
     const blowupAreaBasedOnSize: Map<number, number> = new Map([
       [3, 1],
@@ -415,5 +638,52 @@ export class CircleSketch extends GenericSketch {
       }
     }
     return result;
+  }
+
+  recordJaggedTriangle(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number
+  ) {
+    const opts = {};
+    const vertices1 = this.jaggedLineFreeFlow(x1, y1, x2, y2, opts);
+    const vertices2 = this.jaggedLineFreeFlow(x2, y2, x3, y3, opts);
+    const vertices3 = this.jaggedLineFreeFlow(x3, y3, x1, y1, opts);
+
+    return vertices1.concat(vertices2).concat(vertices3);
+  }
+
+  pushFilling(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number,
+    leftTriangle: boolean
+  ) {
+    // the x coordinates of the border points of the hachure
+    const xCoords = [x1, x2, x3];
+    // the y coordinates of the border points of the hachure
+    const yCoords = [y1, y2, y3];
+    // the gap between two hachure lines
+    const gap = this.fillGap;
+    // the angle of the hachure in degrees
+    let angle;
+    if (leftTriangle) {
+      angle = 45;
+    } else {
+      angle = 315;
+    }
+
+    // set the thikness of our hachure lines
+
+    // fill the rect with a hachure
+    this.fillLines.push(
+      this.scribble.scribbleFilling(xCoords, yCoords, gap, angle)!
+    );
   }
 }

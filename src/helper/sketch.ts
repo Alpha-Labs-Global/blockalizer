@@ -12,6 +12,7 @@ import GenericSketch from "../art-styles/generic_sketch";
 import NoneSketch from "../art-styles/none_sketch";
 // import CubeSketch from "../art-styles/cube_sketch";
 import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
+import { CircleSketchOptions, CircleSketch } from "../art-styles/circle_sketch";
 
 export interface BlockInfo {
   blockHash: string;
@@ -137,6 +138,25 @@ export function assign_sketch(
         aliveGridOptions
       );
       break;
+      case "circle-sketch":
+        let circleSketchOptions: CircleSketchOptions = {
+          numOfBoxes: opts.numOfBoxes || 9,
+          paletteIndex: opts.paletteIndex || 0,
+          noFill: opts.noFill || false,
+          removeBlocks: opts.removeBlocks || 0,
+          animate: opts.animate || false,
+          paperIndex: opts.paperIndex || 0,
+        };
+        sketch = new CircleSketch(
+          p5,
+          canvasWidth,
+          canvasHeight,
+          table,
+          parseInt(blockNumber),
+          hex2bin(blockInfo.blockHash),
+          circleSketchOptions
+        );        
+        break;
   }
   return sketch;
 }

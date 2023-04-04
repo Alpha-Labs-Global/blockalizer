@@ -61,7 +61,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     regenerate();
     if (ready) {
-      setStyle("alive-grid");
+      setStyle("circle-sketch");
     } else {
       setStyle("none");
     }

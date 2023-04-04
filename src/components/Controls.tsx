@@ -38,8 +38,6 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
   return (
     <div className="w-[80%]">
       <span className="block mt-4"></span>
-
-
       {!disableMint ? (
       <svg viewBox="0 0 348 284" fill="none" xmlns="http://www.w3.org/2000/svg">
 
