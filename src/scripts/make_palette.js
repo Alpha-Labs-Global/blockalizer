@@ -25,11 +25,15 @@ function hexToRgb(hex) {
 // var sunshine = ["#FFDAA8", "#FFAA2C", "#FF9218", "#311400"];
 // var noir = ["#E6E6E6", "#979797", "#8A8A8A", "#070707"];
 // var allColors = [alpine, tidal, autumn];
-var tropicana = ["#FFC634", "#7534FF", "#FF34D2"];
-var neon_fruit = ["#69FF34", "#FB34FF", "#EFFF34"];
-var zest = ["#FF347D", "#BEFF34", "#FF7D34"];
-var waterfall = ["#34CEFF", "#3491FF", "#6934FF"];
-var allColors = [tropicana, neon_fruit, zest, waterfall];
+// var tropicana = ["#FFC634", "#7534FF", "#FF34D2"];
+// var neon_fruit = ["#69FF34", "#FB34FF", "#EFFF34"];
+// var zest = ["#FF347D", "#BEFF34", "#FF7D34"];
+// var waterfall = ["#34CEFF", "#3491FF", "#6934FF"];
+var hifi = ["#FF7426", "#EC3FBB", "#FFEA30"];
+var berry = ["#AAEBFF", "#BDFF30", "#3F99EC"];
+var candy = ["#FFFFFF", "#FF99E2", "#3051FF"];
+var arctic = ["#FFFFFF", "#3FD7EC", "#3051FF"];
+var allColors = [hifi, berry, candy, arctic];
 
 var data = [];
 var obj = {};

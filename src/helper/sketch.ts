@@ -53,6 +53,7 @@ export function assign_sketch(
     table,
     parseInt(blockNumber)
   );
+  console.log("> selectedStyle: ", selectedStyle);
   switch (selectedStyle) {
     /*
     case "grid":

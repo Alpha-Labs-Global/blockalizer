@@ -69,7 +69,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const numOfBoxesOptions = [3, 6, 9, 12];
   const tetriOptions = [0, 1, 2, 3];
   const noFillOptions = [true, false];
-  const chromaOptions = ["Tropicana", "Neon Fruit"];
+  const chromaOptions = ["hifi", "berry", "candy","arctic"];
 
   const randSelect = (lst: Array<any>) =>
     lst[Math.floor(Math.random() * lst.length)];
@@ -87,7 +87,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   // In order of how the palette is generated. Ideally it would be
   // best if the names would come from the data. But I will get to
   // that later
-  const colorNames = ["Tropicana", "Neon Fruit", "Zest", "Waterfall"];
+  const colorNames = ["hifi", "berry", "candy", "arctic"];
 
   const lazySetBlocks = async () => {
     if (signer) {
@@ -186,6 +186,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const mint = async () => {
     console.log("minting");
+    console.log("> sketchRef: ", sketchRef);
+    console.log("> blockInfo: ", blockInfo);
     if (sketchRef && sketchRef.current && blockInfo) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
@@ -545,7 +547,8 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               animate={animate}
               setAnimate={setAnimate}
               premium={premium}
-              disableMint={disableMint || blockUI}
+              // disableMint={disableMint || blockUI}
+              disableMint={false}
             ></Controls>
           </div>
           <span className="block mt-8"></span>
