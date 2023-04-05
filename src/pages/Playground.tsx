@@ -186,8 +186,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const mint = async () => {
     console.log("minting");
-    console.log("> sketchRef: ", sketchRef);
-    console.log("> blockInfo: ", blockInfo);
     if (sketchRef && sketchRef.current && blockInfo) {
       // @ts-ignore: Object is possibly 'null'.
       const canvas: HTMLCanvasElement = sketchRef.current.sketch.canvas;
@@ -547,7 +545,6 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               animate={animate}
               setAnimate={setAnimate}
               premium={premium}
-              // disableMint={disableMint || blockUI}
               disableMint={false}
             ></Controls>
           </div>

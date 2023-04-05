@@ -208,19 +208,13 @@ export class CircleSketch extends GenericSketch {
         // this.p5.tint(50);
         this.p5.background(img);
         this.scaffolding();
-        if (!this.animate) this.preview();
+        this.preview();
       },
       (e) => {
         console.log(e);
       }
     );
-
-    // this.p5.image(this.paper!, 0, 0, this.canvasWidth, this.canvasHeight);
-    // this.p5.background(this.paper!);
-    // this.scaffolding();
-    // if (!this.animate) this.preview();
-
-    if (!this.animate) this.p5.noLoop();
+    this.p5.noLoop();
   }
 
   draw() {
@@ -337,7 +331,6 @@ export class CircleSketch extends GenericSketch {
         i < this.sketchWidth - this.margins;
         i += this.sizeOfBox
       ) {
-        // this.point(j, i);
         this.generateTriangles(i, j, bitIndex);
         bitIndex += 1;
       }
@@ -428,7 +421,6 @@ export class CircleSketch extends GenericSketch {
     let n3 = this.p5.noise(i * rez2, j * rez2);
 
     if (this.shouldDrawBlock(bitIndex)) {
-      // this.triangleFillColors.push(color); // extract out so not affected by random calls
       this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
     }
   }
