@@ -205,7 +205,6 @@ export class CircleSketch extends GenericSketch {
         // this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
         // this.p5.tint(50);
         // this.p5.background(img);
-        this.scaffolding();
         this.preview();
       },
       (e) => {
