@@ -47,7 +47,7 @@ const Home: React.FC<ComponentProps> = (props: ComponentProps) => {
   const loadLatestBlock = async () => {
     try {
       const result = await latestBlock();
-      
+
       setRecentlyMintedBlocks(result);
       if (result.length > 0) {
         setRecentBlock(result[0]);

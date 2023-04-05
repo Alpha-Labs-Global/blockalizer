@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Controls.scss"
+import "./Controls.scss";
 
 interface ComponentProps {
   numOfBoxes: number;
@@ -16,8 +16,6 @@ interface ComponentProps {
   setChroma(chroma: string): void;
   mintHandler(): void;
 }
-
-
 
 const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
   const numOfBoxes = props.numOfBoxes;
@@ -38,20 +36,48 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
   return (
     <div className="w-[80%]">
       <span className="block mt-4"></span>
-     <div className="controlsbx">
-     <div className="flexbx">
-       <div className="lftbx">Grid Size</div>
-       <div className="rghtbx">
-         <div className="controltabs">
-           <div className={`tbs ${numOfBoxes === 3 ? "active" : ""}`} onClick={(e) => {setNumOfBoxes(3);}}>3</div>
-           <div className={`tbs ${numOfBoxes === 6 ? "active" : ""}`} onClick={(e) => {setNumOfBoxes(6);}}>6</div>
-           <div className={`tbs ${numOfBoxes === 9 ? "active" : ""}`} onClick={(e) => {setNumOfBoxes(9);}}>9</div>
-           <div className={`tbs ${numOfBoxes === 12 ? "active" : ""}`} onClick={(e) => {setNumOfBoxes(12);}}>12</div>
-         </div>
-       </div>
-     </div>
-     <div className="spacerx"></div>
-     {/* <div className="flexbx flex2">
+      <div className="controlsbx">
+        <div className="flexbx">
+          <div className="lftbx">Grid Size</div>
+          <div className="rghtbx">
+            <div className="controltabs">
+              <div
+                className={`tbs ${numOfBoxes === 3 ? "active" : ""}`}
+                onClick={(e) => {
+                  setNumOfBoxes(3);
+                }}
+              >
+                3
+              </div>
+              <div
+                className={`tbs ${numOfBoxes === 6 ? "active" : ""}`}
+                onClick={(e) => {
+                  setNumOfBoxes(6);
+                }}
+              >
+                6
+              </div>
+              <div
+                className={`tbs ${numOfBoxes === 9 ? "active" : ""}`}
+                onClick={(e) => {
+                  setNumOfBoxes(9);
+                }}
+              >
+                9
+              </div>
+              <div
+                className={`tbs ${numOfBoxes === 12 ? "active" : ""}`}
+                onClick={(e) => {
+                  setNumOfBoxes(12);
+                }}
+              >
+                12
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="spacerx"></div>
+        {/* <div className="flexbx flex2">
        <div className="lftbx">Anti-Block</div>
        <div className="rghtbx">
          <div className="controltabs">
@@ -62,7 +88,7 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
          </div>
        </div>
      </div> */}
-     {/* <div className="spacerx"></div>
+        {/* <div className="spacerx"></div>
      <div className="flexbx">
        <div className="lftbx">Fill</div>
        <div className="rghtbx">
@@ -72,7 +98,7 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
          </div>
        </div>
      </div> */}
-     {/* <div className="spacerx"></div>
+        {/* <div className="spacerx"></div>
      <div className="flexbx">
        <div className="lftbx">Animation Display</div>
        <div className="rghtbx">
@@ -81,23 +107,53 @@ const Controls: React.FC<ComponentProps> = (props: ComponentProps) => {
          </div>
        </div>
      </div> */}
-     <div className="spacerx"></div>
-     <div className="flexbx">
-       <div className="lftbx">Chroma</div>
-       <div className={`rghtbx chromaboxes ${chroma}`}>
-         <div className="text">{chroma}</div>
-         <div className="circleboxes">
-             <div className="circleboxOuter hifi" onClick={() => {setChroma("hifi")}}><div className="circleboxinner"></div></div>
-             <div className="circleboxOuter berry" onClick={() => {setChroma("berry")}}><div className="circleboxinner"></div></div>
-             <div className="circleboxOuter candy" onClick={() => {setChroma("candy")}}><div className="circleboxinner"></div></div>
-             <div className="circleboxOuter arctic" onClick={() => {setChroma("arctic")}}><div className="circleboxinner"></div></div>
-         </div>
-       </div>
-     </div>
-     <div className="spacerx"></div>
-     <button className="mintbutton" onClick={mintHandler}>Mint | 0.015E</button>
-   </div>
-   <span className="block mb-10"></span>
+        <div className="spacerx"></div>
+        <div className="flexbx">
+          <div className="lftbx">Chroma</div>
+          <div className={`rghtbx chromaboxes ${chroma}`}>
+            <div className="text">{chroma}</div>
+            <div className="circleboxes">
+              <div
+                className="circleboxOuter hifi"
+                onClick={() => {
+                  setChroma("hifi");
+                }}
+              >
+                <div className="circleboxinner"></div>
+              </div>
+              <div
+                className="circleboxOuter berry"
+                onClick={() => {
+                  setChroma("berry");
+                }}
+              >
+                <div className="circleboxinner"></div>
+              </div>
+              <div
+                className="circleboxOuter candy"
+                onClick={() => {
+                  setChroma("candy");
+                }}
+              >
+                <div className="circleboxinner"></div>
+              </div>
+              <div
+                className="circleboxOuter arctic"
+                onClick={() => {
+                  setChroma("arctic");
+                }}
+              >
+                <div className="circleboxinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="spacerx"></div>
+        <button className="mintbutton" onClick={mintHandler}>
+          Mint | 0.015E
+        </button>
+      </div>
+      <span className="block mb-10"></span>
     </div>
   );
 };

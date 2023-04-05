@@ -69,7 +69,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
   const numOfBoxesOptions = [3, 6, 9, 12];
   const tetriOptions = [0, 1, 2, 3];
   const noFillOptions = [true, false];
-  const chromaOptions = ["hifi", "berry", "candy","arctic"];
+  const chromaOptions = ["hifi", "berry", "candy", "arctic"];
 
   const randSelect = (lst: Array<any>) =>
     lst[Math.floor(Math.random() * lst.length)];

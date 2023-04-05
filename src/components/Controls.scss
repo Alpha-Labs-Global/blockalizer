@@ -1,142 +1,145 @@
-.controlsbx{
-    .spacerx{
-        height:20px;
+.controlsbx {
+  .spacerx {
+    height: 20px;
+  }
+  .flexbx {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .lftbx {
+      color: #bdbdbd;
+      font-size: 20px;
     }
-    .flexbx{
+    .rghtbx {
+      .controltabs {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        .lftbx{
-            color:#BDBDBD;
-            font-size: 20px;
+        background: rgba(217, 217, 217, 0.26);
+        border-radius: 44px;
+        overflow: hidden;
+        .tbs {
+          padding: 5px 26px;
+          &.active {
+            background: #fff;
+            color: #000;
+          }
         }
-        .rghtbx{
-            .controltabs{
-                display: flex;
-                align-items: center ;
-                background: rgba(217, 217, 217, 0.26);
-                border-radius: 44px;
-                overflow: hidden;
-                .tbs{
-                    padding:5px 26px;
-                    &.active{
-                        background: #fff;
-                        color: #000;
-                    }
-                }
-            }
-            .animatedisplay{
-                color: #fff;
-                font-size: 18px;
-                .coloured{
-                    color: #A1FFD2;
-                }
-            }
-            &.chromaboxes{
-                display: flex;
-                align-items: center;
-                .text{font-size: 18px;}
-                .circleboxes{
-                    display: flex;
-                    cursor: pointer;
-                    align-items: center;
-                    .circleboxOuter{
-                        border-radius: 50%;
-                       background: rgba(255,255,255,0.1);
-                        width:30px;
-                        height:30px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin-left: 10px;
-                        .circleboxinner{
-                            background: transparent;
-                            border-radius: 50%;
-                            width:15px;
-                            height:15px;
-                        }
-                        &.hifi{
-                            border:2px solid #F1BC33;;
-                        }
-                        &.berry{
-                            border:2px solid #69FF34;
-                        }
-                        &.candy{
-                            border:2px solid #FF347D;
-                        }
-                        &.arctic{
-                            border:2px solid #34CEFF;
-                        }
-                    }
-                }
-                &.hifi{
-                    .text{
-                        color: #F1BC33;
-                    }
-                    .hifi{
-                        .circleboxinner{
-                            background: #F1BC33;;
-                        }
-                    }
-                }
-                &.berry{
-                    .text{
-                        color: #69FF34;
-                    }
-                    .berry{
-                        .circleboxinner{
-                            background: #69FF34;;
-                        }
-                    }
-                }
-                &.candy{
-                    .text{
-                        color: #FF347D;
-                    }
-                    .candy{
-                        .circleboxinner{
-                            background: #FF347D;;
-                        }
-                    }
-                }
-                &.arctic{
-                    .text{
-                        color: #34CEFF;
-                    }
-                    .arctic{
-                        .circleboxinner{
-                            background: #34CEFF;;
-                        }
-                    }
-                }
-            }
+      }
+      .animatedisplay {
+        color: #fff;
+        font-size: 18px;
+        .coloured {
+          color: #a1ffd2;
         }
-        &.flex2{
-            .tbs{
-                padding:5px 18px !important;
-            }
+      }
+      &.chromaboxes {
+        display: flex;
+        align-items: center;
+        .text {
+          font-size: 18px;
         }
+        .circleboxes {
+          display: flex;
+          cursor: pointer;
+          align-items: center;
+          .circleboxOuter {
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            .circleboxinner {
+              background: transparent;
+              border-radius: 50%;
+              width: 15px;
+              height: 15px;
+            }
+            &.hifi {
+              border: 2px solid #f1bc33;
+            }
+            &.berry {
+              border: 2px solid #69ff34;
+            }
+            &.candy {
+              border: 2px solid #ff347d;
+            }
+            &.arctic {
+              border: 2px solid #34ceff;
+            }
+          }
+        }
+        &.hifi {
+          .text {
+            color: #f1bc33;
+          }
+          .hifi {
+            .circleboxinner {
+              background: #f1bc33;
+            }
+          }
+        }
+        &.berry {
+          .text {
+            color: #69ff34;
+          }
+          .berry {
+            .circleboxinner {
+              background: #69ff34;
+            }
+          }
+        }
+        &.candy {
+          .text {
+            color: #ff347d;
+          }
+          .candy {
+            .circleboxinner {
+              background: #ff347d;
+            }
+          }
+        }
+        &.arctic {
+          .text {
+            color: #34ceff;
+          }
+          .arctic {
+            .circleboxinner {
+              background: #34ceff;
+            }
+          }
+        }
+      }
     }
-    .mintbutton{
-        background-color: #ADFFD8;
-        color:#121212;
-        padding: 10px 36px;
-        font-size: 24px;
-        border-radius: 14px;
-        width: 100%;
-        max-width: 300px;
-        margin-top: 20px;
+    &.flex2 {
+      .tbs {
+        padding: 5px 18px !important;
+      }
     }
-    &.greyedout{
-        // opacity: 0.26;
-        .tbs, .animatedisplay{
-            color:#121212 !important
-        }
-        .mintbutton{
-            background: rgba(217, 217, 217, 0.26) !important;
-        }
-        .circleboxOuter{
-            border-color: rgba(217, 217, 217, 0.26) !important;
-        }
+  }
+  .mintbutton {
+    background-color: #adffd8;
+    color: #121212;
+    padding: 10px 36px;
+    font-size: 24px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+  }
+  &.greyedout {
+    // opacity: 0.26;
+    .tbs,
+    .animatedisplay {
+      color: #121212 !important;
     }
+    .mintbutton {
+      background: rgba(217, 217, 217, 0.26) !important;
+    }
+    .circleboxOuter {
+      border-color: rgba(217, 217, 217, 0.26) !important;
+    }
+  }
 }

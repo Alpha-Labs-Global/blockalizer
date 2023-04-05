@@ -138,25 +138,25 @@ export function assign_sketch(
         aliveGridOptions
       );
       break;
-      case "circle-sketch":
-        let circleSketchOptions: CircleSketchOptions = {
-          numOfBoxes: opts.numOfBoxes || 9,
-          paletteIndex: opts.paletteIndex || 0,
-          noFill: opts.noFill || false,
-          removeBlocks: opts.removeBlocks || 0,
-          animate: opts.animate || false,
-          paperIndex: opts.paperIndex || 0,
-        };
-        sketch = new CircleSketch(
-          p5,
-          canvasWidth,
-          canvasHeight,
-          table,
-          parseInt(blockNumber),
-          hex2bin(blockInfo.blockHash),
-          circleSketchOptions
-        );        
-        break;
+    case "circle-sketch":
+      let circleSketchOptions: CircleSketchOptions = {
+        numOfBoxes: opts.numOfBoxes || 9,
+        paletteIndex: opts.paletteIndex || 0,
+        noFill: opts.noFill || false,
+        removeBlocks: opts.removeBlocks || 0,
+        animate: opts.animate || false,
+        paperIndex: opts.paperIndex || 0,
+      };
+      sketch = new CircleSketch(
+        p5,
+        canvasWidth,
+        canvasHeight,
+        table,
+        parseInt(blockNumber),
+        hex2bin(blockInfo.blockHash),
+        circleSketchOptions
+      );
+      break;
   }
   return sketch;
 }
@@ -164,7 +164,7 @@ export function assign_sketch(
 export function load_colors(): p5Types.Table {
   let table: p5Types.Table;
   table = new p5Types.Table();
-  let column: keyof typeof colors[0];
+  let column: keyof (typeof colors)[0];
   for (column in colors[0]) {
     table.addColumn(column);
   }

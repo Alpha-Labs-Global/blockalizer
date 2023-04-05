@@ -331,7 +331,7 @@ export class CircleSketch extends GenericSketch {
         i < this.sketchWidth - this.margins;
         i += this.sizeOfBox
       ) {
-        this.generateTriangles(i, j, bitIndex);
+        this.generateCircles(i, j, bitIndex);
         bitIndex += 1;
       }
     }
@@ -407,26 +407,17 @@ export class CircleSketch extends GenericSketch {
   selectColors() {
     for (let j = 0; j < this.gridSize; j++) {
       for (let i = 0; i < this.gridSize; i++) {
-        if (this.shouldDrawBlock(j * this.gridSize + i)) {
-          const noiseColor = this.p5.random();
-          const color = this.pickColors(noiseColor);
-          this.triangleFillColors.push(color);
-        }
+        const noiseColor = this.p5.random();
+        const color = this.pickColors(noiseColor);
+        this.triangleFillColors.push(color);
       }
     }
   }
 
-  generateTriangles(i: number, j: number, bitIndex: number) {
+  generateCircles(i: number, j: number, bitIndex: number) {
     const rez2 = 0.01;
     let n3 = this.p5.noise(i * rez2, j * rez2);
-
-    if (this.shouldDrawBlock(bitIndex)) {
-      this.generateTriangleOutline(n3, i, j, this.sizeOfBox, bitIndex);
-    }
-  }
-
-  shouldDrawBlock(bitIndex: number) {
-    return !this.blocksToRemove.has(bitIndex);
+    this.generateCircleOutline(n3, i, j, this.sizeOfBox, bitIndex);
   }
 
   outline() {
@@ -446,13 +437,14 @@ export class CircleSketch extends GenericSketch {
     }
   }
 
-  generateTriangleOutline(
+  generateCircleOutline(
     n3: number,
     i: number,
     j: number,
     size: number,
     bitIndex: number
   ) {
+    console.log({ n3, i, j, size, bitIndex });
     // 1 is ◣ and 0 is ◢
     this.p5.strokeJoin(this.p5.BEVEL);
     const orientation = this.blockOrientation[bitIndex];
