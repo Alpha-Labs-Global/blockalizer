@@ -93,7 +93,7 @@ export class CircleSketch extends GenericSketch {
     this.printColors(this.paletteIndex);
     this.colorPalette = this.generatePalette(this.paletteIndex);
 
-    this.p5.randomSeed(blockNumber);
+    // this.p5.randomSeed(blockNumber);
     this.artTypeRandNum = Math.floor(this.p5.random(0, 100)) % 2;
     this.reseed();
 
@@ -216,6 +216,7 @@ export class CircleSketch extends GenericSketch {
   }
 
   scaffolding() {
+    console.log("> scaffolding: ");
     this.outline();
     this.selectColors();
     let bitIndex = 0;
@@ -234,9 +235,9 @@ export class CircleSketch extends GenericSketch {
       }
     }
   }
-  draw() {
-    this.scaffolding();
-  }
+  // draw() {
+  //   // TODO: draw the shape from pre-generated data
+  // }
 
   preview() {
     this.scaffolding();
