@@ -81,21 +81,23 @@ export class CircleSketch extends GenericSketch {
 
     const marginPct = 5;
     const squareSize = Math.min(this.canvasHeight, this.canvasWidth);
-    this.margins = (squareSize * marginPct) / 100;
+    // this.margins = (squareSize * marginPct) / 100;
+    this.margins = 0;
+    
 
     this.sketchHeight = squareSize;
     this.sketchWidth = squareSize;
     const lengthOfBlockOrientation = this.gridSize * this.gridSize;
     this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
 
-    this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
+    // this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
 
-    // console.log(`Palette selected: ${this.paletteIndex}`);
     this.printColors(this.paletteIndex);
 
     // this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
     this.colorPalette = this.generatePalette(this.paletteIndex);
+    console.log("> colorPalette: ", this.colorPalette);
 
     this.blocksToRemove = this.computeBlocksToRemove();
     // console.log("removed blocks: ", Array.from(this.blocksToRemove));
@@ -111,7 +113,7 @@ export class CircleSketch extends GenericSketch {
         maxOffset = 2;
         this.fillGap = 6;
         this.strokeWidthFill = 5;
-        this.strokeWidth = 1.5;
+        this.strokeWidth = 3;
         this.strokeWidthOutline = 3;
         break;
       case 6:
@@ -120,7 +122,7 @@ export class CircleSketch extends GenericSketch {
         maxOffset = 1;
         this.fillGap = 5;
         this.strokeWidthFill = 3.5;
-        this.strokeWidth = 1.5;
+        this.strokeWidth = 2;
         this.strokeWidthOutline = 2;
         break;
       case 9:
@@ -129,7 +131,7 @@ export class CircleSketch extends GenericSketch {
         maxOffset = 1;
         this.fillGap = 4;
         this.strokeWidthFill = 2.5;
-        this.strokeWidth = 1.5;
+        this.strokeWidth = 1;
         this.strokeWidthOutline = 1;
         break;
       case 12:
@@ -138,7 +140,7 @@ export class CircleSketch extends GenericSketch {
         maxOffset = 1;
         this.fillGap = 3.5;
         this.strokeWidthFill = 2;
-        this.strokeWidth = 1;
+        this.strokeWidth = 0.5;
         this.strokeWidthOutline = 0.5;
         break;
       default:
@@ -147,10 +149,12 @@ export class CircleSketch extends GenericSketch {
         maxOffset = 1;
         this.fillGap = 5;
         this.strokeWidthFill = 3;
-        this.strokeWidth = 1.5;
+        this.strokeWidth = 0.5;
         this.strokeWidthOutline = 0.5;
         break;
     }
+
+    this.sizeOfBox = Math.ceil(squareSize - this.strokeWidthOutline) / this.gridSize;
 
     if (this.noFill) {
       this.strokeColor = this.p5.color(
@@ -204,9 +208,9 @@ export class CircleSketch extends GenericSketch {
       paper_links[this.paperIndex],
       (img) => {
         // console.log("paper image loaded");
-        this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
+        // this.p5.image(img, 0, 0, this.canvasWidth, this.canvasHeight);
         // this.p5.tint(50);
-        this.p5.background(img);
+        // this.p5.background(img);
         this.scaffolding();
         this.preview();
       },
@@ -421,18 +425,19 @@ export class CircleSketch extends GenericSketch {
   }
 
   outline() {
+    const strokeColor = this.pickColors(0);
     for (let j = this.margins; j < this.canvasHeight; j += this.sizeOfBox) {
       this.p5.push();
       this.p5.strokeWeight(this.strokeWidthOutline);
-      this.p5.stroke(0, 70);
-      this.p5.line(0, j, this.canvasWidth, j);
+      this.p5.stroke(strokeColor);
+      this.p5.line(0, j + this.strokeWidthOutline / 2, this.canvasWidth, j);
       this.p5.pop();
     }
     for (let i = this.margins; i < this.canvasWidth; i += this.sizeOfBox) {
       this.p5.push();
       this.p5.strokeWeight(this.strokeWidthOutline);
-      this.p5.stroke(0, 70);
-      this.p5.line(i, 0, i, this.canvasHeight);
+      this.p5.stroke(strokeColor);
+      this.p5.line(i + this.strokeWidthOutline / 2, 0, i, this.canvasHeight);
       this.p5.pop();
     }
   }
@@ -444,9 +449,8 @@ export class CircleSketch extends GenericSketch {
     size: number,
     bitIndex: number
   ) {
-    console.log({ n3, i, j, size, bitIndex });
     // 1 is ◣ and 0 is ◢
-    this.p5.strokeJoin(this.p5.BEVEL);
+    // this.p5.strokeJoin(this.p5.BEVEL);
     const orientation = this.blockOrientation[bitIndex];
     const offset = 0;
     const startI = i + offset;
@@ -454,55 +458,65 @@ export class CircleSketch extends GenericSketch {
     const startJ = j + offset;
     const endJ = j + size - offset;
     let triangleSteps: any = [];
-    if (orientation === 0) {
-      if (n3 < 0.5) {
-        // ◢ Lower right triangle
-        triangleSteps = this.recordJaggedTriangle(
-          endI,
-          startJ,
-          endI,
-          endJ,
-          startI,
-          endJ
-        );
-        this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
-      } else {
-        // ◤ Upper left triangle
-        triangleSteps = this.recordJaggedTriangle(
-          startI,
-          endJ,
-          startI,
-          startJ,
-          endI,
-          startJ
-        );
-        this.pushFilling(startI, endJ, startI, startJ, endI, startJ, false);
-      }
-    } else {
-      if (n3 < 0.5) {
-        // ◣ Lower left triangle
-        triangleSteps = this.recordJaggedTriangle(
-          startI,
-          startJ,
-          endI,
-          endJ,
-          startI,
-          endJ
-        );
-        this.pushFilling(startI, startJ, endI, endJ, startI, endJ, true);
-      } else {
-        // ◥ Upper right triangle
-        triangleSteps = this.recordJaggedTriangle(
-          startI,
-          startJ,
-          endI,
-          endJ,
-          endI,
-          startJ
-        );
-        this.pushFilling(startI, startJ, endI, endJ, endI, startJ, true);
-      }
-    }
+    triangleSteps = this.recordJaggedTriangle(
+      endI,
+      startJ,
+      endI,
+      endJ,
+      startI,
+      endJ
+    );
+    this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
+
+    // if (orientation === 0) {
+    //   if (n3 < 0.5) {
+    //     // ◢ Lower right triangle
+    //     triangleSteps = this.recordJaggedTriangle(
+    //       endI,
+    //       startJ,
+    //       endI,
+    //       endJ,
+    //       startI,
+    //       endJ
+    //     );
+    //     this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
+    //   } else {
+    //     // ◤ Upper left triangle
+    //     triangleSteps = this.recordJaggedTriangle(
+    //       startI,
+    //       endJ,
+    //       startI,
+    //       startJ,
+    //       endI,
+    //       startJ
+    //     );
+    //     this.pushFilling(startI, endJ, startI, startJ, endI, startJ, false);
+    //   }
+    // } else {
+    //   if (n3 < 0.5) {
+    //     // ◣ Lower left triangle
+    //     triangleSteps = this.recordJaggedTriangle(
+    //       startI,
+    //       startJ,
+    //       endI,
+    //       endJ,
+    //       startI,
+    //       endJ
+    //     );
+    //     this.pushFilling(startI, startJ, endI, endJ, startI, endJ, true);
+    //   } else {
+    //     // ◥ Upper right triangle
+    //     triangleSteps = this.recordJaggedTriangle(
+    //       startI,
+    //       startJ,
+    //       endI,
+    //       endJ,
+    //       endI,
+    //       startJ
+    //     );
+    //     this.pushFilling(startI, startJ, endI, endJ, endI, startJ, true);
+    //   }
+    // }
     this.allTriangles.push(triangleSteps);
   }
 
@@ -633,11 +647,14 @@ export class CircleSketch extends GenericSketch {
     y3: number
   ) {
     const opts = {};
-    const vertices1 = this.jaggedLineFreeFlow(x1, y1, x2, y2, opts);
-    const vertices2 = this.jaggedLineFreeFlow(x2, y2, x3, y3, opts);
-    const vertices3 = this.jaggedLineFreeFlow(x3, y3, x1, y1, opts);
+    // const vertices1 = this.jaggedLineFreeFlow(x1, y1, x2, y2, opts);
+    // const vertices2 = this.jaggedLineFreeFlow(x2, y2, x3, y3, opts);
+    // const vertices3 = this.jaggedLineFreeFlow(x3, y3, x1, y1, opts);
 
-    return vertices1.concat(vertices2).concat(vertices3);
+    const vertices1 = this.drawCrookedCircle(50, 50, x2, y2);
+
+    // return vertices1.concat(vertices2).concat(vertices3);
+    return vertices1;
   }
 
   pushFilling(
@@ -670,4 +687,5 @@ export class CircleSketch extends GenericSketch {
       this.scribble.scribbleFilling(xCoords, yCoords, gap, angle)!
     );
   }
+
 }
