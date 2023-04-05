@@ -36,7 +36,6 @@ export class CircleSketch extends GenericSketch {
   colorPalette: Array<Color>; // Color Palette to be used
   paletteIndex: number; // Selected index from color table
   gridSize: number; // Size of the grid
-  blocksToRemove: Set<number>; // Set of blocks to remove
   iterator: number; // iterate over bits
   triangleIterator: number;
   margins: number; // margin around sketch;
@@ -58,6 +57,7 @@ export class CircleSketch extends GenericSketch {
   fillGap: number;
   strokeColor: p5.Color;
   paperIndex: number; // 0,1,2
+  artTypeRandNum: number; // 0, 1
 
   constructor(
     p5Instance: p5Types,
@@ -83,24 +83,18 @@ export class CircleSketch extends GenericSketch {
     const squareSize = Math.min(this.canvasHeight, this.canvasWidth);
     // this.margins = (squareSize * marginPct) / 100;
     this.margins = 0;
-    
 
     this.sketchHeight = squareSize;
     this.sketchWidth = squareSize;
     const lengthOfBlockOrientation = this.gridSize * this.gridSize;
     this.blockOrientation = blockBitsDecomp.slice(0, lengthOfBlockOrientation);
 
-    // this.sizeOfBox = Math.ceil(squareSize - 2 * this.margins) / this.gridSize;
     this.paletteIndex = opts.paletteIndex;
-
     this.printColors(this.paletteIndex);
-
-    // this.colorPalette = this.generatePaletteWithOpacity(this.paletteIndex);
     this.colorPalette = this.generatePalette(this.paletteIndex);
-    console.log("> colorPalette: ", this.colorPalette);
 
-    this.blocksToRemove = this.computeBlocksToRemove();
-    // console.log("removed blocks: ", Array.from(this.blocksToRemove));
+    this.p5.randomSeed(blockNumber);
+    this.artTypeRandNum = Math.floor(this.p5.random(0, 100)) % 2;
     this.reseed();
 
     let bowing = 3;
@@ -154,7 +148,7 @@ export class CircleSketch extends GenericSketch {
         break;
     }
 
-    this.sizeOfBox = Math.ceil(squareSize - this.strokeWidthOutline) / this.gridSize;
+    this.sizeOfBox = (squareSize - this.strokeWidthOutline) / this.gridSize;
 
     if (this.noFill) {
       this.strokeColor = this.p5.color(
@@ -221,106 +215,6 @@ export class CircleSketch extends GenericSketch {
     this.p5.noLoop();
   }
 
-  draw() {
-    const strokeScale = this.strokeWidth;
-    const stokeRez = 0.02;
-
-    // go over all triangles
-    if (this.triangleIterator < this.allTriangles.length) {
-      const vertices = this.allTriangles[this.triangleIterator];
-
-      // check if triangle needs filling
-      if (!this.fillDone) {
-        if (this.noFill) {
-          this.triangleIterator++;
-          this.iterator = 1;
-          this.fillDone = true;
-        } else {
-          this.drawFill();
-        }
-      } else {
-        // draw triangle outline
-        if (this.iterator < vertices.length) {
-          const i = this.iterator;
-          const x1 = vertices[i - 1][0];
-          const y1 = vertices[i - 1][1];
-          const x2 = vertices[i][0];
-          const y2 = vertices[i][1];
-          let strokeOffset =
-            strokeScale *
-            this.p5.noise(x1 * stokeRez + 1000, y1 * stokeRez + 1000);
-          this.p5.strokeWeight(strokeOffset);
-          this.p5.stroke(this.strokeColor);
-          this.p5.beginShape();
-          this.p5.vertex(x1, y1);
-          this.p5.vertex(x2, y2);
-          this.p5.endShape();
-
-          this.iterator++;
-        } else {
-          // fill triangle
-          this.fillDone = false;
-        }
-      }
-    }
-  }
-
-  drawFill() {
-    const fillLines = this.fillLines[this.triangleIterator];
-    const fillColor = this.triangleFillColors[this.triangleIterator].toString();
-    if (this.fillIterator < fillLines.length) {
-      const lines = fillLines[this.fillIterator];
-
-      if (this.lineIterator == 0) {
-        this.p5.push();
-        this.p5.strokeWeight(this.strokeWidthFill);
-        this.p5.noFill();
-        this.p5.stroke(fillColor);
-        this.p5.beginShape();
-      }
-
-      let line;
-      if (this.firstLine) {
-        line = lines[0];
-      } else {
-        line = lines[1];
-      }
-
-      if (this.lineIterator < line.length) {
-        const x = Number(line[this.lineIterator][0]);
-        const y = Number(line[this.lineIterator][1]);
-        const curve = line[this.lineIterator][2];
-        // console.log("line details: ", x, y, curve);
-        if (curve) {
-          this.p5.curveVertex(x, y);
-        } else {
-          this.p5.vertex(x, y);
-        }
-        this.lineIterator++;
-      } else {
-        if (this.firstLine) {
-          this.p5.endShape();
-          this.p5.pop();
-          this.lineIterator = 0;
-          this.firstLine = false;
-        } else {
-          this.p5.endShape();
-          this.p5.pop();
-          this.lineIterator = 0;
-          this.fillIterator++;
-          this.firstLine = true;
-        }
-      }
-    } else {
-      // draw next triangle
-      this.triangleIterator++;
-      this.fillIterator = 0;
-      this.iterator = 1;
-      this.fillDone = true;
-      // if (this.fillLines!.length > 0) this.p5.noLoop();
-    }
-  }
-
   scaffolding() {
     this.outline();
     this.selectColors();
@@ -335,13 +229,17 @@ export class CircleSketch extends GenericSketch {
         i < this.sketchWidth - this.margins;
         i += this.sizeOfBox
       ) {
-        this.generateCircles(i, j, bitIndex);
+        this.generateCircles(i, j);
         bitIndex += 1;
       }
     }
   }
+  draw() {
+    this.scaffolding();
+  }
 
   preview() {
+    this.scaffolding();
     const strokeScale = this.strokeWidth;
     const stokeRez = 0.02;
 
@@ -418,10 +316,8 @@ export class CircleSketch extends GenericSketch {
     }
   }
 
-  generateCircles(i: number, j: number, bitIndex: number) {
-    const rez2 = 0.01;
-    let n3 = this.p5.noise(i * rez2, j * rez2);
-    this.generateCircleOutline(n3, i, j, this.sizeOfBox, bitIndex);
+  generateCircles(i: number, j: number) {
+    this.generateCircleOutline(i, j, this.sizeOfBox);
   }
 
   outline() {
@@ -430,119 +326,105 @@ export class CircleSketch extends GenericSketch {
       this.p5.push();
       this.p5.strokeWeight(this.strokeWidthOutline);
       this.p5.stroke(strokeColor);
-      this.p5.line(0, j + this.strokeWidthOutline / 2, this.canvasWidth, j);
+      this.p5.line(0, j + this.strokeWidthOutline / 2, this.canvasWidth, j + this.strokeWidthOutline / 2);
       this.p5.pop();
     }
     for (let i = this.margins; i < this.canvasWidth; i += this.sizeOfBox) {
       this.p5.push();
       this.p5.strokeWeight(this.strokeWidthOutline);
       this.p5.stroke(strokeColor);
-      this.p5.line(i + this.strokeWidthOutline / 2, 0, i, this.canvasHeight);
+      this.p5.line(i + this.strokeWidthOutline / 2, 0, i + this.strokeWidthOutline / 2, this.canvasHeight);
       this.p5.pop();
     }
   }
 
   generateCircleOutline(
-    n3: number,
     i: number,
     j: number,
     size: number,
-    bitIndex: number
   ) {
-    // 1 is ◣ and 0 is ◢
-    // this.p5.strokeJoin(this.p5.BEVEL);
-    const orientation = this.blockOrientation[bitIndex];
-    const offset = 0;
-    const startI = i + offset;
-    const endI = i + size - offset;
-    const startJ = j + offset;
-    const endJ = j + size - offset;
-    let triangleSteps: any = [];
-    triangleSteps = this.recordJaggedTriangle(
-      endI,
-      startJ,
-      endI,
-      endJ,
-      startI,
-      endJ
-    );
-    this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
+    this.p5.push();
+    const mainColor = this.pickColors(0);
+    /**
+     * 0 - filled full circle
+     * 1 - unfilled full circle
+     * 2 - facing right
+     * 3 - facing left
+     * 4 - facing top
+     */
+    const circleTypeRandNum = Math.floor(this.p5.random(0, 100)) % 5;
 
-    // if (orientation === 0) {
-    //   if (n3 < 0.5) {
-    //     // ◢ Lower right triangle
-    //     triangleSteps = this.recordJaggedTriangle(
-    //       endI,
-    //       startJ,
-    //       endI,
-    //       endJ,
-    //       startI,
-    //       endJ
-    //     );
-    //     this.pushFilling(endI, startJ, endI, endJ, startI, endJ, false);
-    //   } else {
-    //     // ◤ Upper left triangle
-    //     triangleSteps = this.recordJaggedTriangle(
-    //       startI,
-    //       endJ,
-    //       startI,
-    //       startJ,
-    //       endI,
-    //       startJ
-    //     );
-    //     this.pushFilling(startI, endJ, startI, startJ, endI, startJ, false);
-    //   }
-    // } else {
-    //   if (n3 < 0.5) {
-    //     // ◣ Lower left triangle
-    //     triangleSteps = this.recordJaggedTriangle(
-    //       startI,
-    //       startJ,
-    //       endI,
-    //       endJ,
-    //       startI,
-    //       endJ
-    //     );
-    //     this.pushFilling(startI, startJ, endI, endJ, startI, endJ, true);
-    //   } else {
-    //     // ◥ Upper right triangle
-    //     triangleSteps = this.recordJaggedTriangle(
-    //       startI,
-    //       startJ,
-    //       endI,
-    //       endJ,
-    //       endI,
-    //       startJ
-    //     );
-    //     this.pushFilling(startI, startJ, endI, endJ, endI, startJ, true);
-    //   }
-    // }
-    this.allTriangles.push(triangleSteps);
-  }
+    /**
+     * 0 - includes 1 circle
+     * 1 - includes 4 circles
+     */
+    const margin = size / 8;
+    const width = size - 2 * margin;
+    const height = width;
 
-  generatePaletteWithOpacity(paletteIndex: number) {
-    let strokeColor = this.p5.color(
-      this.colorTable.getNum(paletteIndex, 0),
-      this.colorTable.getNum(paletteIndex, 1),
-      this.colorTable.getNum(paletteIndex, 2)
-    );
-    let otherColor = this.p5.color(
-      this.colorTable.getNum(paletteIndex, 3),
-      this.colorTable.getNum(paletteIndex, 4),
-      this.colorTable.getNum(paletteIndex, 5)
-    );
+    this.p5.strokeWeight(this.strokeWidthOutline * 2/ 3);
+    this.p5.stroke(mainColor);
+    if (this.artTypeRandNum == 0) {
+      if (circleTypeRandNum == 0) {
+        this.p5.fill(mainColor);
+      } else {
+        this.p5.fill(0, 0, 0, 0);
+      }
 
-    let colorList = [strokeColor];
-    let opacityAdjustedColorlist = [0.2, 0.4, 0.6, 0.8, 1].map((opacity) => {
-      const newColor = this.p5.color(
-        this.p5.red(otherColor),
-        this.p5.green(otherColor),
-        this.p5.blue(otherColor)
-      );
-      newColor.setAlpha(opacity * 255);
-      return newColor;
-    });
-    return colorList.concat(opacityAdjustedColorlist);
+      if (circleTypeRandNum < 2) {
+        this.p5.ellipse(
+          i + width / 2 + margin,
+          j + height / 2 + margin,
+          width,
+          height
+        );
+      } else {
+        const startAt = (circleTypeRandNum - 2) * this.p5.PI / 2 - this.p5.PI / 2;
+        this.p5.arc(
+          i + width / 2 + margin,
+          j + height / 2 + margin,
+          width,
+          height,
+          startAt,
+          startAt + this.p5.PI
+        );
+      }
+    } else {
+      const subMargin = margin / 2;
+      const subSize = width / 2;
+      let startX = i;
+      let startY = j;
+      for (let subId = 0; subId < 4; subId ++){
+        const noFillRand = Math.floor(this.p5.random(0, 100)) % 2;
+        if (noFillRand == 0) {
+          this.p5.fill(mainColor);
+        } else {
+          this.p5.fill(0, 0, 0, 0);
+        }
+
+        this.p5.ellipse(
+          startX + subSize / 2 + subMargin,
+          startY + subSize / 2 + subMargin,
+          subSize,
+          subSize
+        );
+
+        if (subId % 2 == 0) {
+          startX = i + subSize + subMargin * 2;
+        } else {
+          startX = i;
+        }
+
+        if (Math.floor(subId + 1 / 2) == 0) {
+          startY = j;
+        } else {
+          startY = j + subSize + subMargin * 2;
+        }
+      }
+    }
+
+    this.p5.pop();
+    // this.allTriangles.push(triangleSteps);
   }
 
   generatePalette(paletteIndex: number) {
@@ -593,99 +475,6 @@ export class CircleSketch extends GenericSketch {
       css_arr.push(`background: rgb(${r},${g},${b});`);
     }
     console.log(str, ...css_arr);
-  }
-
-  computeBlocksToRemove() {
-    let result = new Set<number>();
-    const blowupAreaBasedOnSize: Map<number, number> = new Map([
-      [3, 1],
-      [6, 3],
-      [9, 7],
-      [12, 12],
-    ]);
-    const totalBlocks = this.gridSize * this.gridSize;
-    const blowupArea = blowupAreaBasedOnSize.get(this.gridSize) || 0;
-    const directions = [
-      -1,
-      1,
-      this.gridSize,
-      -this.gridSize,
-      this.gridSize + 1,
-      -this.gridSize - 1,
-      -this.gridSize + 1,
-      this.gridSize - 1,
-    ];
-    for (let j = 0; j < this.removeBlocks; j++) {
-      let randomBlock = Math.floor(this.p5.random() * totalBlocks);
-      let i = 0;
-      while (i < blowupArea) {
-        if (!result.has(randomBlock)) {
-          result.add(randomBlock);
-          i++;
-        }
-
-        let randomDirection =
-          directions[Math.floor(this.p5.random() * directions.length)];
-
-        randomBlock += randomDirection;
-        if (randomBlock < 0) {
-          randomBlock = totalBlocks - randomBlock;
-        } else if (randomBlock > totalBlocks) {
-          randomBlock = randomBlock - totalBlocks;
-        }
-      }
-    }
-    return result;
-  }
-
-  recordJaggedTriangle(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    x3: number,
-    y3: number
-  ) {
-    const opts = {};
-    // const vertices1 = this.jaggedLineFreeFlow(x1, y1, x2, y2, opts);
-    // const vertices2 = this.jaggedLineFreeFlow(x2, y2, x3, y3, opts);
-    // const vertices3 = this.jaggedLineFreeFlow(x3, y3, x1, y1, opts);
-
-    const vertices1 = this.drawCrookedCircle(50, 50, x2, y2);
-
-    // return vertices1.concat(vertices2).concat(vertices3);
-    return vertices1;
-  }
-
-  pushFilling(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    x3: number,
-    y3: number,
-    leftTriangle: boolean
-  ) {
-    // the x coordinates of the border points of the hachure
-    const xCoords = [x1, x2, x3];
-    // the y coordinates of the border points of the hachure
-    const yCoords = [y1, y2, y3];
-    // the gap between two hachure lines
-    const gap = this.fillGap;
-    // the angle of the hachure in degrees
-    let angle;
-    if (leftTriangle) {
-      angle = 45;
-    } else {
-      angle = 315;
-    }
-
-    // set the thikness of our hachure lines
-
-    // fill the rect with a hachure
-    this.fillLines.push(
-      this.scribble.scribbleFilling(xCoords, yCoords, gap, angle)!
-    );
   }
 
 }
