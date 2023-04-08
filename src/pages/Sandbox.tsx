@@ -64,7 +64,7 @@ const Sandbox: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (uniqueKey != keyGenerator()) {
       setUniqueKey(keyGenerator());
       // p5Instance.redraw();
-      console.log("Regenerating Art...");
+      console.log("[Sandbox] Regenerating Art...");
     }
   };
 

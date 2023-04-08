@@ -12,6 +12,7 @@ import GenericSketch from "../art-styles/generic_sketch";
 import NoneSketch from "../art-styles/none_sketch";
 // import CubeSketch from "../art-styles/cube_sketch";
 import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
+import { CircleSketchOptions, CircleSketch } from "../art-styles/circle_sketch";
 
 export interface BlockInfo {
   blockHash: string;
@@ -136,6 +137,21 @@ export function assign_sketch(
         aliveGridOptions
       );
       break;
+    case "circle-sketch":
+      let circleSketchOptions: CircleSketchOptions = {
+        numOfBoxes: opts.numOfBoxes || 9,
+        paletteIndex: opts.paletteIndex || 0,
+      };
+      sketch = new CircleSketch(
+        p5,
+        canvasWidth,
+        canvasHeight,
+        table,
+        parseInt(blockNumber),
+        hex2bin(blockInfo.blockHash),
+        circleSketchOptions
+      );
+      break;
   }
   return sketch;
 }
@@ -143,7 +159,7 @@ export function assign_sketch(
 export function load_colors(): p5Types.Table {
   let table: p5Types.Table;
   table = new p5Types.Table();
-  let column: keyof typeof colors[0];
+  let column: keyof (typeof colors)[0];
   for (column in colors[0]) {
     table.addColumn(column);
   }

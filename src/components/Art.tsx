@@ -61,7 +61,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
   useEffect(() => {
     regenerate();
     if (ready) {
-      setStyle("alive-grid");
+      setStyle("circle-sketch");
     } else {
       setStyle("none");
     }
@@ -96,11 +96,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacity: 255, // using fixed opacity
       strokeWidth: 1.5, // using fixed stroke width
       paletteIndex: paletteIndex,
-      opacitySwitch: true,
-      noFill: noFill,
-      removeBlocks: tetri,
-      animate: animate,
-      paperIndex: paperIndex,
+      opacitySwitch: true
     };
 
     sketch = assign_sketch(
@@ -131,7 +127,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (uniqueKey != keyGenerator()) {
       setUniqueKey(keyGenerator());
       // p5Instance.redraw();
-      console.log("Regenerating Art...");
+      console.log("[Art] Regenerating Art...");
     }
   };
 
