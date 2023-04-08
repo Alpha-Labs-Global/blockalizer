@@ -22,7 +22,6 @@ export class CircleSketch extends GenericSketch {
   strokeWidth: number; // stroke width to use
   strokeWidthOutline: number;
   strokeWidthFill: number;
-  fillGap: number;
   artTypeRandNum: number; // 0, 1
 
   constructor(
@@ -56,51 +55,28 @@ export class CircleSketch extends GenericSketch {
     this.artTypeRandNum = Math.floor(this.p5.random(0, 100)) % 2;
     this.reseed();
 
-    let bowing = 3;
-    let roughness = 4;
-    let maxOffset = 3;
     switch (this.gridSize) {
       case 3:
-        bowing = 2;
-        roughness = 3;
-        maxOffset = 2;
-        this.fillGap = 6;
         this.strokeWidthFill = 5;
         this.strokeWidth = 3;
         this.strokeWidthOutline = 3;
         break;
       case 6:
-        bowing = 3;
-        roughness = 2;
-        maxOffset = 1;
-        this.fillGap = 5;
         this.strokeWidthFill = 3.5;
         this.strokeWidth = 2;
         this.strokeWidthOutline = 2;
         break;
       case 9:
-        bowing = 3;
-        roughness = 2;
-        maxOffset = 1;
-        this.fillGap = 4;
         this.strokeWidthFill = 2.5;
         this.strokeWidth = 1;
         this.strokeWidthOutline = 1;
         break;
       case 12:
-        bowing = 2;
-        roughness = 2;
-        maxOffset = 1;
-        this.fillGap = 3.5;
         this.strokeWidthFill = 2;
         this.strokeWidth = 0.5;
         this.strokeWidthOutline = 0.5;
         break;
       default:
-        bowing = 3;
-        roughness = 3;
-        maxOffset = 1;
-        this.fillGap = 5;
         this.strokeWidthFill = 3;
         this.strokeWidth = 0.5;
         this.strokeWidthOutline = 0.5;

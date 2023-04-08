@@ -545,7 +545,7 @@ const Playground: React.FC<ComponentProps> = (props: ComponentProps) => {
               animate={animate}
               setAnimate={setAnimate}
               premium={premium}
-              disableMint={false}
+              disableMint={disableMint || blockUI}
             ></Controls>
           </div>
           <span className="block mt-8"></span>
