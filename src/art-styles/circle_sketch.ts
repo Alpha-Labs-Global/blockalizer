@@ -8,29 +8,21 @@ import GenericSketch from "./generic_sketch";
 export interface CircleSketchOptions {
   numOfBoxes: number;
   paletteIndex: number;
-  noFill: boolean;
-  removeBlocks: number;
-  animate: boolean;
-  paperIndex: number;
 }
 
 export class CircleSketch extends GenericSketch {
   backgroundColor: p5Types.Color; // background color to use if overridden
   sizeOfBox: number; // size in px of each individual square
-  noFill: boolean; // setting it to false removes all color
-  removeBlocks: number; // 0 means none, 1 is low, 2 is medium, 3 is high
   colorPalette: Array<Color>; // Color Palette to be used
   paletteIndex: number; // Selected index from color table
   gridSize: number; // Size of the grid
   margins: number; // margin around sketch;
   sketchWidth: number;
   sketchHeight: number;
-  animate: boolean;
   strokeWidth: number; // stroke width to use
   strokeWidthOutline: number;
   strokeWidthFill: number;
   fillGap: number;
-  strokeColor: p5.Color;
   artTypeRandNum: number; // 0, 1
 
   constructor(
@@ -49,9 +41,6 @@ export class CircleSketch extends GenericSketch {
     this.gridSize = opts.numOfBoxes;
     this.backgroundColor = this.p5.color(14, 15, 15);
     this.strokeWidth = 1.5;
-    this.noFill = opts.noFill;
-    this.removeBlocks = opts.removeBlocks;
-    this.animate = opts.animate;
 
     const squareSize = Math.min(this.canvasHeight, this.canvasWidth);
     this.margins = 0;
@@ -120,32 +109,6 @@ export class CircleSketch extends GenericSketch {
 
     this.sizeOfBox = (squareSize - this.strokeWidthOutline) / this.gridSize;
 
-    if (this.noFill) {
-      this.strokeColor = this.p5.color(
-        this.colorTable.getNum(this.paletteIndex, 0),
-        this.colorTable.getNum(this.paletteIndex, 1),
-        this.colorTable.getNum(this.paletteIndex, 2)
-      );
-      switch (this.gridSize) {
-        case 3:
-          this.strokeWidth = 12;
-          break;
-        case 6:
-          this.strokeWidth = 8;
-          break;
-        case 9:
-          this.strokeWidth = 6;
-          break;
-        case 12:
-          this.strokeWidth = 4;
-          break;
-        default:
-          this.strokeWidth = 1.5;
-          break;
-      }
-    } else {
-      this.strokeColor = this.p5.color(10);
-    }
   }
 
   setup(canvasParentRef: Element) {
@@ -325,9 +288,6 @@ export class CircleSketch extends GenericSketch {
     }
 
     let selectedColor = this.colorPalette[colorIndex];
-    if (this.noFill) {
-      selectedColor.setAlpha(0); // simplest way to have no fill
-    }
     return selectedColor;
   }
 

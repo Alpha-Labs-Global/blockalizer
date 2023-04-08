@@ -141,10 +141,6 @@ export function assign_sketch(
       let circleSketchOptions: CircleSketchOptions = {
         numOfBoxes: opts.numOfBoxes || 9,
         paletteIndex: opts.paletteIndex || 0,
-        noFill: opts.noFill || false,
-        removeBlocks: opts.removeBlocks || 0,
-        animate: opts.animate || false,
-        paperIndex: opts.paperIndex || 0,
       };
       sketch = new CircleSketch(
         p5,

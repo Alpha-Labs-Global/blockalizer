@@ -96,11 +96,7 @@ export const Art: React.FC<ComponentProps> = (props: ComponentProps) => {
       opacity: 255, // using fixed opacity
       strokeWidth: 1.5, // using fixed stroke width
       paletteIndex: paletteIndex,
-      opacitySwitch: true,
-      noFill: noFill,
-      removeBlocks: tetri,
-      animate: animate,
-      paperIndex: paperIndex,
+      opacitySwitch: true
     };
 
     sketch = assign_sketch(
