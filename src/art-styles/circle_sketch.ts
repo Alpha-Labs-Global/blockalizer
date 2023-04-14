@@ -121,6 +121,7 @@ export class CircleSketch extends GenericSketch {
   // }
 
   preview() {
+    this.p5.background(this.p5.color(14, 15, 15));
     this.scaffolding();
   }
 
