@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Collapsible from "react-collapsible";
 
-import placeholder from "../media/updatingMint.png";
+import placeholder from "../media/updating-mint.png";
 import placeHolder from "../media/square.png";
 
 import { latestBlock } from "../helper/server";

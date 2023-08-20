@@ -4,9 +4,9 @@ import p5Types from "p5";
 
 import { assign_sketch, load_colors, BlockInfo } from "../helper/sketch";
 import { getBlockInfo } from "../helper/server";
-import placeholder from "../media/updatingMint.png";
+import placeholder from "../media/updating-mint.png";
 
-import GenericSketch from "../art-styles/generic_sketch";
+import GenericSketch from "../art-styles/generic-sketch";
 
 interface ComponentProps {
   blockNumber: number;

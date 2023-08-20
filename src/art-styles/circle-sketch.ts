@@ -3,7 +3,7 @@
 
 import p5 from "p5";
 import p5Types, { Color } from "p5";
-import GenericSketch from "./generic_sketch";
+import GenericSketch from "./generic-sketch";
 
 export interface CircleSketchOptions {
   numOfBoxes: number;

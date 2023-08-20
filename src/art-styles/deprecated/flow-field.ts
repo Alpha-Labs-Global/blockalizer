@@ -2,7 +2,7 @@
 
 import p5 from "p5";
 import p5Types from "p5";
-import GenericSketch from "../generic_sketch";
+import GenericSketch from "../generic-sketch";
 
 class Particle {
   loc: p5Types.Vector;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./collapsible.scss";
 
-import "./MainScreen.css";
-import Playground from "./Playground";
-import Home from "./Home";
+import "./main-screen.css";
+import Playground from "./playground";
+import Home from "./home";
 
 import { ConnectKitButton } from "connectkit";
 

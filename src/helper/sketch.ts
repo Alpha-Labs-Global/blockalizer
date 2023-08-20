@@ -7,12 +7,12 @@ import {
   ColoredTriangleOptions,
   ColoredTrianglesSketch,
 } from "../art-styles/colored-triangles";
-import GenericSketch from "../art-styles/generic_sketch";
-// import NoiseSketch from "../art-styles/noise_sketch";
-import NoneSketch from "../art-styles/none_sketch";
-// import CubeSketch from "../art-styles/cube_sketch";
-import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive_grid";
-import { CircleSketchOptions, CircleSketch } from "../art-styles/circle_sketch";
+import GenericSketch from "../art-styles/generic-sketch";
+// import NoiseSketch from "../art-styles/noise-sketch";
+import NoneSketch from "../art-styles/none-sketch";
+// import CubeSketch from "../art-styles/cube-sketch";
+import { AliveGridOptions, AliveGridSketch } from "../art-styles/alive-grid";
+import { CircleSketchOptions, CircleSketch } from "../art-styles/circle-sketch";
 
 export interface BlockInfo {
   blockHash: string;

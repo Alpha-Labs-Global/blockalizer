@@ -1,5 +1,5 @@
 import p5Types, { Color } from "p5";
-import GenericSketch from "./generic_sketch";
+import GenericSketch from "./generic-sketch";
 
 /* Palette has a collection of 5 colors and we consider two palettes or one
 

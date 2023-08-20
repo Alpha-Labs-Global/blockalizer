@@ -8,7 +8,7 @@ import {
   BlockInfo,
   all_sketch_styles,
 } from "../helper/sketch";
-import GenericSketch from "../art-styles/generic_sketch";
+import GenericSketch from "../art-styles/generic-sketch";
 
 interface ComponentProps {}
 

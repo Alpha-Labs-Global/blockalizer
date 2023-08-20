@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./MainScreen.css";
+import "./main-screen.css";
 
-import Art from "../components/Art";
-import Controls from "../components/Controls";
-import BlockSelector from "../components/BlockSelector";
-import Gallery from "../components/Gallery";
+import Art from "../components/art";
+import Controls from "../components/controls";
+import BlockSelector from "../components/block-selector";
+import Gallery from "../components/gallery";
 
 import { useSigner } from "wagmi";
 import { trackAmplitude } from "../helper/amplitude";
@@ -30,8 +30,8 @@ import {
 } from "../helper/wallet";
 import { ethers, BigNumber } from "ethers";
 
-import "./Playground.css";
-import Header from "../components/Header";
+import "./playground.css";
+import Header from "../components/header";
 
 import { BlockInfo } from "../helper/sketch";
 

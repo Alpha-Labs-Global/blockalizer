@@ -1,5 +1,5 @@
 import React from "react";
-import placeholder from "../media/updatingMint.png";
+import placeholder from "../media/updating-mint.png";
 
 interface ComponentProps {
   ownedPieces: Array<any>;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Controls.scss";
+import "./controls.scss";
 
 interface ComponentProps {
   numOfBoxes: number;

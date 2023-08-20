@@ -1,6 +1,6 @@
 /*
 import p5Types from "p5";
-import GenericSketch from "../generic_sketch";
+import GenericSketch from "../generic-sketch";
 
 export interface ColoredTriangleOptions {
   numOfBoxes: number;

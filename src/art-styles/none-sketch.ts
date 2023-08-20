@@ -1,5 +1,5 @@
 import p5Types from "p5";
-import GenericSketch from "./generic_sketch";
+import GenericSketch from "./generic-sketch";
 
 export default class NoneSketch extends GenericSketch {
   boxSize: number;

@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import MainScreen from "./pages/MainScreen";
-import Sandbox from "./pages/Sandbox";
+import MainScreen from "./pages/main-screen";
+import Sandbox from "./pages/sandbox";
 
 function App() {
   return (
